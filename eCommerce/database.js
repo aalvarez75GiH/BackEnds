@@ -31,6 +31,9 @@ const products = [
     }
 ]
 
+const users = []
+
 module.exports = {
-    products
+    products, 
+    users
 }
