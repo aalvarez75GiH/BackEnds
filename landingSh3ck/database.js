@@ -27,9 +27,11 @@ const counters = [
 ]
 
 const users = []
+const registeredUsers = []
 
 module.exports = {
     counters, 
-    users
+    users,
+    registeredUsers
 }
 

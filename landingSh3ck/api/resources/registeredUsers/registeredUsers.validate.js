@@ -1,13 +1,15 @@
 const Joi = require('@hapi/joi')
 const logger = require('../../../utils/logger')
 
-const bluePrintUsers = Joi.object({
+const bluePrintRegisteredUsers = Joi.object({
     fullName: Joi.string().min(3).max(100).required(),
-    email: Joi.string().email().required()
+    password: Joi.string().min(6).max(200).required(),
+    email: Joi.string().email().required(),
+    phoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required()
 })
 
 module.exports = ( req, res, next ) => {
-    const result = bluePrintUsers.validate(req.body, {abortEarly: false, convert: false})
+    const result = bluePrintRegisteredUsers.validate(req.body, {abortEarly: false, convert: false})
     if (result.error === undefined){
         next()
     }else{
@@ -18,4 +20,3 @@ module.exports = ( req, res, next ) => {
         res.status(400).send(`Errors at the request: ${validationErrors}`)
     }
 }
-

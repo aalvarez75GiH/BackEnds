@@ -1,7 +1,6 @@
 const express = require('express')
 const _ = require('underscore')
-// const { v4: uuidv4 } = require("uuid")
-// const bcrypt = require('bcrypt')
+const { v4: uuidv4 } = require("uuid")
 
 const logger = require('../../../utils/logger')
 const users = require('../../../database').users
@@ -25,11 +24,8 @@ usersRouter.post('/', validateUsers, (req, res)=>{
         res.status(409).send(`User with email address: [${newUser.email}] already exists`)
         return
     }
-
-    users.push({
-        fullname: newUser.fullname,
-        email: newUser.email
-    })    
+    newUser.id = uuidv4()    
+    users.push(newUser)   
     logger.info(`User [${newUser.email}] has been created...`)
     res.status(201).send(`User [${newUser.email}] has been created...`)
 })
