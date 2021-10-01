@@ -6,8 +6,8 @@ const cors = require('cors')
 // const path = require('path')
 
 const countersRouter = require('./api/resources/counters/counters.routes')
+const intUsersRouter = require('./api/resources/interestedUsers/interestedUsers.routes')
 const usersRouter = require('./api/resources/users/users.routes')
-const registeredUsersRouter = require('./api/resources/registeredUsers/registeredUsers.routes')
 
 const app = express()
 // app.use(express.static(path.join('../../FrontEnds/landingsh3ck/','build')))
@@ -20,8 +20,8 @@ app.use(morgan('short', {
 }))
 
 app.use('/api/counters', countersRouter)
+app.use('/api/interestedUsers', intUsersRouter)
 app.use('/api/users', usersRouter)
-app.use('/api/register', registeredUsersRouter)
 
 app.get('/', (req,res)=> {
     res.send('sh3ck has born today...')

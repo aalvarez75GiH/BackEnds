@@ -26,12 +26,12 @@ const counters = [
 
 ]
 
+const interestedUsers = []
 const users = []
-const registeredUsers = []
 
 module.exports = {
     counters, 
-    users,
-    registeredUsers
+    interestedUsers,
+    users
 }
 

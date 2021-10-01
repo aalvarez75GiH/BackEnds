@@ -3,7 +3,9 @@ const logger = require('../../../utils/logger')
 
 const bluePrintUsers = Joi.object({
     fullName: Joi.string().min(3).max(100).required(),
-    email: Joi.string().email().required()
+    password: Joi.string().min(6).max(200).required(),
+    email: Joi.string().email().required(),
+    phoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required()
 })
 
 module.exports = ( req, res, next ) => {
@@ -18,4 +20,3 @@ module.exports = ( req, res, next ) => {
         res.status(400).send(`Errors at the request: ${validationErrors}`)
     }
 }
-
