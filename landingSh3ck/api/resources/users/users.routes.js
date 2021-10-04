@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken')
 
 const logger = require('../../../utils/logger')
 const users = require('../../../database').users
-const validateUsers = require('./users.validate')
+const validateUsers = require('./users.validate').validateUsers
+const validateLoginRequest = require('./users.validate').validateLoginRequest
 const usersRouter = express.Router()
 
 usersRouter.get('/', (req,res)=> {
@@ -45,7 +46,7 @@ usersRouter.post('/', validateUsers, (req, res)=>{
     })
 })
 
-usersRouter.post('/login', ( req, res ) => {
+usersRouter.post('/login', validateLoginRequest, ( req, res ) => {
     const notAuthUser = req.body
     const index = _.findIndex(users, user => {
         return user.email === notAuthUser.email
@@ -59,11 +60,17 @@ usersRouter.post('/login', ( req, res ) => {
     const hashedPassword = users[index].password
     bcrypt.compare(notAuthUser.password, hashedPassword, (err, match) => {
         if (match){
-            res.send('User was found and it`s being authenticated succesfully...')
+            //here is where i create token and send it to frontEnd
+            const token = jwt.sign({id: users[index].id},
+            'this is a secret', {
+                expiresIn: 60 * 60 * 24 * 365
+            })
+            logger.info(`User [${notAuthUser.email}] has been authenticated succesfully...`)
+            res.status(200).send({token})
             return
         }else{
             logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
-            res.status(400).send(`Incorrect credentials, check them again...`)
+            res.status(400).send(`email or password incorrect, check your credentials and try again...`)
         }
     })
 
