@@ -31,12 +31,13 @@ usersRouter.post('/', validateUsers, (req, res)=>{
             res.status(500).send('An error ocurred processing user creation process')
             return
         }    
-        newUser.id = uuidv4()
+        
         users.push({
             fullName:newUser.fullName,
             email:newUser.email,
             phoneNumber: newUser.phoneNumber,
-            password: hashedPassword
+            password: hashedPassword,
+            id: uuidv4()
         })
         logger.info(`User [${newUser.email}] has been created...`)
         res.status(201).send(`User [${newUser.email}] has been created...`)
