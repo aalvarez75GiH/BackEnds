@@ -34,10 +34,6 @@ app.get('/', passport.authenticate('basic', {session:false}), (req,res)=> {
     res.send('sh3ck has born today...')
 })
 
-// app.get('*', (req,res)=>{
-//     res.sendFile(path.join('../../FrontEnds/landingsh3ck'+'/build/index.html'))
-// })
-
 app.listen(5000, () => {
     logger.info('ch3ck server running at post 5000...')
 })
