@@ -13,13 +13,14 @@ module.exports = ( req, res, next ) => {
         next()
     }else{
         
-        // const validationErrors = result.error.details.reduce((accumulator, error)=> {
-        //     return accumulator + `[${error.message}]`
+        const validationErrors = result.error.details.reduce((accumulator, error)=> {
+            return accumulator + `[${error.message}]`
             
-        // },"")
-        // logger.warn(`Information sent by user is not complete ${validationErrors}`)
+        },"")
+        logger.warn(`Information sent by user is not complete ${validationErrors}`)
         // res.status(400).send(`Errors at the request: ${validationErrors}`)
         res.status(400).json(result.error.details)
+        // res.status(400).send(validationErrors)
     }
 }
 
