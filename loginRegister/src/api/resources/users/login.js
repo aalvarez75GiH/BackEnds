@@ -21,7 +21,7 @@ router.post('/login', (req, res)=> {
     const storedPassword = users[index].password
     if (storedPassword !== password){
         logger.info(`Email or password has NOT been authenticated...`)
-        return res.json({message: 'Email or password does not match...'})
+        return res.status(400).json({message: 'Email or password does not match...'})
     }else{
         
         //create token and send it
@@ -31,6 +31,7 @@ router.post('/login', (req, res)=> {
             })
             logger.info(`User with email [${email}] has been authenticated...`)
             res.status(200).json({
+                message:'Welcome back',
                 token: token
             })
     }
