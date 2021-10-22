@@ -8,10 +8,10 @@ const cors = require('cors')
 const api = require('./api/index')
 const products = require('./api/index')
 const port = process.env || 5000
-// const authJWT = require('./api/middleware/auth/passport')
+const authJWT = require('./api/middleware/auth/passport')
 const app = express()
 
-require('./api/middleware/auth/passport')
+// require('./api/middleware/auth/passport')
 
 
 app.use(morgan('short',{
@@ -20,7 +20,7 @@ app.use(morgan('short',{
     }
 }))
 
-// passport.use(authJWT)
+passport.use(authJWT)
 app.use(passport.initialize())
 
 app.use(helmet())

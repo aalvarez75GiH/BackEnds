@@ -7,7 +7,7 @@ const users = require('../../../provisionalDB').users
 const extractJWT =  passportJWT.ExtractJwt
 const strategyJWT = passportJWT.Strategy
 
-passport.use(new strategyJWT({
+module.exports = new strategyJWT({
     jwtFromRequest: extractJWT.fromAuthHeaderAsBearerToken(), 
     secretOrKey: 'this is a secret',
 },
@@ -30,6 +30,6 @@ function(jwtPayload, done) {
 
 }
 )
-) 
+
 
 
