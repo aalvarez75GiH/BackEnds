@@ -1,5 +1,6 @@
 const express = require('express')
 const _ = require('underscore')
+const bcrypt = require('bcrypt')
 const { v4: uuidv4 } = require('uuid')
 const logger = require('../../../utils/logger')
 const router = express.Router()
@@ -23,17 +24,23 @@ router.post('/register', async(req, res)=> {
             message: `User with email: ${email} already registered at Database...`
         })
     }
-    
-    users.push({
-        fullName: fullName,
-        email: email,
-        password: password,
-        id: uuidv4()
-    }) 
-    console.log(req.body)
-    logger.info(`User [${fullName}] has been created...`)
-    res.status(201).json(`User [${fullName}] has been created...`)
-    
+
+    bcrypt.hash(password, 10, (error, hashedPassword)=> {
+        if (error){
+            logger.error('An error ocurred when we tried to hash user`s password', error)
+            res.status(500).json(`An error ocurred when we tried to hash user's ${email} password`)
+        }
+
+        users.push({
+            fullName: fullName,
+            email: email,
+            password: hashedPassword,
+            id: uuidv4()
+        }) 
+        console.log(req.body)
+        logger.info(`User [${fullName}] has been created...`)
+        res.status(201).json(`User [${fullName}] has been created...`)
+    })
 })
 module.exports = router
 
