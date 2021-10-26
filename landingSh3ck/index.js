@@ -4,8 +4,7 @@ const logger = require('./utils/logger')
 const morgan = require('morgan')
 const cors = require('cors')
 const passport = require('passport')
-const { BasicStrategy } = require('passport-http')
-const auth = require('./api/libs/auth')
+const authJWT = require('./api/libs/auth')
 // const path = require('path')
 
 const countersRouter = require('./api/resources/counters/counters.routes')
@@ -23,7 +22,7 @@ app.use(morgan('short', {
     }
 }))
 
-passport.use(new BasicStrategy(auth))
+passport.use(authJWT)
 app.use(passport.initialize())
 
 app.use('/api/counters', countersRouter)

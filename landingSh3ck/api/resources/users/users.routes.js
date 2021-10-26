@@ -3,8 +3,11 @@ const _ = require('underscore')
 const { v4: uuidv4 } = require("uuid")
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const passport = require('passport')
 
 const logger = require('../../../utils/logger')
+const jwtAuthorization = passport.authenticate('jwt', { session: false })
+
 const users = require('../../../database').users
 const validateUsers = require('./users.validate').validateUsers
 const validateLoginRequest = require('./users.validate').validateLoginRequest
@@ -76,12 +79,10 @@ usersRouter.post('/login', validateLoginRequest, ( req, res ) => {
 
 })
 
-
-
-
-
-
-
+usersRouter.get('/me', jwtAuthorization, (req,res) => {
+    let dataUser = req.user.fullName
+    res.send(dataUser)
+})
 
 
 

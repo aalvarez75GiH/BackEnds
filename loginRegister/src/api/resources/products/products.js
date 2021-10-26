@@ -10,9 +10,7 @@ const products = require('../../../provisionalDB').products
 router.get('/products', (req,res)=> {
     res.send(products)
 })
-// router.get('/payments', (req,res)=> {
-//     res.send(' i am payments')
-// })
+
 
 // router.delete( '/:id' , jwtAuthorization, ( req,res ) => {
 //     let id = req.params.id
