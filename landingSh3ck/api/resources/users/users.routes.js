@@ -27,7 +27,8 @@ usersRouter.post('/', validateUsers, (req, res)=>{
 
     if (index !== -1){
         logger.info(`User owning ${newUser.email} already registered...`)
-        res.status(409).send(`User with email address: [${newUser.email}] already exists`)
+        // res.status(409).send(`User with email address: [${newUser.email}] already exists`)
+        res.status(409).send(newUser.fullName)
         return
     }
     bcrypt.hash(newUser.password, 10, ( err, hashedPassword )=> {
@@ -45,7 +46,8 @@ usersRouter.post('/', validateUsers, (req, res)=>{
             id: uuidv4()
         })
         logger.info(`User [${newUser.email}] has been created...`)
-        res.status(201).send(`User [${newUser.email}] has been created...`)
+        // res.status(201).send(`User [${newUser.email}] has been created...`)
+        res.status(201).send(newUser.fullName)
     })
 })
 
@@ -56,7 +58,7 @@ usersRouter.post('/login', validateLoginRequest, ( req, res ) => {
     })
     if (index === -1){
         logger.info(`User with email ${notAuthUser.email} was not found at DB`)
-        res.status(400).send(`User [${notAuthUser.email}]  hasn't been found, check your credentials..`)
+        res.status(400).send(`${notAuthUser.email}`)
         return
     }
 

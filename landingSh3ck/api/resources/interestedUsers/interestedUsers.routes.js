@@ -20,14 +20,17 @@ intUsersRouter.post('/', validateUsers, (req, res)=>{
     })
 
     if (index !== -1){
-        logger.info(`User owning ${newUser.email} already registered...`)
-        res.status(409).send(`User with email address: [${newUser.email}] already exists`)
+        logger.info(` User with email ${newUser.email} already enrolled as interested User `)
+        // res.status(409).send(`User with email address: [${newUser.email}] already exists`)
+        res.status(409).send(`${newUser.fullName}`)
+        // res.status(500).send(`internal Error...`)
         return
     }
     newUser.id = uuidv4()    
     interestedUsers.push(newUser)   
     logger.info(`User [${newUser.email}] has been created...`)
-    res.status(201).send(`User [${newUser.email}] has been created...`)
+    // res.status(201).send(`User [${newUser.email}] has been created...`)
+    res.status(201).send(`${newUser.fullName}`)
 })
 
 module.exports = intUsersRouter
