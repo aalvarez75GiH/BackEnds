@@ -39,7 +39,10 @@ router.post('/register', async(req, res)=> {
         }) 
         console.log(req.body)
         logger.info(`User [${fullName}] has been created...`)
-        res.status(201).json(`User [${fullName}] has been created...`)
+        // res.status(201).json(`User [${fullName}] has been created...`)
+        res.status(201).json({
+            message: 'Thank you for registering with us..'
+        })
     })
 })
 module.exports = router
