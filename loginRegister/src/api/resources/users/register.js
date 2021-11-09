@@ -20,7 +20,7 @@ router.post('/register', async(req, res)=> {
     })
     if (index !== -1){
         logger.info(`User with email ${email} already registered...`)
-        return res.json({
+        return res.status(409).json({
             message: `User with email: ${email} already registered at Database...`
         })
     }
