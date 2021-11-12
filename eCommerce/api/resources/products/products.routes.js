@@ -4,37 +4,64 @@ const { v4: uuidv4 } = require("uuid")
 const passport = require('passport')
 
 
-const products = require('./../../../database').products
 const validateProduct = require('./products.validate')
-const logger = require('../../../utils/logger');
+const logger = require('../../../utils/logger')
+const productController = require('./products.controller')
 const jwtAuthorization = passport.authenticate('jwt', { session: false })
 const productsRouter = express.Router()
 
 
 productsRouter.get( '/', ( req, res ) => {
-        res.json(products)
+    productController.getProducts()
+    .then(products => {
+        res.status(201).json(products)
+    })
+    .catch(error => {
+        logger.error('Sorry, we had a problem when we were reading at DB...')
+        res.status(500).send('Sorry, we had a problem when we were reading at DB...')
+    })    
 })
 
-productsRouter.get( '/:id', ( req, res ) => {
-    products.map((product)=> {
-        if (product.id === req.params.id){
-            res.json(product)
-            return
-        }
-    })
+// productsRouter.get( '/:id', ( req, res ) => {
+//     products.map((product)=> {
+//         if (product.id === req.params.id){
+//             res.json(product)
+//             return
+//         }
+//     })
 
-    res.status(404).send('Product not found from .map')
+//     res.status(404).send('Product not found from .map')
+// })
+productsRouter.get( '/:id', ( req, res ) => {
+    productController.getProductsById(req.params.id)
+    .then(product => {
+        res.status(201).json(product)
+    })
+    .catch(error => {
+        logger.error(`Product with ID[${req.params.id}] was not found at DB`)
+        res.status(500).send('Sorry, we did not find that product at DB...')
+    })
+    // products.map((product)=> {
+    //     if (product.id === req.params.id){
+    //         res.json(product)
+    //         return
+    //     }
+    // })
+
+    // res.status(404).send('Product not found from .map')
 })
 
 productsRouter.post( '/', [ jwtAuthorization, validateProduct ], ( req,res ) => {
-        let newProduct = {
-            ...req.body,
-            id: uuidv4(),
-            owner: req.user.username
-        }   
-        products.push(newProduct)
-        logger.info('Product added to the Products collection', newProduct)
-        res.status(201).json(newProduct)
+        
+    productController.createProduct(req.body, req.user.username)
+    .then(product => {
+        logger.info('Product added to the Products collection', product)
+        res.status(201).json(product)
+    })
+    .catch(error => {
+        logger.error('Product could not be added to collection...', product)
+        res.status(500).send('Product could not be added to collection...')
+    })
 })
 
 

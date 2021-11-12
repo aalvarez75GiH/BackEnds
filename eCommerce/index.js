@@ -1,14 +1,13 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const mongoose = require('mongoose')
 const passport = require('passport')
-//const { BasicStrategy } = require('passport-http')
 const productsRouter = require('./api/resources/products/products.routes')
 const usersRouter = require('./api/resources/users/users.routes')
 const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
 const config = require('./config')
-//const basicAuth = require('./api/libs/basicAuth')
 
 
 
@@ -20,9 +19,15 @@ app.use(morgan('short', {
     }
 }))
 
-//passport.use( new BasicStrategy(basicAuth))
+
 passport.use(authJWT)
 app.use(passport.initialize())
+
+mongoose.connect('mongodb://localhost:27017/vendetuscorotos')
+mongoose.connection.on('error', () => {
+    logger.error('Connection with MongoDB failed...')
+    process.exit(1)
+})
 
 app.use('/api/products', productsRouter)
 app.use('/api/users', usersRouter)
