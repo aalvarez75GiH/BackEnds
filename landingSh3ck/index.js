@@ -5,6 +5,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const passport = require('passport')
 const authJWT = require('./api/libs/auth')
+const config = require('./config')
 // const path = require('path')
 
 const countersRouter = require('./api/resources/counters/counters.routes')
@@ -33,7 +34,9 @@ app.get('/', passport.authenticate('basic', {session:false}), (req,res)=> {
     res.send('sh3ck has born today...')
 })
 
-app.listen(5000, () => {
+console.log(config)
+
+app.listen(config.port, () => {
     logger.info('ch3ck server running at post 5000...')
 })
 

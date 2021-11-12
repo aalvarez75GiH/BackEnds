@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid")
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
+const config = require('../../../config')
 
 const logger = require('../../../utils/logger')
 const jwtAuthorization = passport.authenticate('jwt', { session: false })
@@ -67,7 +68,7 @@ usersRouter.post('/login', validateLoginRequest, ( req, res ) => {
         if (match){
             //here is where i create token and send it to frontEnd
             const token = jwt.sign({id: users[index].id},
-            'this is a secret', {
+            config.jwt.secret, {
                 expiresIn: 60 * 60 * 24 * 365
             })
             logger.info(`User [${notAuthUser.email}] has been authenticated succesfully...`)

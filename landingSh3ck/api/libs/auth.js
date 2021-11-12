@@ -3,6 +3,7 @@ const _ = require('underscore')
 const logger = require('../../utils/logger')
 const bcrypt = require('bcrypt')
 const passportJWT = require('passport-jwt')
+const config = require('../../config')
 
 
 
@@ -28,7 +29,7 @@ const passportJWT = require('passport-jwt')
 // }
 
 const jwtOptions = {
-    secretOrKey: 'this is a secret',
+    secretOrKey: config.jwt.secret,
     jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderAsBearerToken()
 }
 
