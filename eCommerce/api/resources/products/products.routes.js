@@ -46,13 +46,6 @@ productsRouter.put( '/:id', [ jwtAuthorization, validateProduct ], ( req, res ) 
         owner: req.user.username
     }
     
-    // let dataToChange = {
-    //     ...req.body,
-    //     id: req.params.id,
-    //     owner: req.user.username,
-    //     ownerID: req.user.id
-    // }
-
     const index = _.findIndex(products, product => product.id === dataToChange.id)
     if (index !== -1 ){
         if (products[index].owner !== dataToChange.owner){

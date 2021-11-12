@@ -7,6 +7,7 @@ const productsRouter = require('./api/resources/products/products.routes')
 const usersRouter = require('./api/resources/users/users.routes')
 const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
+const config = require('./config')
 //const basicAuth = require('./api/libs/basicAuth')
 
 
@@ -31,8 +32,8 @@ app.use('/api/users', usersRouter)
     //logger.info(`username: ${req.user.username}, id: ${req.user.id}`)
     //res.send('Welcome to my E-Commerce API BackEnd...')
 //})
-
-app.listen(3000, ()=> {
+// console.log(config)
+app.listen(config.port, ()=> {
     logger.info('Server running at port 3000...')
 })
 

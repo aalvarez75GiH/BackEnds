@@ -7,6 +7,7 @@ const users = require('./../../../database').users
 const validateUsers = require('./users.validate').validateUsers
 const validateLoginRequest =  require('./users.validate').validateLoginRequest
 const logger = require('../../../utils/logger')
+const config = require('../../../config')
 
 const usersRouter = express.Router()
 
@@ -62,8 +63,8 @@ usersRouter.post('/login', validateLoginRequest, (req, res) => {
             logger.info(`User [${notAuthUser.username}] has been authenticated...`)
             //create token and send it
             const token = jwt.sign({ id: users[index].id }, 
-                'this is a secret', {
-                    expiresIn: 60 * 60 * 24 * 365,
+                config.jwt.secret, {
+                    expiresIn: config.jwt.expirationDate,
                 })
                 logger.info(`User [${notAuthUser.username}] has been authenticated...`)
                 res.status(200).json({
