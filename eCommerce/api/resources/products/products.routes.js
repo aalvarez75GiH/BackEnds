@@ -22,16 +22,7 @@ productsRouter.get( '/', ( req, res ) => {
     })    
 })
 
-// productsRouter.get( '/:id', ( req, res ) => {
-//     products.map((product)=> {
-//         if (product.id === req.params.id){
-//             res.json(product)
-//             return
-//         }
-//     })
 
-//     res.status(404).send('Product not found from .map')
-// })
 productsRouter.get( '/:id', ( req, res ) => {
     productController.getProductsById(req.params.id)
     .then(product => {
@@ -41,14 +32,6 @@ productsRouter.get( '/:id', ( req, res ) => {
         logger.error(`Product with ID[${req.params.id}] was not found at DB`)
         res.status(500).send('Sorry, we did not find that product at DB...')
     })
-    // products.map((product)=> {
-    //     if (product.id === req.params.id){
-    //         res.json(product)
-    //         return
-    //     }
-    // })
-
-    // res.status(404).send('Product not found from .map')
 })
 
 productsRouter.post( '/', [ jwtAuthorization, validateProduct ], ( req,res ) => {

@@ -1,9 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const logger = require('./utils/logger')
 const morgan = require('morgan')
 const cors = require('cors')
 const passport = require('passport')
+const mongoose = require('mongoose')
+
+const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
 const config = require('./config')
 // const path = require('path')
@@ -11,10 +13,11 @@ const config = require('./config')
 const countersRouter = require('./api/resources/counters/counters.routes')
 const intUsersRouter = require('./api/resources/interestedUsers/interestedUsers.routes')
 const usersRouter = require('./api/resources/users/users.routes')
+
 const app = express()
 
 
-// app.use(express.static(path.join('../../FrontEnds/landingsh3ck/','build')))
+
 app.use(bodyParser.json())
 app.use(cors())
 app.use(morgan('short', {
@@ -25,6 +28,16 @@ app.use(morgan('short', {
 
 passport.use(authJWT)
 app.use(passport.initialize())
+
+// *********** Data Base configuration ******************
+
+mongoose.connect('mongodb://localhost:27017/sh3ch')
+mongoose.connection.on('error', () => {
+    logger.error('Connection with DB failed...')
+    process.exit(1)
+})
+// ******************************************************
+
 
 app.use('/api/counters', countersRouter)
 app.use('/api/interestedUsers', intUsersRouter)
