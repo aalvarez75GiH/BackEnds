@@ -1,6 +1,4 @@
 const express = require('express')
-const _ = require('underscore')
-const { v4: uuidv4 } = require("uuid")
 const logger = require('../../../utils/logger')
 const interestedUser = require('./interestedUsers.model')
 const validateUsers = require('./interestedUsers.validate')
@@ -36,7 +34,7 @@ intUsersRouter.post('/', validateUsers, (req, res)=>{
                 res.status(500).send('Interested user could not be added to collection...')
             })
              
-        })
-        
+        })     
 })
+
 module.exports = intUsersRouter
