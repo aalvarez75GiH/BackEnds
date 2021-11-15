@@ -72,6 +72,7 @@ productsRouter.put( '/:id', [ jwtAuthorization, validarID, validateProduct ], as
     let userWantToPut = req.user.username
     let productToReplace
 
+    
     try {
         productToReplace = await productController.getOneProduct(id)
     } catch (error) {
@@ -85,6 +86,7 @@ productsRouter.put( '/:id', [ jwtAuthorization, validarID, validateProduct ], as
         res.status(404).send(`Product with id [${id}] do not exists at DB...`)    
         return
     }
+
     if( productToReplace.owner !== userWantToPut){
         logger.warn(`User ${userWantToPut} do not own Product with id ${id}. it can not be Replaced`)
         res.status(401).send(`Sorry, you are not the owner of Product ID ${id} 
@@ -94,8 +96,8 @@ productsRouter.put( '/:id', [ jwtAuthorization, validarID, validateProduct ], as
 
     productController.replaceProduct(id, req.body, userWantToPut)
     .then(productReplaced => {
-        logger.info(`Product with id [${id}] has been replaced successfully... `)
-        res.json(productReplaced)
+        logger.info(`Product with id [${id}] has been replaced successfully... `, productReplaced.toObject())
+        res.json(productReplaced.toObject())
     })
     .catch(error => {
         logger.error(`Error: There was an exception when we tried to replace Product with id: [${id}]`, error)
