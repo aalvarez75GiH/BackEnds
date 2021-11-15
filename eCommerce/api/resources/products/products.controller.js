@@ -11,13 +11,28 @@ const getProducts = () => {
     return Product.find({})
 }
 
-const getProductsById = (id) => {
+const getOneProduct = (id) => {
     return Product.findById(id)
+}
+
+const deleteProduct = (id) => {
+    return Product.findByIdAndRemove(id)
+}
+
+const replaceProduct = (id, product, username) => {
+    return Product.findOneAndUpdate({_id: id}, {
+        ...product,
+        owner: username
+    },{
+        new: true //This option is in order to return the new document modified
+    })
 }
 
 module.exports = {
     createProduct,
     getProducts,
-    getProductsById
+    getOneProduct,
+    deleteProduct,
+    replaceProduct
 }
 

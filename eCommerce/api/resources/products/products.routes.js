@@ -11,6 +11,16 @@ const jwtAuthorization = passport.authenticate('jwt', { session: false })
 const productsRouter = express.Router()
 
 
+const validarID = (req, res, next) => {
+    let id = req.params.id
+    if(id.match(/^[a-fA-F0-9]{24}$/) === null){
+        res.status(400). send(`id [${id}] entered is not valid...`)
+        return
+    }
+    next()
+
+}
+
 productsRouter.get( '/', ( req, res ) => {
     productController.getProducts()
     .then(products => {
@@ -23,18 +33,27 @@ productsRouter.get( '/', ( req, res ) => {
 })
 
 
-productsRouter.get( '/:id', ( req, res ) => {
-    productController.getProductsById(req.params.id)
+productsRouter.get( '/:id', validarID,( req, res ) => {
+    let id = req.params.id
+    productController.getOneProduct(id)
     .then(product => {
-        res.status(201).json(product)
+        if (!product){
+            logger.error(`Product with id [${id}] do not exists at DB...`)
+            res.status(404).send(`Product with id [${id}] do not exists at DB...`)
+        
+        }else{
+            logger.info(`Product with id [${id}] has been retrieved from DB successfully...`)
+            res.status(201).json(product)
+        }
+        
     })
     .catch(error => {
-        logger.error(`Product with ID[${req.params.id}] was not found at DB`)
-        res.status(500).send('Sorry, we did not find that product at DB...')
+        logger.error(`Error: There was an exception when we tried to get Product with id: [${id}]`)
+        res.status(500).send(`Error: There was an exception when we tried to get Product with id: [${id}]`)
     })
 })
 
-productsRouter.post( '/', [ jwtAuthorization, validateProduct ], ( req,res ) => {
+productsRouter.post( '/', [ jwtAuthorization, validateProduct ], async(req,res) => {
         
     productController.createProduct(req.body, req.user.username)
     .then(product => {
@@ -48,53 +67,118 @@ productsRouter.post( '/', [ jwtAuthorization, validateProduct ], ( req,res ) => 
 })
 
 
-productsRouter.put( '/:id', [ jwtAuthorization, validateProduct ], ( req, res ) => {
-    
-    let dataToChange = {
-        ...req.body,
-        id: req.params.id,
-        owner: req.user.username
+productsRouter.put( '/:id', [ jwtAuthorization, validarID, validateProduct ], async(req,res) => {
+    let id = req.params.id    
+    let userWantToPut = req.user.username
+    let productToReplace
+
+    try {
+        productToReplace = await productController.getOneProduct(id)
+    } catch (error) {
+        logger.error(`Error: There was an exception when we tried to get Product with id: [${id}]`)
+        res.status(500).send(`Error: There was an exception when we tried to get Product with id: [${id}]`)
+        return
     }
-    
-    const index = _.findIndex(products, product => product.id === dataToChange.id)
-    if (index !== -1 ){
-        if (products[index].owner !== dataToChange.owner){
-            logger.info(`${req.user.username} do not own Product with id ${dataToChange.id}`)
-            res.status(401).send(`Sorry, you are not the owner of Product ID ${dataToChange.id} `)
-            return
-        }
-        
-        products[index] = dataToChange
-        logger.info(`Product with id: [${dataToChange.id}] has been replaced it`, dataToChange)
-        res.status(200).json(dataToChange)
-        
-        
-    }else {
-        res.status(404).send(`Sorry, we could NOT find the product with ID [${dataToChange.id}]`)
+
+    if (!productToReplace){
+        logger.info(`Product with id [${id}] do not exists at DB...`)
+        res.status(404).send(`Product with id [${id}] do not exists at DB...`)    
+        return
+    }
+    if( productToReplace.owner !== userWantToPut){
+        logger.warn(`User ${userWantToPut} do not own Product with id ${id}. it can not be Replaced`)
+        res.status(401).send(`Sorry, you are not the owner of Product ID ${id} 
+        you can not replace it if you are not the owner`)
+        return
     } 
+
+    productController.replaceProduct(id, req.body, userWantToPut)
+    .then(productReplaced => {
+        logger.info(`Product with id [${id}] has been replaced successfully... `)
+        res.json(productReplaced)
+    })
+    .catch(error => {
+        logger.error(`Error: There was an exception when we tried to replace Product with id: [${id}]`, error)
+        res.status(500).send(`Error: There was an exception when we tried to replace Product with id: [${id}]`)
+    })
+     
 })
 
-productsRouter.delete( '/:id' , jwtAuthorization, ( req,res ) => {
+productsRouter.delete( '/:id' , [ jwtAuthorization, validarID ], async( req,res ) => {
     let id = req.params.id
-    const index = _.findIndex(products, product => product.id === id)
-    if (index !== -1){
-        if (products[index].owner !== req.user.username){
-            logger.info(`${req.user.username} do not own Product with id ${id}. it can not be deleted`)
-            res.status(401).send(`Sorry, you are not the owner of Product ID ${id} 
-            you can not delete it if you are not the owner`)
-            return
-        }
-
-        const productDeleted = products.splice(index,1)
-        logger.info(`Product with id: [${id}] has been deleted`, productDeleted)
-        //res.status(200).json(productDeleted).send('The Product has been Removed successfully...')
-        res.status(200).send('The Product has been Removed successfully...')
-        //res.status(200).json(productDeleted)
-        
-    }else{
-        logger.warn(`Product with id: [${id}] do not exists...`)
-        res.status(404).send(`Sorry, we could NOT find the product with ID [${id}]`)
+    let userWantDelete = req.user.username
+    let productToDelete
+    
+    try {
+        productToDelete = await productController.getOneProduct(id)
+            
+    } catch (error) {
+        logger.error(`Error: There was an exception when we tried to get Product with id: [${id}]`)
+        res.status(500).send(`Error: There was an exception when we tried to get Product with id: [${id}]`)
+        return
     }
+
+    if (!productToDelete){
+        logger.info(`Product with id [${id}] do not exists at DB...`)
+        res.status(404).send(`Product with id [${id}] do not exists at DB...`)    
+        return
+    }
+
+    if(productToDelete.owner !== userWantDelete){
+        logger.info(`User ${userWantDelete} do not own Product with id ${id}. it can not be deleted`)
+        res.status(401).send(`Sorry, you are not the owner of Product ID ${id} 
+            you can not delete it if you are not the owner`)
+    }
+
+    try {
+        const productDeleted = await productController.deleteProduct(id)
+        logger.info(`Product with id [${id}] was deleted successfully...`)
+        res.json(productDeleted)
+    } catch (error) {
+        logger.error(`there was an exception error...`)
+        res.status(500).send(`Error occurred deleting product with ID[${id}]`)
+    }
+
+
+    //  My Try catch
+    // try {
+    //     const productToDelete = await productController.getOneProduct(id)
+    //     if(!productToDelete){
+    //         logger.info(`Product with id [${id}] do not exists at DB...`)
+    //         res.status(404).send(`Product with id [${id}] do not exists at DB...`)    
+    //         return   
+    //     }
+    //     if(productToDelete.owner !== userWantDelete){
+    //         logger.info(`User ${userWantDelete} do not own Product with id ${id}. it can not be deleted`)
+    //         res.status(401).send(`Sorry, you are not the owner of Product ID ${id} 
+    //             you can not delete it if you are not the owner`)
+    //         return
+    //     }
+    //     const productDeleted = await productController.deleteProduct(id)
+    //     logger.info(`Product with id [${id}] was deleted successfully...`)
+    //     res.json(productDeleted)
+    // } catch (error) {
+    //     logger.error(`there was an exception error...`)
+    //     res.status(500).send(`Error occurred deleting product with ID[${id}]`)
+    // }
+
+    //  My Promise with .then
+    // productController.deleteProduct(id)
+    // .then(productToDelete => {
+    //     if(!productToDelete){
+    //         logger.error(`Product with id [${id}] do not exists at DB...`)
+    //         res.status(404).send(`Product with id [${id}] do not exists at DB...`)
+    //     }else{
+    //         logger.info(`Product with id [${id}] has been deleted from DB successfully...`)
+    //         res.status(201).json(productToDelete)
+    //     }
+        
+    // })
+    // .catch(error => {
+    //     logger.error(`Error: There was an exception when we tried to get Product with id: [${id}]`)
+    //     res.status(500).send(`Error: There was an exception when we tried to get Product with id: [${id}]`)
+    // })
+    
 })
 
 module.exports = productsRouter
