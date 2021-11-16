@@ -57,11 +57,11 @@ productsRouter.post( '/', [ jwtAuthorization, validateProduct ], async(req,res) 
         
     productController.createProduct(req.body, req.user.username)
     .then(product => {
-        logger.info('Product added to the Products collection', product)
+        logger.info('Product added to the Products collection', product.toObject())
         res.status(201).json(product)
     })
     .catch(error => {
-        logger.error('Product could not be added to collection...', product)
+        logger.error('Product could not be added to collection...', product.toObject())
         res.status(500).send('Product could not be added to collection...')
     })
 })
