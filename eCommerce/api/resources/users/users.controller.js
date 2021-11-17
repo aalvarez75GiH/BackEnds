@@ -15,6 +15,18 @@ const findUser = (newUser) => {
         })
     })
 }
+const findUserForLogin = (notAuthUser) => {
+    return new Promise((resolve, reject) => {
+        user.findOne({'username': notAuthUser.username })
+        .exec()
+        .then(user => {
+            resolve(user)
+        })
+        .catch(error => {
+            reject(error)
+        })
+    })
+}
 
 const createUser = (newUser, hashedPassword) => {
     return new user({
@@ -26,7 +38,8 @@ const createUser = (newUser, hashedPassword) => {
 
 module.exports = {
     getUsers,
-    createUser,
     findUser,
+    findUserForLogin,
+    createUser
 }
 

@@ -129,7 +129,8 @@ productsRouter.delete( '/:id' , [ jwtAuthorization, validarID ], async( req,res 
     if(productToDelete.owner !== userWantDelete){
         logger.info(`User ${userWantDelete} do not own Product with id ${id}. it can not be deleted`)
         res.status(401).send(`Sorry, you are not the owner of Product ID ${id} 
-            you can not delete it if you are not the owner`)
+        you can not delete it if you are not the owner`)
+        return 
     }
 
     try {
