@@ -12,6 +12,12 @@ const usersRouter = express.Router()
 const user = require('./users.model')
 const userController = require('./users.controller') 
 
+const transformBodyToLowerCase = (req, res, next) => {
+    req.body.fullName && (req.body.fullName = req.body.fullName.toLowerCase())
+    req.body.email && (req.body.email = req.body.email.toLowerCase())
+    next()
+}
+
 usersRouter.get('/', (req,res)=> {
     userController.getUsers()
     .then(users => {
@@ -23,7 +29,7 @@ usersRouter.get('/', (req,res)=> {
     })
 })
 
-usersRouter.post('/', validateUsers, (req, res)=>{
+usersRouter.post('/', [validateUsers, transformBodyToLowerCase], (req, res)=>{
     let newUser = req.body
 
     userController.findUser(newUser)
@@ -45,7 +51,7 @@ usersRouter.post('/', validateUsers, (req, res)=>{
                 res.status(201).send(user.fullName)
             })
             .catch(error => {
-                logger.error('An error Ocurred when we try to get hash of user`s password', err)
+                logger.error('An error Ocurred when we try to get hash of user`s password', error)
                 res.status(500).send('An error ocurred processing user creation process')
             })
         })
@@ -58,7 +64,7 @@ usersRouter.post('/', validateUsers, (req, res)=>{
 })
 
 
-usersRouter.post('/login', validateLoginRequest, ( req, res ) => {
+usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], ( req, res ) => {
     const notAuthUser = req.body
 
     userController.findUserForLogin(notAuthUser)

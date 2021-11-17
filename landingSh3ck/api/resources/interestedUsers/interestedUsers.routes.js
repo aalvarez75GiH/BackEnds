@@ -5,6 +5,12 @@ const validateUsers = require('./interestedUsers.validate')
 const interestedUsersController = require('./interestedUsers.controller')
 const intUsersRouter = express.Router()
 
+const transformBodyToLowerCase = (req, res, next) => {
+    req.body.fullName && (req.body.fullName = req.body.fullName.toLowerCase())
+    req.body.email && (req.body.email = req.body.email.toLowerCase())
+    next()
+}
+
 intUsersRouter.get('/', (req,res)=> {
     interestedUsersController.getInterestedUsers()
     .then(interestedUsers => {
@@ -16,7 +22,7 @@ intUsersRouter.get('/', (req,res)=> {
     })
 })
 
-intUsersRouter.post('/', validateUsers, (req, res)=>{
+intUsersRouter.post('/', [validateUsers, transformBodyToLowerCase], (req, res)=>{
     let newUser = req.body
     interestedUsersController.findInterestedUser(newUser)
     .then(foundInterestedUser => {
@@ -41,25 +47,5 @@ intUsersRouter.post('/', validateUsers, (req, res)=>{
     })        
 })
 
-// intUsersRouter.post('/', validateUsers, (req, res)=>{
-//     let newUser = req.body
-//         interestedUser.findOne({ email: newUser.email})
-//         .exec()
-//         .then(foundUser => {
-//             if (foundUser){
-//                 logger.info(` User with email ${newUser.email} already enrolled as interested User `)
-//                 return res.status(409).send(`${newUser.fullName}`)
-//             }
-//             interestedUsersController.createInterestedUser(newUser)
-//             .then((interestedUser)=>{
-//                 logger.info(`User [${interestedUser.email}] has been created...`)
-//                 res.status(201).send(`${interestedUser.fullName}`)
-//             }).catch(error => {
-//                 logger.error('Interested User could not be added to collection...', product)
-//                 res.status(500).send('Interested user could not be added to collection...')
-//             })
-             
-//         })     
-// })
 
 module.exports = intUsersRouter

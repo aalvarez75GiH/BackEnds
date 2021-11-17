@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid")
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-// const users = require('./../../../database').users
+const users = require('./../../../database').users
 const validateUsers = require('./users.validate').validateUsers
 const validateLoginRequest =  require('./users.validate').validateLoginRequest
 const logger = require('../../../utils/logger')
@@ -12,6 +12,12 @@ const config = require('../../../config')
 const usersController = require('./users.controller')
 
 const usersRouter = express.Router()
+
+const transformBodyToLowerCase = (req, res, next) => {
+    req.body.username && (req.body.username = req.body.username.toLowerCase())
+    req.body.email && (req.body.email = req.body.email.toLowerCase())
+    next()
+}
 
 usersRouter.get('/',( req, res ) => {
     usersController.getUsers()
@@ -24,7 +30,7 @@ usersRouter.get('/',( req, res ) => {
     })
 })
 
-usersRouter.post('/', validateUsers, (req, res)=>{
+usersRouter.post('/', [validateUsers, transformBodyToLowerCase],(req, res)=>{
     
     let newUser = req.body
     usersController.findUser(newUser)
@@ -61,7 +67,7 @@ usersRouter.post('/', validateUsers, (req, res)=>{
 
 })
 
-usersRouter.post('/login', validateLoginRequest, (req, res) => {
+usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], (req, res) => {
     let notAuthUser = req.body
     const index = _.findIndex(users, user => {
         return user.username === notAuthUser.username 
