@@ -10,32 +10,38 @@ const validateUsers = require('./users.validate').validateUsers
 const validateLoginRequest = require('./users.validate').validateLoginRequest
 const usersRouter = express.Router()
 const user = require('./users.model')
-// const userController = require('./users.controller') 
+const userController = require('./users.controller') 
 
 usersRouter.get('/', (req,res)=> {
-    logger.info('Request get to registered users successful...')
-    res.send(users)
+    userController.getUsers()
+    .then(users => {
+        res.status(201).json(users)
+    })
+    .catch(error => {
+        logger.error('There has been a problem getting Users from database', error)
+        res.status(500).send('There has been a problem getting Users from database')
+    })
 })
 
 usersRouter.post('/', validateUsers, (req, res)=>{
     let newUser = req.body
 
-    user.findOne({ email: newUser.email })
-    .exec()
+    userController.findUser(newUser)
     .then(foundUser =>{
         if (foundUser){
-            logger.info(`User owning ${newUser.email} already registered...`)
+            logger.info(`User with ${newUser.email} already registered...`)
             res.status(409).send(newUser.fullName)
             return
         }
         bcrypt.hash(newUser.password, 10, (error, hashedPassword) =>{
-            // userController.createUser(newUser, hashedPassword)
-            new user({
-                ...newUser,
-                password: hashedPassword
-            }).save()
+            if (error){
+                logger.error('An error Ocurred when we try to get hash of user`s password', err)
+                res.status(500).send('An error ocurred while trying to hash password...')
+                return
+            }
+            userController.createUser(newUser, hashedPassword)
             .then(user => {
-                logger.info(`User [${user.email}] has been created...`)
+                logger.info(`User with [${user.email}] has been created...`)
                 res.status(201).send(user.fullName)
             })
             .catch(error => {
@@ -44,12 +50,18 @@ usersRouter.post('/', validateUsers, (req, res)=>{
             })
         })
     })
+    .catch(error => {
+        logger.error(`An error Ocurred when we try to verify if user 
+        with email [${newUser.email}] does exists at DB`, error)
+        res.status(500).send('An error ocurred processing verification...')
+    })
 })
+
 
 usersRouter.post('/login', validateLoginRequest, ( req, res ) => {
     const notAuthUser = req.body
-    user.findOne({ email: notAuthUser.email })
-    .exec()
+
+    userController.findUserForLogin(notAuthUser)
     .then(foundUser => {
         if (!foundUser){
             logger.info(`User with email ${notAuthUser.email} was not found at DB`)
@@ -72,7 +84,13 @@ usersRouter.post('/login', validateLoginRequest, ( req, res ) => {
             }    
         })
     })
+    .catch(error => {
+        logger.error(`An error Ocurred when we try to verify if user 
+        with email [${notAuthUser.email}] does exists at DB`, error)
+        res.status(500).send('An error ocurred processing verification...')
+    })
 })
+
 
 usersRouter.get('/me', jwtAuthorization, (req,res) => {
     let dataUser = req.user.fullName

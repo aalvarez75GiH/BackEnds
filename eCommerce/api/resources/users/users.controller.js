@@ -23,6 +23,7 @@ const createUser = (newUser, hashedPassword) => {
     }).save()
 }
 
+
 module.exports = {
     getUsers,
     createUser,
