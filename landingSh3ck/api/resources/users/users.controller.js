@@ -26,16 +26,32 @@ const findUserForLogin = ({
     throw new Error ('Get user function from controller was called without specifying id or email')
 }
 
-// const findUserForLogin = (notAuthUser) => {
+
+
+
+// *************** with Promise
+// const findUserForLogin = ({ email, id}) => {
 //     return new Promise((resolve, reject) => {
-//         user.findOne({'email': notAuthUser.email})
-//         .exec()
-//         .then(user => {
-//             resolve(user)
-//         })
-//         .catch(error => {
-//             reject(error)
-//         })
+//         if (email){
+//             return user.findOne({'email': email})
+//             .exec()
+//             .then(user => {
+//                 resolve(user)
+//             })
+//             .catch(error => {
+//                 reject(error)
+//             })
+//         }
+//         if (id){
+//             return user.findOne({'_id': id})
+//             .exec()
+//             .then(user => {
+//                 resolve(user)
+//             })
+//             .catch(error => {
+//                 reject(error)
+//             })
+//         }
 //     })
 // }
 
