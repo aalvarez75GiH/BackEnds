@@ -17,19 +17,29 @@ const findUser = (newUser) => {
     })
 }
 
-const findUserForLogin = (notAuthUser) => {
-    return new Promise((resolve, reject) => {
-        user.findOne({'email': notAuthUser.email})
-        .exec()
-        .then(user => {
-            logger.info(user)
-            resolve(user)
-        })
-        .catch(error => {
-            reject(error)
-        })
-    })
+const findUserForLogin = ({
+    email,
+    id
+}) => {
+    if (email) return user.findOne({ email: email })
+    if (id) return user.findOne({ _id: id })
+    throw new Error ('Get user function from controller was called without specifying id or email')
 }
+
+// const findUserForLogin = (notAuthUser) => {
+//     return new Promise((resolve, reject) => {
+//         user.findOne({'email': notAuthUser.email})
+//         .exec()
+//         .then(user => {
+//             resolve(user)
+//         })
+//         .catch(error => {
+//             reject(error)
+//         })
+//     })
+// }
+
+
 
 
 const createUser = (newUser, hashedPassword) => {

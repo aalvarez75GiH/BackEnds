@@ -1,6 +1,4 @@
 const express = require('express')
-const _ = require('underscore')
-const { v4: uuidv4 } = require("uuid")
 const passport = require('passport')
 
 

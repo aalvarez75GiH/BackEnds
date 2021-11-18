@@ -9,7 +9,6 @@ const config = require('../../../config')
 const validateUsers = require('./users.validate').validateUsers
 const validateLoginRequest = require('./users.validate').validateLoginRequest
 const usersRouter = express.Router()
-const user = require('./users.model')
 const userController = require('./users.controller') 
 
 const transformBodyToLowerCase = (req, res, next) => {
@@ -63,43 +62,89 @@ usersRouter.post('/', [validateUsers, transformBodyToLowerCase], (req, res)=>{
     })
 })
 
-
-usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], ( req, res ) => {
+// ****************************** with async/await
+usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], async( req, res ) => {
     const notAuthUser = req.body
+    let foundUser
 
-    userController.findUserForLogin(notAuthUser)
-    .then(foundUser => {
-        if (!foundUser){
-            logger.info(`User with email ${notAuthUser.email} was not found at DB`)
-            res.status(400).send(`${notAuthUser.email}`)
-            return
-        }
-        const hashedPassword = foundUser.password
-        bcrypt.compare(notAuthUser.password, hashedPassword, (error, match)=>{
-            if (match){
-                const token = jwt.sign({id: foundUser.id},
-                config.jwt.secret, {
-                    expiresIn: 60 * 60 * 24 * 365
-                })
-                logger.info(`User [${notAuthUser.email}] has been authenticated succesfully...`)
-                res.status(200).send({token})
-                return    
-            }else{
-                logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
-                res.status(400).send(`email or password incorrect, check your credentials and try again...`)    
-            }    
-        })
-    })
-    .catch(error => {
+    try {
+        foundUser = await userController.findUserForLogin({ email: notAuthUser.email })    
+    
+    } catch (error) {
         logger.error(`An error Ocurred when we try to verify if user 
         with email [${notAuthUser.email}] does exists at DB`, error)
         res.status(500).send('An error ocurred processing verification...')
-    })
+        return
+    }
+    if (!foundUser){
+        logger.info(`User with email ${notAuthUser.email} was not found at DB`)
+        res.status(400).send(`${notAuthUser.email}`)
+        return
+    }
+
+    const hashedPassword = foundUser.password
+    let correctPassword
+
+    try {
+        correctPassword = await bcrypt.compare(notAuthUser.password, hashedPassword)
+    
+    } catch (error) {
+        logger.info(`Compare passwords process failed...`)
+        res.status(500).send('There was an error when comparing passwords')
+        return
+    }
+    
+    if(correctPassword){
+        const token = jwt.sign({id: foundUser.id},
+        config.jwt.secret, {
+            expiresIn: 60 * 60 * 24 * 365
+        })
+        logger.info(`User [${notAuthUser.email}] has been authenticated succesfully...`)
+        res.status(200).send({token})        
+    }else{
+        logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
+        res.status(400).send(`email or password incorrect, check your credentials and try again...`)     
+    }
 })
+
+// with Promise
+// usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], ( req, res ) => {
+//     const notAuthUser = req.body
+
+//     userController.findUserForLogin(notAuthUser)
+//     .then(foundUser => {
+//         if (!foundUser){
+//             logger.info(`User with email ${notAuthUser.email} was not found at DB`)
+//             res.status(400).send(`${notAuthUser.email}`)
+//             return
+//         }
+//         const hashedPassword = foundUser.password
+//         bcrypt.compare(notAuthUser.password, hashedPassword, (error, match)=>{
+//             if (match){
+//                 const token = jwt.sign({id: foundUser.id},
+//                 config.jwt.secret, {
+//                     expiresIn: 60 * 60 * 24 * 365
+//                 })
+//                 logger.info(`User [${notAuthUser.email}] has been authenticated succesfully...`)
+//                 res.status(200).send({token})
+//                 return    
+//             }else{
+//                 logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
+//                 res.status(400).send(`email or password incorrect, check your credentials and try again...`)    
+//             }    
+//         })
+//     })
+//     .catch(error => {
+//         logger.error(`An error Ocurred when we try to verify if user 
+//         with email [${notAuthUser.email}] does exists at DB`, error)
+//         res.status(500).send('An error ocurred processing verification...')
+//     })
+// })
 
 
 usersRouter.get('/me', jwtAuthorization, (req,res) => {
     let dataUser = req.user.fullName
+    logger.info(dataUser)
     res.send(dataUser)
 })
 
