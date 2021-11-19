@@ -3,6 +3,7 @@ const logger = require('../../../utils/logger')
 const interestedUser = require('./interestedUsers.model')
 const validateUsers = require('./interestedUsers.validate')
 const interestedUsersController = require('./interestedUsers.controller')
+const processingErrors  = require('../../libs/errorHandler').processingErrors
 const intUsersRouter = express.Router()
 
 const transformBodyToLowerCase = (req, res, next) => {
@@ -11,41 +12,32 @@ const transformBodyToLowerCase = (req, res, next) => {
     next()
 }
 
-intUsersRouter.get('/', (req,res)=> {
-    interestedUsersController.getInterestedUsers()
+intUsersRouter.get('/', processingErrors((req,res)=> {
+    return interestedUsersController.getInterestedUsers()
     .then(interestedUsers => {
         res.status(201).json(interestedUsers)
     })
-    .catch(error => {
-        logger.error('Sorry, we had a problem when we were reading at DB...')
-        res.status(500).send('Sorry, we had a problem when we were reading at DB...')
-    })
-})
+}))
 
-intUsersRouter.post('/', [validateUsers, transformBodyToLowerCase], (req, res)=>{
+// turn into try/catch and refactoring with error handler
+intUsersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingErrors(async(req, res)=>{
     let newUser = req.body
-    interestedUsersController.findInterestedUser(newUser)
-    .then(foundInterestedUser => {
-        if (foundInterestedUser){
-            logger.info(` User with email ${newUser.email} already enrolled as interested User `)
-            res.status(409).send(`${newUser.fullName}`)
-            return
-        }
-        interestedUsersController.createInterestedUser(newUser)
-        .then(interestedUser => {
-            logger.info(`User [${interestedUser.email}] has been created...`)
-            res.status(201).send(`${interestedUser.fullName}`)
-        })
-        .catch(error => {
-            logger.error('Interested User could not be added to collection...', error)
-            res.status(500).send('Interested user could not be added to collection...')
-        })
-    })
-    .catch( error => {
-        logger.error('An Error has occurred trying to find user at DB', error)
-        res.status(500).send('Interested user could not be found due to an error')
-    })        
-})
+    let foundInterestedUser
+    
+    foundInterestedUser = await interestedUsersController.findInterestedUser(newUser) 
+    
+    if (foundInterestedUser){
+        logger.info(` User with email ${newUser.email} is already registered as interested User `)
+        res.status(409).send(`${newUser.fullName}`)
+        return
+    }
+    
+    const interestedUser = await interestedUsersController.createInterestedUser(newUser)
+    logger.info(`User [${interestedUser.email}] has been created...`)
+    res.status(201).send(`${interestedUser.fullName}`)
+    
+           
+}))
 
 
 module.exports = intUsersRouter

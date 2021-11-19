@@ -8,6 +8,7 @@ const usersRouter = require('./api/resources/users/users.routes')
 const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
 const config = require('./config')
+const errorhandler = require('./api/libs/errorHandler')
 
 
 
@@ -31,16 +32,23 @@ mongoose.connection.on('error', () => {
 
 app.use('/api/products', productsRouter)
 app.use('/api/users', usersRouter)
+app.use(errorhandler.processingDBErrors)
+if (config.environmentConfiguration === 'prod'){
+    app.use(errorhandler.productionErrors)
+}else{
+    app.use(errorhandler.developmentErrors)
+}
 
+// Basic End point used for testing
 //app.get('/', passport.authenticate('jwt', { session: false }), (req,res) => {
     //logger.info(req.user)
     //logger.info(`username: ${req.user.username}, id: ${req.user.id}`)
     //res.send('Welcome to my E-Commerce API BackEnd...')
 //})
-// console.log(config)
+
 app.listen(config.port, ()=> {
     logger.info('Server running at port 3000...')
 })
 
 
-//passport.authenticate('basic', {session: false}),
+

@@ -7,8 +7,19 @@ const validateLoginRequest =  require('./users.validate').validateLoginRequest
 const logger = require('../../../utils/logger')
 const config = require('../../../config')
 const usersController = require('./users.controller')
+const processingErrors = require('../../libs/errorHandler').processingErrors
 
 const usersRouter = express.Router()
+
+class UserDataAlreadyInUse extends Error {
+    constructor(message){
+        super(message)
+        this.message = message || 'Email or username already associatted to an account'
+        this.status = 409
+        this.name = 'UserDataAlreadyInUse'
+    }
+}
+
 
 const transformBodyToLowerCase = (req, res, next) => {
     req.body.username && (req.body.username = req.body.username.toLowerCase())
@@ -16,55 +27,37 @@ const transformBodyToLowerCase = (req, res, next) => {
     next()
 }
 
-usersRouter.get('/',( req, res ) => {
-    usersController.getUsers()
+usersRouter.get('/', processingErrors((req,res) => {
+    return usersController.getUsers()
     .then(users => {
         res.status(201).json(users)
     })
-    .catch(error => {
-        logger.error('There has been a problem getting Users from database', error)
-        res.status(500).send('There has been a problem getting Users from database')
-    })
-})
+}))
 
-usersRouter.post('/', [validateUsers, transformBodyToLowerCase],(req, res)=>{
+usersRouter.post('/', [validateUsers, transformBodyToLowerCase],processingErrors((req, res) => {
     
     let newUser = req.body
-    usersController.findUser(newUser)
+    return usersController.findUser(newUser)
     .then(foundUser => {
         if (foundUser){
             logger.info('username or email already registered...')
-            res.status(409).send(`User with username: [${newUser.username}] or email [${newUser.email}] already exists at our DB`)
-            return
+            throw new UserDataAlreadyInUse()
+            // res.status(409).send(`User with username: [${newUser.username}] or email [${newUser.email}] already exists at our DB`)
+            // return
         }
-        bcrypt.hash(newUser.password, 10, ( err, hashedPassword ) => {
-            if (err){
-                logger.error('An error Ocurred when we try to get hash of user`s password', err)
-                res.status(500).send('An error ocurred processing user creation process')
-                return 
-            }
-           
-            usersController.createUser(newUser, hashedPassword)
-            .then(user => {
-                logger.info(`User [${user.username}] has been created...`)
-                res.status(201).send(`User [${user.username}] has been created...`)
-            })
-            .catch(error => {
-                logger.error(`An error ocurred when we try to create user with email [${user.email}]`, error)
-                res.status(500).send(`An error ocurred processing user with email [${user.email}]`)
-                return
-            })    
-        })    
+        return bcrypt.hash(newUser.password, 10)
     })
-    .catch(error => {
-        logger.error(`An error Ocurred when we try to verify if user 
-        [${newUser.username}] with email [${newUser.email}] does exists at DB`, error)
-        res.status(500).send('An error ocurred processing verification...')
-    })
-
-})
+    .then((hashedPassword)=> {
+        logger.info('pasa por aqui...')
+        return  usersController.createUser(newUser, hashedPassword)
+        .then(user => {
+            logger.info(`User [${user.username}] has been created...`)
+            res.status(201).send(`User [${user.username}] has been created...`)
+        })
+    })         
+}))
  
-usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], async(req, res) => {
+usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], processingErrors(async(req, res) => {
     let notAuthUser = req.body
     let foundUser
     
@@ -110,7 +103,7 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], asy
         res.status(400).send('Invalid credentials, user failed authentication...')
     }
     
-})
+}))
 
 // My login process...
 // usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], (req, res) => {

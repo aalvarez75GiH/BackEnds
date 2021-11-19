@@ -8,6 +8,7 @@ const mongoose = require('mongoose')
 const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
 const config = require('./config')
+const errorHandler = require('./api/libs/errorHandler')
 // const path = require('path')
 
 const countersRouter = require('./api/resources/counters/counters.routes')
@@ -42,6 +43,12 @@ mongoose.connection.on('error', () => {
 app.use('/api/counters', countersRouter)
 app.use('/api/interestedUsers', intUsersRouter)
 app.use('/api/users', usersRouter)
+app.use(errorHandler.processingDBErrors)
+if (config.environmentConfiguration === 'prod'){
+    app.use(errorHandler.productionErrors)   
+}else{
+    app.use(errorHandler.developmentErrors)
+}
 
 app.get('/', passport.authenticate('basic', {session:false}), (req,res)=> {
     res.send('sh3ck has born today...')

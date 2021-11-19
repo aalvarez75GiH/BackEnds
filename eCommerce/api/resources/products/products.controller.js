@@ -1,10 +1,11 @@
 const Product = require('./products.model')
 
 const createProduct = (product, owner) => {
-    return new Product({
-        ...product,
-        owner: owner
-    }).save()
+    return Promise.reject('This is a controlled Error...')
+    // return new Product({
+    //     ...product,
+    //     owner: owner
+    // }).save()
 }
 
 const getProducts = () => {
