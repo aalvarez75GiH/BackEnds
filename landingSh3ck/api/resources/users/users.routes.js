@@ -9,7 +9,18 @@ const config = require('../../../config')
 const validateUsers = require('./users.validate').validateUsers
 const validateLoginRequest = require('./users.validate').validateLoginRequest
 const usersRouter = express.Router()
-const userController = require('./users.controller') 
+const userController = require('./users.controller')
+const processingErrors = require('../../libs/errorHandler').processingErrors 
+
+class UserDataAlreadyInUse extends Error {
+    constructor(message){
+        super(message)
+        this.message = message || 'Email or username already associated to an account'
+        this.status = 409
+        this.name = 'UserDataAlreadyInUse'
+    }
+}
+
 
 const transformBodyToLowerCase = (req, res, next) => {
     req.body.fullName && (req.body.fullName = req.body.fullName.toLowerCase())
@@ -17,65 +28,44 @@ const transformBodyToLowerCase = (req, res, next) => {
     next()
 }
 
-usersRouter.get('/', (req,res)=> {
-    userController.getUsers()
+usersRouter.get('/', processingErrors((req,res)=> {
+    return userController.getUsers()
     .then(users => {
         res.status(201).json(users)
     })
-    .catch(error => {
-        logger.error('There has been a problem getting Users from database', error)
-        res.status(500).send('There has been a problem getting Users from database')
-    })
-})
+}))
 
-usersRouter.post('/', [validateUsers, transformBodyToLowerCase], (req, res)=>{
+usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingErrors((req, res)=>{
     let newUser = req.body
-
-    userController.findUser(newUser)
+    
+    return userController.findUser(newUser)
     .then(foundUser =>{
         if (foundUser){
             logger.info(`User with ${newUser.email} already registered...`)
-            res.status(409).send(newUser.fullName)
-            return
+            throw new UserDataAlreadyInUse()
         }
-        bcrypt.hash(newUser.password, 10, (error, hashedPassword) =>{
-            if (error){
-                logger.error('An error Ocurred when we try to get hash of user`s password', err)
-                res.status(500).send('An error ocurred while trying to hash password...')
-                return
-            }
-            userController.createUser(newUser, hashedPassword)
-            .then(user => {
-                logger.info(`User with [${user.email}] has been created...`)
-                res.status(201).send(user.fullName)
-            })
-            .catch(error => {
-                logger.error('An error Ocurred when we try to get hash of user`s password', error)
-                res.status(500).send('An error ocurred processing user creation process')
-            })
+        return bcrypt.hash(newUser.password, 10)
+    })
+    .then (hashedPassword => {
+        logger.info('Pasa por aqui')
+        logger.info(hashedPassword)
+        return userController.createUser(newUser, hashedPassword)
+        .then(user => {
+            logger.info(`User with [${user.email}] has been created...`)
+            res.status(201).send(user.fullName)
         })
     })
-    .catch(error => {
-        logger.error(`An error Ocurred when we try to verify if user 
-        with email [${newUser.email}] does exists at DB`, error)
-        res.status(500).send('An error ocurred processing verification...')
-    })
-})
+    
+}))
+
 
 // ****************************** with async/await
-usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], async( req, res ) => {
+usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], processingErrors(async(req,res) => {
     const notAuthUser = req.body
     let foundUser
 
-    try {
-        foundUser = await userController.findUserForLogin({ email: notAuthUser.email })    
+    foundUser = await userController.findUserForLogin({ email: notAuthUser.email })    
     
-    } catch (error) {
-        logger.error(`An error Ocurred when we try to verify if user 
-        with email [${notAuthUser.email}] does exists at DB`, error)
-        res.status(500).send('An error ocurred processing verification...')
-        return
-    }
     if (!foundUser){
         logger.info(`User with email ${notAuthUser.email} was not found at DB`)
         res.status(400).send(`${notAuthUser.email}`)
@@ -85,14 +75,7 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], asy
     const hashedPassword = foundUser.password
     let correctPassword
 
-    try {
-        correctPassword = await bcrypt.compare(notAuthUser.password, hashedPassword)
-    
-    } catch (error) {
-        logger.info(`Compare passwords process failed...`)
-        res.status(500).send('There was an error when comparing passwords')
-        return
-    }
+    correctPassword = await bcrypt.compare(notAuthUser.password, hashedPassword)
     
     if(correctPassword){
         const token = jwt.sign({id: foundUser.id},
@@ -105,41 +88,7 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], asy
         logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
         res.status(400).send(`email or password incorrect, check your credentials and try again...`)     
     }
-})
-
-// with Promise
-// usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], ( req, res ) => {
-//     const notAuthUser = req.body
-
-//     userController.findUserForLogin(notAuthUser)
-//     .then(foundUser => {
-//         if (!foundUser){
-//             logger.info(`User with email ${notAuthUser.email} was not found at DB`)
-//             res.status(400).send(`${notAuthUser.email}`)
-//             return
-//         }
-//         const hashedPassword = foundUser.password
-//         bcrypt.compare(notAuthUser.password, hashedPassword, (error, match)=>{
-//             if (match){
-//                 const token = jwt.sign({id: foundUser.id},
-//                 config.jwt.secret, {
-//                     expiresIn: 60 * 60 * 24 * 365
-//                 })
-//                 logger.info(`User [${notAuthUser.email}] has been authenticated succesfully...`)
-//                 res.status(200).send({token})
-//                 return    
-//             }else{
-//                 logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
-//                 res.status(400).send(`email or password incorrect, check your credentials and try again...`)    
-//             }    
-//         })
-//     })
-//     .catch(error => {
-//         logger.error(`An error Ocurred when we try to verify if user 
-//         with email [${notAuthUser.email}] does exists at DB`, error)
-//         res.status(500).send('An error ocurred processing verification...')
-//     })
-// })
+}))
 
 
 usersRouter.get('/me', jwtAuthorization, (req,res) => {

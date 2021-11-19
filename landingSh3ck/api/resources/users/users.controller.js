@@ -1,6 +1,7 @@
 const logger = require('../../../utils/logger')
 const user = require('./users.model')
 
+
 const getUsers = () => {
     return user.find({}) 
 }
@@ -25,8 +26,6 @@ const findUserForLogin = ({
     if (id) return user.findOne({ _id: id })
     throw new Error ('Get user function from controller was called without specifying id or email')
 }
-
-
 
 
 // *************** with Promise
