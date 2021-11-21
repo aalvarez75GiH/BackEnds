@@ -1,6 +1,5 @@
 const express = require('express')
 const logger = require('../../../utils/logger')
-const interestedUser = require('./interestedUsers.model')
 const validateUsers = require('./interestedUsers.validate')
 const interestedUsersController = require('./interestedUsers.controller')
 const processingErrors  = require('../../libs/errorHandler').processingErrors

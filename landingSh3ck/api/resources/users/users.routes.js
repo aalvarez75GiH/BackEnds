@@ -11,15 +11,7 @@ const validateLoginRequest = require('./users.validate').validateLoginRequest
 const usersRouter = express.Router()
 const userController = require('./users.controller')
 const processingErrors = require('../../libs/errorHandler').processingErrors 
-
-class UserDataAlreadyInUse extends Error {
-    constructor(message){
-        super(message)
-        this.message = message || 'Email or username already associated to an account'
-        this.status = 409
-        this.name = 'UserDataAlreadyInUse'
-    }
-}
+const { ErrorHashingData } = require('./users.errors')
 
 
 const transformBodyToLowerCase = (req, res, next) => {
@@ -31,29 +23,31 @@ const transformBodyToLowerCase = (req, res, next) => {
 usersRouter.get('/', processingErrors((req,res)=> {
     return userController.getUsers()
     .then(users => {
-        res.status(201).json(users)
+        res.json(users)
     })
 }))
 
-usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingErrors((req, res)=>{
+usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingErrors(async(req, res)=>{
     let newUser = req.body
+    let foundUser
     
-    return userController.findUser(newUser)
-    .then(foundUser =>{
-        if (foundUser){
-            logger.info(`User with ${newUser.email} already registered...`)
-            throw new UserDataAlreadyInUse()
+    foundUser = await userController.findUser(newUser)     
+    
+    if (foundUser){
+        logger.info(`User with email ${newUser.email} already registered...`)
+        res.status(409).send(`${newUser.fullName}`)
+        return
+    }
+
+    bcrypt.hash(newUser.password, 10, async(error, hashedPassword) => {
+        if (error){
+            logger.info(`Error trying hashing password...`)
+            throw new ErrorHashingData()
         }
-        return bcrypt.hash(newUser.password, 10)
-    })
-    .then (hashedPassword => {
-        logger.info('Pasa por aqui')
-        logger.info(hashedPassword)
-        return userController.createUser(newUser, hashedPassword)
-        .then(user => {
-            logger.info(`User with [${user.email}] has been created...`)
-            res.status(201).send(user.fullName)
-        })
+        await userController.createUser(newUser, hashedPassword)
+        logger.info(`User with email [${newUser.email}] has been created...`)
+        res.status(201).send(newUser.fullName)
+
     })
     
 }))
@@ -86,7 +80,7 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], pro
         res.status(200).send({token})        
     }else{
         logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
-        res.status(400).send(`email or password incorrect, check your credentials and try again...`)     
+        res.status(400).send(`${foundUser.fullName}`)     
     }
 }))
 

@@ -21,7 +21,7 @@ const findUserForLogin = ({
     id: id
 }) => {
     if (username) return user.findOne({ username: username })
-    if (id) return user.findOne({ id : id })
+    if (id) return user.findOne({ _id : id })
     throw new Error ('Get user function from controller was called without specifying id or username')
 }
 
