@@ -46,9 +46,14 @@ if (config.environmentConfiguration === 'prod'){
     //res.send('Welcome to my E-Commerce API BackEnd...')
 //})
 
-app.listen(config.port, ()=> {
+const server = app.listen(config.port, ()=> {
     logger.info('Server running at port 3000...')
 })
+
+module.exports = {
+    app,
+    server
+}
 
 
 

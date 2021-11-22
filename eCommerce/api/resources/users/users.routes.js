@@ -23,32 +23,62 @@ const transformBodyToLowerCase = (req, res, next) => {
 usersRouter.get('/', processingErrors((req,res) => {
     return usersController.getUsers()
     .then(users => {
-        res.status(201).json(users)
+        res.json(users)
     })
 }))
 
-usersRouter.post('/', [validateUsers, transformBodyToLowerCase],processingErrors((req, res) => {
+usersRouter.post('/', [validateUsers, transformBodyToLowerCase],processingErrors(async(req, res) => {
     
     let newUser = req.body
-    return usersController.findUser(newUser)
-    .then(foundUser => {
-        if (foundUser){
-            logger.info('username or email already registered...')
-            throw new UserDataAlreadyInUse()
-            // res.status(409).send(`User with username: [${newUser.username}] or email [${newUser.email}] already exists at our DB`)
-            // return
-        }
-        return bcrypt.hash(newUser.password, 10)
-    })
-    .then((hashedPassword)=> {
-        logger.info('pasa por aqui...')
-        return  usersController.createUser(newUser, hashedPassword)
-        .then(user => {
-            logger.info(`User [${user.username}] has been created...`)
-            res.status(201).send(`User [${user.username}] has been created...`)
-        })
+    let foundUser
+
+    foundUser = await usersController.findUser(newUser)
+    
+    if (foundUser){
+        logger.info('username or email already registered...')
+        // throw new UserDataAlreadyInUse()
+        res.status(409).send('Email or username already associated to an account')
+        return
+    }
+
+    bcrypt.hash(newUser.password, 10, async(error, hashedPassword) => {
+      if (error){
+          logger.info('Error trying hashing password...')
+          return
+      }
+      await usersController.createUser(newUser, hashedPassword)
+      logger.info(`User [${newUser.username}] has been created...`)
+      res.status(201).send(`User has been created successfully`)
     })         
 }))
+
+// ***************************************************************
+// usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingErrors(async(req, res)=>{
+//     let newUser = req.body
+//     let foundUser
+    
+//     foundUser = await userController.findUser(newUser)     
+    
+//     if (foundUser){
+//         logger.info(`User with email ${newUser.email} already registered...`)
+//         res.status(409).send(`${newUser.fullName}`)
+//         return
+//     }
+
+//     bcrypt.hash(newUser.password, 10, async(error, hashedPassword) => {
+//         if (error){
+//             logger.info(`Error trying hashing password...`)
+//             throw new ErrorHashingData()
+//         }
+//         await userController.createUser(newUser, hashedPassword)
+//         logger.info(`User with email [${newUser.email}] has been created...`)
+//         res.status(201).send(newUser.fullName)
+
+//     })
+    
+// }))
+
+// ***************************************************************
  
 usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], processingErrors(async(req, res) => {
     let notAuthUser = req.body
