@@ -255,9 +255,7 @@ describe('InterestedUsers', () => {
                     city: userToVerify.city
                 }, done)                
             })   
-    })
-        
-        
+    })    
     })
 })
 
