@@ -2,7 +2,7 @@ const Joi = require('@hapi/joi')
 const logger = require('../../../utils/logger')
 
 const bluePrintInterestedUsers = Joi.object({
-    fullName: Joi.string().min(3).max(100).required(),
+    fullName: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(), 
     city: Joi.string().min(3).max(100).required()
 })

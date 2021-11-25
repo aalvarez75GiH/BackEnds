@@ -14,7 +14,7 @@ const transformBodyToLowerCase = (req, res, next) => {
 intUsersRouter.get('/', processingErrors((req,res)=> {
     return interestedUsersController.getInterestedUsers()
     .then(interestedUsers => {
-        res.status(201).json(interestedUsers)
+        res.json(interestedUsers)
     })
 }))
 

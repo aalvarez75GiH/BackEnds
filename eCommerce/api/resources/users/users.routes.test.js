@@ -1,8 +1,10 @@
 let request = require('supertest')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 let app = require('../../../index').app
 let server = require('../../../index').server
+const config = require('../../../config')
 let user = require('./users.model')
 
 let usersForTesting = [
@@ -32,7 +34,8 @@ let usersForTesting = [
         password: '123456'
     }
 ]
-
+// we use this test to verify that after a user has been created this user is
+// not created again bc it is already at DB
 function userExistsAndAttributesAreCorrect(foundUser, done) {
     user.find({ username: foundUser.username})
     .then( user => {
@@ -50,6 +53,7 @@ function userExistsAndAttributesAreCorrect(foundUser, done) {
     })
 }
 
+// we use this function to verify that after a test user was not created
 const verifyingUserAtDB = async(User, done) => {
     try {
         let users = await user.find().or([{'username': User.username},{'email': User.email}])
@@ -126,8 +130,7 @@ describe('Users', () => {
                 .end((error, res) => {
                     expect(res.status).toBe(409)
                     expect(typeof res.text).toBe('string')
-                    done()
-                    // expect(res.text).toEqual('Email or username already associated to an account')
+                    done()      
                 })   
         })
     })
@@ -146,51 +149,56 @@ describe('Users', () => {
                     expect(res.status).toBe(409)
                     expect(typeof res.text).toBe('string')
                     done()
-                    // expect(res.text).toEqual('Email or username already associated to an account')
                 })   
         })
     })
     
     test('An user without username should not be created', (done) => {
+        let user = {
+            email: 'arnoldo@yahoo.com',
+            password: '123456'
+        }
         request(app)
             .post('/api/users')
-            .send({
-                email: 'arnoldo@yahoo.com',
-                password: '123456'
-            })
+            .send(user)
             .end((error, res) => {
                 expect(res.status).toBe(400)
                 expect(typeof res.text).toBe('string')
+                verifyingUserAtDB(user, done)
                 done()
-                // expect(res.text).toEqual('Email or username already associated to an account')
             })   
     })
+
     test('An user without email should not be created', (done) => {
+        let user = {
+            username:'aalvarez',
+            password: '123456'
+        }
+
         request(app)
             .post('/api/users')
-            .send({
-                username:'aalvarez',
-                password: '123456'
-            })
+            .send(user)
             .end((error, res) => {
                 expect(res.status).toBe(400)
                 expect(typeof res.text).toBe('string')
+                verifyingUserAtDB(user, done)
                 done()
-                // expect(res.text).toEqual('Email or username already associated to an account')
             })   
     })
+
     test('An user without password should not be created', (done) => {
+        let user = {
+            username: 'aalvarez',
+            email: 'arnoldo@yahoo.com'
+        }
         request(app)
             .post('/api/users')
-            .send({
-                username: 'aalvarez',
-                email: 'arnoldo@yahoo.com'
-            })
+            .send(user)
             .end((error, res) => {
                 expect(res.status).toBe(400)
                 expect(typeof res.text).toBe('string')
+                verifyingUserAtDB(user, done)
                 done()
-                // expect(res.text).toEqual('Email or username already associated to an account')
             })   
     })
     test('An user with an invalid email should not be created', (done) => {
@@ -208,7 +216,6 @@ describe('Users', () => {
                 expect(typeof res.text).toBe('string')
                 verifyingUserAtDB(user, done)
                 done()
-                // expect(res.text).toEqual('Email or username already associated to an account')
             })   
     })
     test('An user with an username with less than 3 chars should not be created', (done) => {
@@ -225,7 +232,6 @@ describe('Users', () => {
                 expect(typeof res.text).toBe('string')
                 verifyingUserAtDB(user, done)
                 done()
-                // expect(res.text).toEqual('Email or username already associated to an account')
             })   
     })
     test('An user with an username with more than 30 chars should not be created', (done) => {
@@ -242,7 +248,6 @@ describe('Users', () => {
                 expect(typeof res.text).toBe('string')
                 verifyingUserAtDB(user, done)
                 done()
-                // expect(res.text).toEqual('Email or username already associated to an account')
             })   
     })
     test('An user with a password with less than 6 chars should not be created', (done) => {
@@ -259,7 +264,6 @@ describe('Users', () => {
                 expect(typeof res.text).toBe('string')
                 verifyingUserAtDB(user, done)
                 done()
-                // expect(res.text).toEqual('Email or username already associated to an account')
             })   
     })
     test('An user with a password more than 30 chars should not be created', (done) => {
@@ -276,9 +280,9 @@ describe('Users', () => {
                 expect(typeof res.text).toBe('string')
                 verifyingUserAtDB(user, done)
                 done()
-                // expect(res.text).toEqual('Email or username already associated to an account')
             })   
     })
+
     test('username or email must be valid and stored as lowercase', (done) => {
         const user = {
             username: 'Aalvarez',
@@ -298,5 +302,145 @@ describe('Users', () => {
                 }, done)                
             })   
     })
+})
+
+    describe('POST /api/users/login', () => {
+        test('Login must fails if request do not contain an username', (done) => {
+            const user ={
+                password:'123456'
+            }
+            request(app)
+            .post('/api/users/login')
+            .send(user)
+            .end((error, res) => {
+                expect(res.status).toBe(400)
+                expect(typeof res.text).toBe('string')
+                done()
+            })
+        })
+        test('Login must fails if request do not contain an password', (done) => {
+            const user ={
+                username:'aalvarez'
+            }
+            request(app)
+            .post('/api/users/login')
+            .send(user)
+            .end((error, res) => {
+                expect(res.status).toBe(400)
+                expect(typeof res.text).toBe('string')
+                done()
+            })
+        })
+        test('Login must fails if not auth user does not exists at DB', (done) => {
+            const userBody ={
+                username:'jonhDoe',
+                password:'123456'
+            }
+            Promise.all(usersForTesting.map( x => new user(x).save()))
+            .then(users => {
+                request(app)
+                .post('/api/users/login')
+                .send(userBody)
+                .end((error, res) => {
+                    expect(res.status).toBe(400)
+                    expect(typeof res.text).toBe('string')
+                    done()
+                })
+            })
+        })
+
+        test('Login must fail if not Auth user enter an invalid password', (done) => {
+            const notAuthUser = {
+                username: 'aalvarez',
+                email: 'arnoldo@yahoo.com',
+                password:'123456'
+            }
+            new user({
+                username: notAuthUser.username,
+                email: notAuthUser.email,
+                password: bcrypt.hashSync(notAuthUser.password, 10)
+            }).save()
+            .then((newUser) => {
+                request(app)
+                .post('/api/users/login')
+                .send({
+                    username: notAuthUser.username,
+                    password:'123457'
+                })
+                .end((error, res) => {
+                    expect(res.status).toBe(400)
+                    expect(typeof res.text).toBe('string')
+                    done()
+                })
+            })
+            .catch(error => {
+                done(error)
+            })
+        })
+        test('User must get a valid token if authentication process is successful', (done) => {
+            const notAuthUser = {
+                username: 'aalvarez',
+                email: 'arnoldo@yahoo.com',
+                password:'123456'
+            }
+            new user({
+                username: notAuthUser.username,
+                email: notAuthUser.email,
+                password: bcrypt.hashSync(notAuthUser.password, 10)
+            }).save()
+            .then((newUser) => {
+                request(app)
+                .post('/api/users/login')
+                .send({
+                    username: notAuthUser.username,
+                    password: notAuthUser.password
+                })
+                .end((error, res) => {
+                    expect(res.status).toBe(200)
+                    expect(res.body.token).toEqual(jwt.sign({ id: newUser._id },
+                        config.jwt.secret, {
+                        expiresIn: config.jwt.expirationDate,
+                    }))
+                    done()
+                })
+            })
+            .catch(error => {
+                done(error)
+            })
+        })
+        
+        test('When users do login, their credentials can be LoweCase or UpperCase', (done) => {
+            const notAuthUser = {
+                username: 'aalvarez',
+                email: 'arnoldo@yahoo.com',
+                password:'123456'
+            }
+            new user({
+                username: notAuthUser.username,
+                email: notAuthUser.email,
+                password: bcrypt.hashSync(notAuthUser.password, 10)
+            }).save()
+            .then((newUser) => {
+                request(app)
+                .post('/api/users/login')
+                .send({
+                    username: 'AALVAREZ',
+                    password: notAuthUser.password
+                })
+                .end((error, res) => {
+                    expect(res.status).toBe(200)
+                    expect(res.body.token).toEqual(jwt.sign({ id: newUser._id },
+                        config.jwt.secret, {
+                        expiresIn: config.jwt.expirationDate,
+                    }))
+                    done()
+                })
+            })
+            .catch(error => {
+                done(error)
+            })
+        })
+
+        
 })
 })

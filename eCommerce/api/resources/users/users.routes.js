@@ -52,33 +52,6 @@ usersRouter.post('/', [validateUsers, transformBodyToLowerCase],processingErrors
     })         
 }))
 
-// ***************************************************************
-// usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingErrors(async(req, res)=>{
-//     let newUser = req.body
-//     let foundUser
-    
-//     foundUser = await userController.findUser(newUser)     
-    
-//     if (foundUser){
-//         logger.info(`User with email ${newUser.email} already registered...`)
-//         res.status(409).send(`${newUser.fullName}`)
-//         return
-//     }
-
-//     bcrypt.hash(newUser.password, 10, async(error, hashedPassword) => {
-//         if (error){
-//             logger.info(`Error trying hashing password...`)
-//             throw new ErrorHashingData()
-//         }
-//         await userController.createUser(newUser, hashedPassword)
-//         logger.info(`User with email [${newUser.email}] has been created...`)
-//         res.status(201).send(newUser.fullName)
-
-//     })
-    
-// }))
-
-// ***************************************************************
  
 usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], processingErrors(async(req, res) => {
     let notAuthUser = req.body
@@ -99,7 +72,7 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], pro
     if (correctPassword){
         logger.info(`User [${notAuthUser.username}] has been authenticated...`)
         //create token and send it
-        const token = jwt.sign({ id: foundUser.id }, 
+        const token = jwt.sign({ id: foundUser._id }, 
             config.jwt.secret, {
                 expiresIn: config.jwt.expirationDate,
             })

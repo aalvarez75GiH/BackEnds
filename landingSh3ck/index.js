@@ -54,9 +54,16 @@ app.get('/', passport.authenticate('basic', {session:false}), (req,res)=> {
     res.send('sh3ck has born today...')
 })
 
+
+
 console.log(config)
 
-app.listen(config.port, () => {
+const server = app.listen(config.port, () => {
     logger.info('ch3ck server running at post 5000...')
 })
+
+module.exports = {
+    app,
+    server
+}
 
