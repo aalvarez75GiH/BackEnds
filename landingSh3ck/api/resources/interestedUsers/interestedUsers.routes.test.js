@@ -118,9 +118,9 @@ describe('InterestedUsers', () => {
                 request(app)
                 .post('/api/interestedUsers')
                 .send({
-                    fullName: 'kris Summers',
+                    fullName: 'Kristina Summers',
                     email: 'kris@yahoo.com',
-                    city: 'Athens'
+                    city: 'Barquisimeto'
                 })
                 .end((error,res)=>{
                     expect(res.status).toBe(409)
