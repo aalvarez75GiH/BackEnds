@@ -65,19 +65,21 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], pro
         res.status(400).send(`${notAuthUser.email}`)
         return
     }
-
+    console.log('lo consiguió...')
     const hashedPassword = foundUser.password
     let correctPassword
 
     correctPassword = await bcrypt.compare(notAuthUser.password, hashedPassword)
     
     if(correctPassword){
+        console.log('password correcto...')
         const token = jwt.sign({id: foundUser.id},
         config.jwt.secret, {
             expiresIn: 60 * 60 * 24 * 365
         })
         logger.info(`User [${notAuthUser.email}] has been authenticated succesfully...`)
-        res.status(200).send({token})        
+        res.status(200).send({token})
+        return        
     }else{
         logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
         res.status(400).send(`${foundUser.fullName}`)     

@@ -1,8 +1,11 @@
 const request = require('supertest')
 const user = require('./users.model')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const app = require('../../../index').app
 const server = require('../../../index').server
+const config = require('../../../config')
 
 const usersDummy = [
     {
@@ -344,7 +347,164 @@ describe('Users', () => {
         })
     })
 
-    // describe('POST /api/users/login', () => {
+    describe('POST /api/users/login', () => {
+        
+        test('Login Process must fail if user is not found at DB', (done) => {
+            const notAuthUser = {
+                email: 'miguel@yahoo.com',
+                password: '123456'
+            }
+            new user({
+                fullName: 'Arnoldo Alvarez',
+                email: 'arnoldo@yahoo.com',
+                password: bcrypt.hashSync('123456', 10),
+                phoneNumber: '17066124602'
+            }).save()
+            .then((response)=> {
+                request(app)
+                .post('/api/users/login')
+                .send({
+                    email: notAuthUser.email,
+                    password: notAuthUser.password
+                })
+                .end((error, res) => {
+                    expect(res.status).toBe(400)
+                    expect(typeof res.text).toBe('string')
+                    expect(res.text).toEqual(notAuthUser.email)
+                    done()
+                })    
+            })
+        })
 
-    // })
+        
+        test('Login and authentication process must fail if request does not contain an email returning a error status code 400', (done) => {
+            request(app)
+            .post('/api/users/login')
+            .send({
+                password: '123456'
+            })
+            .end((error, res) => {
+                expect(res.status).toBe(400)
+                expect(typeof res.text).toBe('string')
+                done()
+            })
+        })
+
+        test('Login and authentication process must fail if request does not contain a password returning a error status code 400', (done) => {
+            request(app)
+            .post('/api/users/login')
+            .send({
+                email: 'arnoldo@yahoo.com'
+            })
+            .end((error, res) => {
+                expect(res.status).toBe(400)
+                expect(typeof res.text).toBe('string')
+                done()
+            })
+        })
+        
+        
+        
+        test('if user`s credentials are valid and user is registered at DB then user is authenticated and get a token', (done) => {
+            const notAuthUser = {
+                fullName: 'Arnoldo Alvarez',
+                email: 'arnoldo@yahoo.com',
+                password: '123456',
+                phoneNumber: '17066124602'
+
+            }
+            new user({
+                fullName: notAuthUser.fullName,
+                email: notAuthUser.email,
+                password: bcrypt.hashSync(notAuthUser.password, 10),
+                phoneNumber: notAuthUser.phoneNumber
+            }).save()
+            .then(newUser => {
+                request(app)
+                    .post('/api/users/login')
+                    .send({
+                        email: notAuthUser.email,
+                        password: notAuthUser.password
+                    })
+                    .end((error, res) => {
+                        expect(res.status).toBe(200)
+                        expect(res.body.token).toEqual(
+                        jwt.sign({id: newUser._id},
+                        config.jwt.secret, {
+                            expiresIn: 60 * 60 * 24 * 365
+                        }))
+                        done()
+                    })
+            })
+            .catch(error => {
+                done(error)
+            })
+
+        })
+
+        test('if user`s password is invalid authentication process must fails returning a error status code 400', (done) => {
+            const notAuthUser = {
+                fullName: "Arnoldo Alvarez",
+                email: "arnoldo@yahoo.com",
+                password: "123456",
+                phoneNumber: "17066124602"
+            }
+            new user({
+                fullName: notAuthUser.fullName,
+                email: notAuthUser.email,
+                password: bcrypt.hashSync(notAuthUser.password, 10),
+                phoneNumber: notAuthUser.phoneNumber
+            }).save()
+            .then(newUser => {
+                request(app)
+                    .post('/api/users/login')
+                    .send({
+                        email: notAuthUser.email,
+                        password: '123457'
+                    })
+                    .end((error, res) => {
+                        expect(res.status).toBe(400)
+                        expect(typeof res.text).toBe('string')
+                        expect(res.text).toEqual(newUser.fullName)
+                        done()
+                    })
+            })
+            .catch(error => {
+                done(error)
+            })
+        })
+        test('if user`s email is invalid authentication process must fails returning a error status code 400', (done) => {
+            const notAuthUser = {
+                fullName: "Arnoldo Alvarez",
+                email: "arnoldo@yahoo.com",
+                password: "123456",
+                phoneNumber: "17066124602"
+            }
+            new user({
+                fullName: notAuthUser.fullName,
+                email: notAuthUser.email,
+                password: bcrypt.hashSync(notAuthUser.password, 10),
+                phoneNumber: notAuthUser.phoneNumber
+            }).save()
+            .then(newUser => {
+                request(app)
+                    .post('/api/users/login')
+                    .send({
+                        email: 'arnol@yahoo.com',
+                        password: notAuthUser.password
+                    })
+                    .end((error, res) => {
+                        // console.log('this is res.body:', res)
+                        expect(res.status).toBe(400)
+                        expect(typeof res.text).toBe('string')
+                        expect(res.text).toEqual('arnol@yahoo.com')
+                        done()
+                    })
+            })
+            .catch(error => {
+                done(error)
+            })
+        })
+
+    })
 })
