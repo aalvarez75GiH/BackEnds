@@ -30,6 +30,8 @@ mongoose.connection.on('error', () => {
     process.exit(1)
 })
 
+
+
 app.use('/api/products', productsRouter)
 app.use('/api/users', usersRouter)
 app.use(errorhandler.processingDBErrors)

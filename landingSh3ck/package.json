@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --forceExit --runInBand"
+    "test": "ENV_MODE=test jest  --runInBand --coverage"
   },
   "author": "Arnoldo Alvarez",
   "license": "ISC",
@@ -28,5 +28,11 @@
   "devDependencies": {
     "jest": "^27.3.1",
     "supertest": "^6.1.6"
+  },
+  "jest": {
+    "testPathIgnorePatterns":[
+      "/config/"
+    ],
+    "testEnvironment": "node"
   }
 }

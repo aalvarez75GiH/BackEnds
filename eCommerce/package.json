@@ -6,7 +6,7 @@
   "author": "Arnoldo Alvarez",
   "license": "ISC",
   "scripts": {
-    "test": "jest --forceExit --runInBand"
+    "test": "NODE_ENV=TEST jest --runInBand --coverage"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -27,5 +27,11 @@
   "devDependencies": {
     "jest": "^27.3.1",
     "supertest": "^6.1.6"
+  },
+  "jest":{
+    "testPathIgnorePatterns":[
+      "/config/"
+    ],
+    "testEnvironment": "node"
   }
 }

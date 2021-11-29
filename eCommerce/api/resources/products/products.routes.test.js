@@ -1,5 +1,6 @@
 const request = require('supertest')
 const bcrypt = require('bcrypt')
+const mongoose = require('mongoose')
 
 const config = require('../../../config')
 const product = require('./products.model')
@@ -61,7 +62,7 @@ let invalidToken = '1111111111JIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYTNhNWRiMTV
 const productIDThatDoNOtExists = '111112222233333444445555'
 
 const getToken = (done) => {
-    user.remove({}, error => {
+    user.deleteMany({}, error => {
         if (error) done(error)
         request(app)
         .post('/api/users')
@@ -87,13 +88,14 @@ const getToken = (done) => {
 describe('Products', () => {
     
     beforeEach((done) => {
-        product.remove({}, (err) => {
+        product.deleteMany({}, (err) => {
             done()
         })
     })
 
-    afterAll(() => {
+    afterAll(async() => {
         server.close()
+        await mongoose.disconnect()
     })
     
     describe('GET /api/products:id ', () => {   
@@ -221,7 +223,7 @@ describe('Products', () => {
         
         let productToDeleteID
         beforeEach( done => {
-            product.remove({}, (error) => {
+            product.deleteMany({}, (error) => {
                 if (error) done(error)
                 Promise.all(productsForTesting.map( newProduct => new product(newProduct).save()))
                 .then(products => {
@@ -312,20 +314,12 @@ describe('Products', () => {
         })
     })
     
-    // (DONE) 'if we try to replace a product with a invalid ID (less than 24 chars) in the request then replacement process must fail'
-    // (DONE) 'if product does NOT exists at DB replacement process must fail returning 404 error status code'
-    // (DONE)'if user DO NOT provides a valid token then product must NOT be replaced'
-    // (DONE)'If user is not the product`s owner replacement process must fail'
-    // (DONE)'If user is the product`s owner and the user delivers a valid token then replacement process must succeed'
-    // 'If Product title is missing the product must NOT be replaced'
-    // 'If Product price is missing the product must NOT be replaced'
-    // 'If Product currency is missing the product must NOT be replaced'
 
     describe('PUT /api/products', () => {
         
         let productToReplaceID
         beforeEach( done => {
-            product.remove({}, (error) => {
+            product.deleteMany({}, (error) => {
                 if (error) done(error)
                 Promise.all(productsForTesting.map( newProduct => new product(newProduct).save()))
                 .then(products => {

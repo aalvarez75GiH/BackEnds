@@ -17,6 +17,9 @@ switch (environment){
     case 'produccion':
         environmentConfiguration = require('./prod')
         break
+    case 'test':
+        environmentConfiguration = require('./test')
+        break
     default:
         environmentConfiguration = require('./dev')
         break

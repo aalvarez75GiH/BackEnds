@@ -1,11 +1,13 @@
 let request = require('supertest')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 
 let app = require('../../../index').app
 let server = require('../../../index').server
 const config = require('../../../config')
 let user = require('./users.model')
+
 
 let usersForTesting = [
     {
@@ -67,13 +69,14 @@ const verifyingUserAtDB = async(User, done) => {
 describe('Users', () => {
     
     beforeEach((done) => {
-        user.remove({}, (err) => {
+        user.deleteMany({}, (err) => {
             done()
         })
     })
 
-    afterAll(() => {
+    afterAll(async() => {
         server.close()
+        await mongoose.disconnect()
     })
 
     describe('GET /api/users', () => {
@@ -106,7 +109,7 @@ describe('Users', () => {
     describe('POST /api/users', () => {
     
         test('If user complies with all validations and does not exists at DB then its created', (done) => {
-    request(app)
+        request(app)
         .post('/api/users')
         .send(usersForTesting[0])
         .end((error, res) => {
@@ -408,7 +411,7 @@ describe('Users', () => {
                 done(error)
             })
         })
-        
+
         test('When users do login, their credentials can be LoweCase or UpperCase', (done) => {
             const notAuthUser = {
                 username: 'aalvarez',

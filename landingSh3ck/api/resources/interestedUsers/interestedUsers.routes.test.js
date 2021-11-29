@@ -1,5 +1,6 @@
 const request = require('supertest')
 const interestedUser = require('./interestedUsers.model')
+const mongoose = require('mongoose')
 
 const app = require('../../../index').app
 const server = require('../../../index').server
@@ -66,8 +67,9 @@ describe('InterestedUsers', () => {
         })
     })
 
-    afterAll(() => {
+    afterAll(async() => {
         server.close()
+        await mongoose.disconnect()
     })
 
     describe('GET /api/interestedUsers', ()=> {

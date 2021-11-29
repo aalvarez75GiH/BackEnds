@@ -2,6 +2,7 @@ const request = require('supertest')
 const user = require('./users.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 
 const app = require('../../../index').app
 const server = require('../../../index').server
@@ -76,8 +77,9 @@ describe('Users', () => {
         })
     })
 
-    afterAll(()=> {
+    afterAll(async()=> {
         server.close()
+        await mongoose.disconnect()
     })
 
     describe('GET /api/users', () => {
