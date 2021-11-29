@@ -18,7 +18,6 @@ const validarID = (req, res, next) => {
         return
     }
     next()
-
 }
 
 productsRouter.get( '/', processingErrors((req,res ) => {
@@ -40,7 +39,7 @@ productsRouter.get( '/:id', validarID, processingErrors((req,res) => {
             return 
         } 
         logger.info(`Product with id [${id}] was found at DB successfully...`)
-        res.status(201).json(product)
+        res.status(200).json(product)
     })
 }))
 
@@ -94,13 +93,12 @@ productsRouter.delete( '/:id' , [ jwtAuthorization, validarID ], processingError
 
     if(productToDelete.owner !== userWantDelete){
         logger.info(`User ${userWantDelete} do not own Product with id ${id}. it can not be deleted`)
-        throw new NotOwnerToProceed(`Sorry, you are not the owner of Product ID ${id} 
-        you can not delete it if you are not the owner`) 
+        throw new NotOwnerToProceed(`Sorry, you are not the owner of Product ID ${id}. You can not delete it if you are not the owner`) 
     }
 
     const productDeleted = await productController.deleteProduct(id)
     logger.info(`Product with id [${id}] was deleted successfully...`)
-    res.json(productDeleted)
+    res.status(200).json(productDeleted)
 }))
 
 module.exports = productsRouter

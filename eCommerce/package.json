@@ -6,7 +6,7 @@
   "author": "Arnoldo Alvarez",
   "license": "ISC",
   "scripts": {
-    "test": "jest --forceExit"
+    "test": "jest --forceExit --runInBand"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
