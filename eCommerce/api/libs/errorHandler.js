@@ -7,32 +7,38 @@ exports.processingErrors = (fn) => {
     }
 }
 
-exports.processingDBErrors = (req, res, next) => {
-    if (err instanceof mongoose.Error || err.name === 'MongoError'){
+exports.processingDBErrors = (error, req, res, next) => {
+    if (error instanceof mongoose.Error || error.name === 'MongoError'){
         logger.error('An error related with MongoDB has occurred')
-        err.message = 'An error related with Mongo DB occurred unexpectedly. For more info contact to ecommerce technical support team'
-        err.status = 500
+        error.message = 'An error related with Mongo DB occurred unexpectedly. For more info contact to ecommerce technical support team'
+        error.status = 500
     }
-    next(err)
+    next(error)
 }
 
-exports.productionErrors = (err, req, res, next) => {
- res.status(err.status || 500)
+exports.processingBodySizeErrors = (error, req,res,next) => {
+    if (error.status === 413){
+        logger.error(`Request sent to route [${req.path}] has exceeded limit size. Request wont be processed`)
+        error.message = `Request sent to route [${req.path}] has exceeded limit size. Request wont be processed`
+    }
+    next(error)
+}
+
+exports.productionErrors = (error, req, res, next) => {
+ res.status(error.status || 500)
  res.send({
-     message: err.message
+     message: error.message
  })
 }
-exports.developmentErrors = (err, req, res, next) => {
-    res.status(err.status || 500)
+
+exports.developmentErrors = (error, req, res, next) => {
+    res.status(error.status || 500)
     res.send({
-        message: err.message, 
-        stack: err.stack || ''
+        message: error.message, 
+        stack: error.stack || ''
     }) 
 }
 
-// module.exports = {
-//     processingErrors
-// }
 
 
 

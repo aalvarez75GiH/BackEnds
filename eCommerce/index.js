@@ -14,6 +14,7 @@ const errorhandler = require('./api/libs/errorHandler')
 
 const app = express()
 app.use(bodyParser.json())
+app.use(bodyParser.raw({ type: 'image/*', limit: '1mb'  }))
 app.use(morgan('short', {
     stream: {
         write: message => logger.info(message.trim())
@@ -35,18 +36,12 @@ mongoose.connection.on('error', () => {
 app.use('/api/products', productsRouter)
 app.use('/api/users', usersRouter)
 app.use(errorhandler.processingDBErrors)
-if (config.environmentConfiguration === 'prod'){
+app.use(errorhandler.processingBodySizeErrors)
+if (config.environment === 'prod'){
     app.use(errorhandler.productionErrors)
 }else{
     app.use(errorhandler.developmentErrors)
 }
-
-// Basic End point used for testing
-//app.get('/', passport.authenticate('jwt', { session: false }), (req,res) => {
-    //logger.info(req.user)
-    //logger.info(`username: ${req.user.username}, id: ${req.user.id}`)
-    //res.send('Welcome to my E-Commerce API BackEnd...')
-//})
 
 const server = app.listen(config.port, ()=> {
     logger.info('Server running at port 3000...')

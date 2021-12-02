@@ -1,7 +1,8 @@
 const environment = process.env.NODE_ENV || 'development'
 const baseConfiguration = {
     jwt:{},
-    port:5000
+    port:5000,
+    environment
 }
 
 let environmentConfiguration = {}

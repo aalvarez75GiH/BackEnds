@@ -1,8 +1,8 @@
 const express = require('express')
 const passport = require('passport')
 
-
-const validateProduct = require('./products.validate')
+const validatingProductImage   = require('./products.validate').validatingProductImage
+const validatingProductData = require('./products.validate').validatingProductData
 const logger = require('../../../utils/logger')
 const productController = require('./products.controller')
 const jwtAuthorization = passport.authenticate('jwt', { session: false })
@@ -44,7 +44,7 @@ productsRouter.get( '/:id', validarID, processingErrors((req,res) => {
 }))
 
 
-productsRouter.post( '/', [ jwtAuthorization, validateProduct ], processingErrors((req,res) => {
+productsRouter.post( '/', [ jwtAuthorization, validatingProductData ], processingErrors((req,res) => {
     return productController.createProduct(req.body, req.user.username)
     .then(product => {
         logger.info('Product added to the Products collection', product.toObject())
@@ -53,7 +53,7 @@ productsRouter.post( '/', [ jwtAuthorization, validateProduct ], processingError
 }))
 
 
-productsRouter.put( '/:id', [ jwtAuthorization, validarID, validateProduct ], processingErrors(async(req,res) => {
+productsRouter.put( '/:id', [ jwtAuthorization, validarID, validatingProductData ], processingErrors(async(req,res) => {
     let id = req.params.id    
     let userWantToPut = req.user.username
     let productToReplace
@@ -98,7 +98,15 @@ productsRouter.delete( '/:id' , [ jwtAuthorization, validarID ], processingError
 
     const productDeleted = await productController.deleteProduct(id)
     logger.info(`Product with id [${id}] was deleted successfully...`)
-    res.status(200).json(productDeleted)
+    res.json(productDeleted)
+}))
+
+productsRouter.put('/:id/image', validatingProductImage, processingErrors(async(req, res ) => {
+    
+    // logger.info('Load Image request:', req.body)
+    res.json({
+        url: '/imageUrl/s3/87ytrjn084.jpg'
+    })
 }))
 
 module.exports = productsRouter

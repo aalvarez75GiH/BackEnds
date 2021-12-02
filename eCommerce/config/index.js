@@ -1,6 +1,7 @@
 const environment = process.env.NODE_ENV || 'development'
 const baseConfiguration = {
     jwt:{},
+    environment,
     port:3000,
     deleteLogs:false
 }
@@ -8,7 +9,7 @@ const baseConfiguration = {
 let environmentConfiguration = {}
 
 switch (environment){
-    case 'development' :
+    case 'development':
     case 'dev':
     case 'desarrollo':
         environmentConfiguration = require('./dev')
@@ -23,7 +24,6 @@ switch (environment){
         break
     default:
         environmentConfiguration = require('./dev')
-        break
 }
 
 module.exports = {
