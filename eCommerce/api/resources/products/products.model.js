@@ -20,6 +20,9 @@ const Product = mongoose.model('product', new Schema({
     owner: {
         type: String,
         required: [true, ' Product must be related to an owner']
+    },
+    image:{
+        type: String
     }
 })) 
 

@@ -29,11 +29,20 @@ const replaceProduct = (id, product, username) => {
     })
 }
 
+const saveImageUrl = (id, imageUrl) => {
+    return Product.findOneAndUpdate({_id: id},{
+        image: imageUrl
+    },{
+        new: true //This option is in order to return the new document modified
+    })
+}
+
 module.exports = {
     createProduct,
     getProducts,
     getOneProduct,
     deleteProduct,
-    replaceProduct
+    replaceProduct, 
+    saveImageUrl
 }
 

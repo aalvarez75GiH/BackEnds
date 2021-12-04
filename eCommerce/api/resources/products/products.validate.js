@@ -1,5 +1,6 @@
 const Joi = require('@hapi/joi')
 const fileType = require('file-type')
+
 const logger = require('../../../utils/logger')
 
 const bluePrintProduct = Joi.object({
@@ -19,6 +20,7 @@ const validatingProductImage = async(req, res, next) => {
         return
     }
 
+    
     let fileInfo = fileType(req.body)
     console.log(fileInfo)    
     if(!CONTENT_TYPES_ALLOWED.includes(fileInfo.mime)){

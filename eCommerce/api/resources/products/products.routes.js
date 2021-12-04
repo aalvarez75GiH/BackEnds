@@ -1,5 +1,6 @@
 const express = require('express')
 const passport = require('passport')
+const { v4: uuidv4 } = require('uuid');
 
 const validatingProductImage   = require('./products.validate').validatingProductImage
 const validatingProductData = require('./products.validate').validatingProductData
@@ -8,6 +9,7 @@ const productController = require('./products.controller')
 const jwtAuthorization = passport.authenticate('jwt', { session: false })
 const processingErrors = require('../../libs/errorHandler').processingErrors
 const { ProductDoesNotExists, NotOwnerToProceed } = require('./products.errors')
+const saveImage = require('../../data/images.controller').saveImage
 const productsRouter = express.Router()
 
 
@@ -101,12 +103,17 @@ productsRouter.delete( '/:id' , [ jwtAuthorization, validarID ], processingError
     res.json(productDeleted)
 }))
 
-productsRouter.put('/:id/image', validatingProductImage, processingErrors(async(req, res ) => {
+productsRouter.put('/:id/image', [jwtAuthorization, validatingProductImage], processingErrors(async(req, res ) => {
+    const id = req.params.id
+    const user = req.user.username    
+    logger.info(`Request from User [${user}] was received. We are processing image with product ID [${id}] `)
     
-    // logger.info('Load Image request:', req.body)
-    res.json({
-        url: '/imageUrl/s3/87ytrjn084.jpg'
-    })
+    const randomizedName = `${uuidv4()}.${req.fileExtension}`
+    const imageURL = await saveImage(req.body, randomizedName)
+    const productModified = await productController.saveImageUrl(id, imageURL)
+    logger.info(`Product with ID [${id}] was modified. New image link [${imageURL}]
+    changed by user [${user}]`)
+    res.json(productModified)
 }))
 
 module.exports = productsRouter
