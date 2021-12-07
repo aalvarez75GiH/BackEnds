@@ -52,5 +52,3 @@ module.exports = {
     validatingProductImage,
     validatingProductData
 }
-
-// +50764326631

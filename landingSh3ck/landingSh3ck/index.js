@@ -1,5 +1,3 @@
-const dotenv = require('dotenv')
-dotenv.config({path:__dirname+'/.env'})
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
@@ -11,12 +9,14 @@ const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
 const config = require('./config')
 const errorHandler = require('./api/libs/errorHandler')
+// const path = require('path')
+
 const countersRouter = require('./api/resources/counters/counters.routes')
 const intUsersRouter = require('./api/resources/interestedUsers/interestedUsers.routes')
 const usersRouter = require('./api/resources/users/users.routes')
 
 const app = express()
-const port = process.env.PORT || 5000
+
 
 
 app.use(bodyParser.json())
@@ -31,27 +31,12 @@ passport.use(authJWT)
 app.use(passport.initialize())
 
 // *********** Data Base configuration ******************
-const dbUrl = `mongodb+srv://sh3ckAdmin:Nm74sc84Cs97lc.@cluster0.ztfck.mongodb.net/landingSh3ckDB?retryWrites=true&w=majority`;
-const connectionParams={
-    useNewUrlParser: true,
-    useUnifiedTopology: true 
-}
 
-mongoose.connect(dbUrl,connectionParams)
-    .then( () => {
-        console.log('Connected to database ')
-    })
-    .catch( (err) => {
-        console.error(`Error connecting to the database. \n${err}`);
-    })
-
-
-// mongoose.connect('mongodb://localhost:27017/sh3ch')
-// console.log(process.env.MONGO_URI);
-// mongoose.connection.on('error', () => {
-//     logger.error('Connection with DB failed...')
-//     process.exit(1)
-// })
+mongoose.connect('mongodb://localhost:27017/sh3ch')
+mongoose.connection.on('error', () => {
+    logger.error('Connection with DB failed...')
+    process.exit(1)
+})
 // ******************************************************
 
 
@@ -59,18 +44,22 @@ app.use('/api/counters', countersRouter)
 app.use('/api/interestedUsers', intUsersRouter)
 app.use('/api/users', usersRouter)
 app.use(errorHandler.processingDBErrors)
-if (config.environment === 'prod'){
+if (config.environmentConfiguration === 'prod'){
     app.use(errorHandler.productionErrors)   
 }else{
     app.use(errorHandler.developmentErrors)
 }
 
-app.get('/', (req,res)=> {
-    res.send('Sh3ck API system Heroku/GitHub')
+app.get('/', passport.authenticate('basic', {session:false}), (req,res)=> {
+    res.send('sh3ck has born today...')
 })
 
-const server = app.listen(port, () => {
-    logger.info('sh3ck server running at post 5000...')
+
+
+console.log(config)
+
+const server = app.listen(config.port, () => {
+    logger.info('ch3ck server running at post 5000...')
 })
 
 module.exports = {

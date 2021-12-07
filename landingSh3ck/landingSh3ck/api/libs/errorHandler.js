@@ -7,30 +7,30 @@ exports.processingErrors = (fn) => {
     }
 }
 
-exports.processingDBErrors = (error,req, res, next) => {
+exports.processingDBErrors = (req, res, next) => {
     console.log('passing for processingDBErrors...')
-    if (error instanceof mongoose.Error || error.name === 'MongoError'){
+    if (err instanceof mongoose.Error || err.name === 'MongoError'){
         console.log('its a Mongo Error')
         logger.error('An error related with MongoDB has occurred')
         err.message = 'Ha ocurrido un error inésperado. Para más información contacte al equipo de soporte de Sh3ck'
-        error.status = 500
+        err.status = 500
     }
-    next(error)
+    next(err)
 }
 
-exports.productionErrors = (error, req, res, next) => {
- res.status(error.status || 500)
+exports.productionErrors = (err, req, res, next) => {
+ res.status(err.status || 500)
  res.send({
-     message: error.message
+     message: err.message
  })
 }
 
-exports.developmentErrors = (error, req, res, next) => {
+exports.developmentErrors = (err, req, res, next) => {
     console.log('its a development Error')
     console.log(req.body)
-    res.status(error.status || 500)
+    res.status(err.status || 500)
     res.send({
-        message: error.message, 
-        stack: error.stack || ''
+        message: err.message, 
+        stack: err.stack || ''
     }) 
 }

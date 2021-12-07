@@ -217,7 +217,6 @@ describe('Products', () => {
                 done()
             })
         })
-
     })
 
     describe('DELETE /api/products', () => {

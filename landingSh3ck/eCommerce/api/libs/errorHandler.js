@@ -7,13 +7,19 @@ exports.processingErrors = (fn) => {
     }
 }
 
-exports.processingDBErrors = (error,req, res, next) => {
-    console.log('passing for processingDBErrors...')
+exports.processingDBErrors = (error, req, res, next) => {
     if (error instanceof mongoose.Error || error.name === 'MongoError'){
-        console.log('its a Mongo Error')
         logger.error('An error related with MongoDB has occurred')
-        err.message = 'Ha ocurrido un error inésperado. Para más información contacte al equipo de soporte de Sh3ck'
+        error.message = 'An error related with Mongo DB occurred unexpectedly. For more info contact to ecommerce technical support team'
         error.status = 500
+    }
+    next(error)
+}
+
+exports.processingBodySizeErrors = (error, req,res,next) => {
+    if (error.status === 413){
+        logger.error(`Request sent to route [${req.path}] has exceeded limit size. Request wont be processed`)
+        error.message = `Request sent to route [${req.path}] has exceeded limit size. Request wont be processed`
     }
     next(error)
 }
@@ -26,11 +32,13 @@ exports.productionErrors = (error, req, res, next) => {
 }
 
 exports.developmentErrors = (error, req, res, next) => {
-    console.log('its a development Error')
-    console.log(req.body)
     res.status(error.status || 500)
     res.send({
         message: error.message, 
         stack: error.stack || ''
     }) 
 }
+
+
+
+

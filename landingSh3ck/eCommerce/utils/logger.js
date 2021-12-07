@@ -1,5 +1,4 @@
 const winston = require('winston')
-const config = require('../config')
 
 
 const includeDate = winston.format((info)=> {
@@ -10,7 +9,7 @@ const includeDate = winston.format((info)=> {
 module.exports = winston.createLogger({
     transports:[
         new winston.transports.Console({
-            level: config.deleteLogs ? 'error' : 'debug',
+            level: 'debug',
             handleExceptions: true,
             format: winston.format.combine(
                 winston.format.colorize(),
