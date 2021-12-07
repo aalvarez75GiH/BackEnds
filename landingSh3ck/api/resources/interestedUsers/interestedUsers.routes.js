@@ -24,7 +24,6 @@ intUsersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingEr
     let foundInterestedUser
     
     foundInterestedUser = await interestedUsersController.findInterestedUser(newUser) 
-    console.log(foundInterestedUser)
     
     if (foundInterestedUser){
         logger.info(` User with email ${newUser.email} is already registered as interested User `)
