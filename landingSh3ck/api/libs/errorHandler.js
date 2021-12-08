@@ -7,7 +7,7 @@ exports.processingErrors = (fn) => {
     }
 }
 
-exports.processingDBErrors = (req, res, next) => {
+exports.processingDBErrors = (err, req, res, next) => {
     console.log('passing for processingDBErrors...')
     if (err instanceof mongoose.Error || err.name === 'MongoError'){
         console.log('its a Mongo Error')

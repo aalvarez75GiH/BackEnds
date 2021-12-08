@@ -64,13 +64,13 @@ if (config.environmentConfiguration === 'prod'){
     app.use(errorHandler.developmentErrors)
 }
 
-app.get('/', passport.authenticate('basic', {session:false}), (req,res)=> {
-    res.send('sh3ck API System at BackEnds')
+app.get('/', (req,res)=> {
+    res.send('API System at BackEnds')
 })
 
 
 const server = app.listen(port, () => {
-    logger.info('ch3ck server running at post 5000...')
+    logger.info('sh3ck server at BackEnds running at post 5000...')
 })
 
 module.exports = {
