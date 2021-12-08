@@ -65,12 +65,12 @@ if (config.environmentConfiguration === 'prod'){
 }
 
 app.get('/', (req,res)=> {
-    res.send('API System at BackEnds')
+    res.send('Intense-atoll-00786 instance responding successfully to requests...')
 })
 
 
 const server = app.listen(port, () => {
-    logger.info('sh3ck server at BackEnds running at post 5000...')
+    logger.info('Intense-atoll-00786 instance running at post 5000...')
 })
 
 module.exports = {
