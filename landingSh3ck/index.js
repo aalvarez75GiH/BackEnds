@@ -65,7 +65,7 @@ if (config.environmentConfiguration === 'prod'){
 }
 
 app.get('/', passport.authenticate('basic', {session:false}), (req,res)=> {
-    res.send('sh3ck has born today...')
+    res.send('sh3ck API System at BackEnds')
 })
 
 
