@@ -3,6 +3,7 @@ const logger = require('../../../utils/logger')
 const validateUsers = require('./interestedUsers.validate')
 const interestedUsersController = require('./interestedUsers.controller')
 const processingErrors  = require('../../libs/errorHandler').processingErrors
+const emailSender = require('../../../utils/emailSender').emailSenderModule
 const intUsersRouter = express.Router()
 
 const transformBodyToLowerCase = (req, res, next) => {
@@ -10,6 +11,7 @@ const transformBodyToLowerCase = (req, res, next) => {
     req.body.email && (req.body.email = req.body.email.toLowerCase())
     next()
 }
+
 
 intUsersRouter.get('/', processingErrors((req,res)=> {
     return interestedUsersController.getInterestedUsers()
@@ -33,6 +35,8 @@ intUsersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingEr
     
     const interestedUser = await interestedUsersController.createInterestedUser(newUser)
     logger.info(`User [${interestedUser.email}] has been created...`)
+    // sendingEmailToInterestedUsers()
+    emailSender('interestedUsers', interestedUser.email)
     res.status(201).send(`${interestedUser.fullName}`)
     
            

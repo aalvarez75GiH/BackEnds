@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const passport = require('passport')
 
 const logger = require('../../../utils/logger')
+const emailSender = require('../../../utils/emailSender').emailSenderModule
 const jwtAuthorization = passport.authenticate('jwt', { session: false })
 const config = require('../../../config')
 const validateUsers = require('./users.validate').validateUsers
@@ -46,6 +47,7 @@ usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingError
         }
         await userController.createUser(newUser, hashedPassword)
         logger.info(`User with email [${newUser.email}] has been created...`)
+        emailSender('users', newUser.email)
         res.status(201).send(newUser.fullName)
 
     })
