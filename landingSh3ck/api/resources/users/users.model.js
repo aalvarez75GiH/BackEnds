@@ -19,12 +19,19 @@ const user = mongoose.model('user', new Schema({
         required: [true, 'You must enter a Phone Number']
 
     }, 
-    password: {
+    // password: {
+    //     type: String,
+    //     min: 3,
+    //     max: 200,
+    //     required: [true, 'Please enter a Password']
+    // },
+    pin: {
         type: String,
-        min: 3,
-        max: 200,
-        required: [true, 'Please enter a Password']
+        min: 4,
+        max: 4,
+        required: [true, 'Please enter a PIN number']
     }
+
 }))
 
 module.exports = user

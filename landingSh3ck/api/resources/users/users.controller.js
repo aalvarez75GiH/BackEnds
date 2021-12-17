@@ -57,10 +57,17 @@ const findUserForLogin = ({
 
 
 
-const createUser = (newUser, hashedPassword) => {
+// const createUser = (newUser, hashedPassword, rawPIN) => {
+//     return new user({
+//         ...newUser,
+//         password: hashedPassword,
+//         pin: rawPIN
+//     }).save()      
+// }
+const createUser = (newUser, hashedPIN) => {
     return new user({
         ...newUser,
-        password: hashedPassword
+        pin: hashedPIN
     }).save()      
 }
 

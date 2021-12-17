@@ -3,7 +3,7 @@ const logger = require('../../../utils/logger')
 
 const bluePrintUsers = Joi.object({
     fullName: Joi.string().min(3).max(30).required(),
-    password: Joi.string().min(6).max(30).required(),
+    // password: Joi.string().min(6).max(30).required(),
     email: Joi.string().email().required(),
     phoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required()
 })
@@ -23,7 +23,7 @@ const validateUsers = ( req, res, next ) => {
 
 const bluePrintLoginRequest = Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string().required()
+    pin: Joi.string().required()
 }) 
 
 const validateLoginRequest = ( req, res, next ) => {
