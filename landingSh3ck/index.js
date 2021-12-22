@@ -65,7 +65,7 @@ if (config.environmentConfiguration === 'prod'){
 }
 
 app.get('/', (req,res)=> {
-    res.send('Sh3ck API System 0.1')
+    res.send('Sh3ck API System 0.2')
 })
 
 
