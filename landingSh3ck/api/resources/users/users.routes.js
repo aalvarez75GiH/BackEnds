@@ -3,12 +3,14 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
 
+const user = require('./users.model')
 const logger = require('../../../utils/logger')
 const emailSender = require('../../../utils/emailSender').emailSenderModule
 const jwtAuthorization = passport.authenticate('jwt', { session: false })
 const config = require('../../../config')
 const validateUsers = require('./users.validate').validateUsers
 const validateLoginRequest = require('./users.validate').validateLoginRequest
+const validateNewPINRequest = require('./users.validate').validateNewPINRequest
 const usersRouter = express.Router()
 const userController = require('./users.controller')
 const processingErrors = require('../../libs/errorHandler').processingErrors 
@@ -88,6 +90,34 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], pro
         res.status(400).send(`${foundUser.fullName}`)     
     }
 }))
+
+usersRouter.put('/newPIN', validateNewPINRequest,processingErrors(async(req,res) => {
+    const requesterUser = req.body
+    let foundUser
+    
+    foundUser  = await userController.findUserForPIN({ email: requesterUser.email})
+    if (!foundUser) {
+        logger.info(`User with email ${requesterUser.email} was not found at DB`)
+        res.status(400).send(`${requesterUser.email}`)
+        return
+    }
+    logger.info(foundUser)
+    const randomPIN = Math.floor(1000 + Math.random() * 9000)
+    const PIN = randomPIN.toString()
+    logger.info(PIN)
+    bcrypt.hash(PIN, 10, async(error, hashedPIN) => {
+        if (error){
+            logger.info(`Error trying hashing PIN...`)
+            throw new ErrorHashingData()
+        }
+        let updatedUser = await userController.updateUserPIN(foundUser.id, hashedPIN) 
+        logger.info(updatedUser)
+        emailSender('users', updatedUser.email, randomPIN)
+        res.status(200).send(foundUser.fullName)
+    })
+}))
+
+
 
 usersRouter.get('/me', jwtAuthorization, (req,res) => {
     let dataUser = req.user.fullName
