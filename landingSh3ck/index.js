@@ -56,7 +56,7 @@ mongoose.connect(url,connectionParams)
 
 app.use('/api/counters', countersRouter)
 app.use('/api/interestedUsers', intUsersRouter)
-app.use('/api/users', usersRouter)
+app.use('/api/users', usersRouter) 
 app.use(errorHandler.processingDBErrors)
 if (config.environmentConfiguration === 'prod'){
     app.use(errorHandler.productionErrors)   
