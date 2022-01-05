@@ -9,7 +9,7 @@ const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
 const config = require('./config')
 const errorHandler = require('./api/libs/errorHandler')
-// const path = require('path')
+
 
 const countersRouter = require('./api/resources/counters/counters.routes')
 const intUsersRouter = require('./api/resources/interestedUsers/interestedUsers.routes')
