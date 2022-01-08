@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index",
+    "client": "npm run start --prefix client",
+    "server": "nodemon index.js",
+    "dev": "NODE_ENV=dev nodemon index.js"
   },
   "keywords": [],
   "author": "",

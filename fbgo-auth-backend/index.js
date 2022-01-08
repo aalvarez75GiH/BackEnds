@@ -4,7 +4,7 @@ let  cookieSession = require('cookie-session')
 const passport = require('passport')
 
 const port = 5000
-const keys = require("./api/config/standard")
+const keys = require("./api/config/keys")
 const authRoute = require('./api/resources/authRoutes')
 const passportStrategies = require('./api/services/passport')
 

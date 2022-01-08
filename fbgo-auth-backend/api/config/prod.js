@@ -1,6 +1,6 @@
 module.exports = {
     googleClientID: '',
-    googleClientSecret: '',
+    googleClientSecret: '8iRiBWsBWEnYNLQZFgYt_Bnt',
     mongoURI: '',
     cookieKey: 'hhjhjhhkjhjh',
     FACEBOOK_APP_ID: '',

@@ -1,20 +1,20 @@
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
-const keys = require('../config/standard')
+const keys = require('../config/keys')
 const facebookUser = require('../models/facebookUsers')
 
 
 /* =================== Handeling Infinite run: Start ===================  */
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-  })
+
   
-  passport.deserializeUser((id, done) => {
-    User.findById(id).then(user => {
-      done(null, user);
-    });
-  })
+passport.serializeUser((user, done) => {
+    done(null, user)
+})
+
+passport.deserializeUser((user, done) => {
+    done(null, user)
+})
 
 //   For Google
 
@@ -24,6 +24,7 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
     console.log(profile)
+    done(null, profile)
 }))
 
 // For facebook
