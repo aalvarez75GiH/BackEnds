@@ -9,12 +9,13 @@ const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
 const config = require('./config')
 const errorHandler = require('./api/libs/errorHandler')
+const fbPassportSetup = require('./api/libs/facebookAuth')
 
 
 const countersRouter = require('./api/resources/counters/counters.routes')
 const intUsersRouter = require('./api/resources/interestedUsers/interestedUsers.routes')
 const usersRouter = require('./api/resources/users/users.routes')
-
+const extUsersRouter = require('./api/resources/externalUsers/extUsers.routes')
 const app = express()
 const port = process.env.PORT || 5000
 
@@ -46,6 +47,7 @@ mongoose.connect(url,connectionParams)
         console.error(`Error connecting to the database. \n${err}`);
     })
 
+// Local Mongo DB
 // mongoose.connect('mongodb://localhost:27017/sh3ch')
 // mongoose.connection.on('error', () => {
 //     logger.error('Connection with DB failed...')
@@ -57,6 +59,8 @@ mongoose.connect(url,connectionParams)
 app.use('/api/counters', countersRouter)
 app.use('/api/interestedUsers', intUsersRouter)
 app.use('/api/users', usersRouter) 
+app.use('/extUsersAuth', extUsersRouter)
+
 app.use(errorHandler.processingDBErrors)
 if (config.environmentConfiguration === 'prod'){
     app.use(errorHandler.productionErrors)   
