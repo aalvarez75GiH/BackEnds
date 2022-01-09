@@ -2,7 +2,7 @@ const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const keys = require('../config/keys')
-const facebookUser = require('../models/facebookUsers')
+const externalUser = require('../models/externalUsers')
 
 
 /* =================== Handeling Infinite run: Start ===================  */
@@ -15,6 +15,11 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
     done(null, user)
 })
+/* =================== Handeling Infinite run: End ===================  */
+
+
+
+/* =================== Passport Strategies ===================  */
 
 //   For Google
 
@@ -24,10 +29,29 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
     console.log(profile)
-    done(null, profile)
+
+    externalUser.findOne({ fbID: profile.id }).then(existingUser => {
+        if (existingUser) {
+          done(null, existingUser)
+        } else {
+          new externalUser({
+            typeUser: profile.provider,
+            fbID: 'not applicable',
+            goID: profile.id,
+            fullName: profile.displayName,
+            email: profile.emails[0].value,
+            phoneNumber: ''
+          })
+            .save()
+            .then(user => {
+              done(null, user)
+            })
+        }
+    })
 }))
 
-// For facebook
+
+// for Facebook
 passport.use(new FacebookStrategy({
     clientID: keys.FACEBOOK_APP_ID,
     clientSecret: keys.FACEBOOK_APP_SECRET,
@@ -35,20 +59,22 @@ passport.use(new FacebookStrategy({
 }, (accessToken, refreshToken, profile, done) => {
     console.log(profile)
     
-    facebookUser.findOne({ fbID: profile.id }).then(existingUser => {
+    externalUser.findOne({ fbID: profile.id }).then(existingUser => {
         if (existingUser) {
           done(null, existingUser)
         } else {
-          // new user case
-          // insert new user id
-          new facebookUser({
+          new externalUser({
+            typeUser: profile.provider,
             fbID: profile.id,
+            goID: 'not applicable',
             fullName: profile.displayName,
+            email: 'sh3ck@facebook.com',
+            phoneNUmber: ''
           })
             .save()
             .then(user => {
               done(null, user)
             })
         }
-      })
+    })
 }))
