@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 let  cookieSession = require('cookie-session')
 const passport = require('passport')
+const cors = require('cors')
 
 const port = 5000
 const keys = require("./api/config/keys")
@@ -9,7 +10,7 @@ const authRoute = require('./api/resources/authRoutes')
 const passportStrategies = require('./api/services/passport')
 
 const app = express()
-
+app.use(cors())
 // ===================== DB Connection
 const connectionParams={
     useNewUrlParser: true,

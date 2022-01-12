@@ -13,21 +13,37 @@ router.get("/", (req, res) => {
     })
 })
 
+// Obtaining current user
+
+router.get('/current_user', (req, res) => {
+  console.log('this is current user...')
+  console.log('this is the user: ', req.user)
+  res.send(req.user)
+})
+
+router.get('/logout', (req,res) => {
+  req.logout()
+  res.redirect('http://www.microsoft.com')
+})
+
 // Google Routes
 router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']})  )
 
 router.get('/google/callback', passport.authenticate('google'), (req, res) => {
-//   res.redirect('/profile')  
+console.log(req.user)  
 console.log('this is Google')
-res.redirect('http://developers.google.com')
+res.redirect('http://localhost:3000/profile')
 })
 
 // Google Routes
 router.get('/facebook', passport.authenticate('facebook', {scope: ['public_profile', 'email']}))
 
 router.get('/facebook/callback', passport.authenticate('facebook'), (req, res) => {
-  res.redirect('http://www.zdnet.com') 
-//   console.log('this is Facebook') 
+  console.log(req.user)
+  console.log('this is Facebook') 
+  res.redirect('http://localhost:3000/profile') 
 })
+
+
 
 module.exports = router
