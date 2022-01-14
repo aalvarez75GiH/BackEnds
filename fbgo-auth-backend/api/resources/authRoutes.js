@@ -17,8 +17,8 @@ router.get("/", (req, res) => {
 
 router.get('/current_user', (req, res) => {
   console.log('this is current user...')
-  console.log('this is the user: ', req.user)
-  res.send(req.user)
+  console.log('this is the request: ', req)
+  res.status(200).json(req.user)
 })
 
 router.get('/logout', (req,res) => {
@@ -29,8 +29,7 @@ router.get('/logout', (req,res) => {
 // Google Routes
 router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']})  )
 
-router.get('/google/callback', passport.authenticate('google'), (req, res) => {
-console.log(req.user)  
+router.get('/google/callback', passport.authenticate('google'), (req, res) => {  
 console.log('this is Google')
 res.redirect('http://localhost:3000/profile')
 })
@@ -39,7 +38,6 @@ res.redirect('http://localhost:3000/profile')
 router.get('/facebook', passport.authenticate('facebook', {scope: ['public_profile', 'email']}))
 
 router.get('/facebook/callback', passport.authenticate('facebook'), (req, res) => {
-  console.log(req.user)
   console.log('this is Facebook') 
   res.redirect('http://localhost:3000/profile') 
 })
