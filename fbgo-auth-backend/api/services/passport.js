@@ -9,11 +9,13 @@ const externalUser = require('../models/externalUsers')
 
   
 passport.serializeUser((user, done) => {
-    done(null, user)
+  done(null, user.id)
 })
 
-passport.deserializeUser((user, done) => {
+passport.deserializeUser((id, done) => {
+  externalUser.findById(id).then(user => {
     done(null, user)
+  })
 })
 /* =================== Handeling Infinite run: End ===================  */
 
@@ -30,8 +32,9 @@ passport.use(new GoogleStrategy({
 }, (accessToken, refreshToken, profile, done) => {
     console.log(profile)
 
-    externalUser.findOne({ fbID: profile.id }).then(existingUser => {
+    externalUser.findOne({ goID: profile.id }).then(existingUser => {
         if (existingUser) {
+          console.log('The google user exists...')
           done(null, existingUser)
         } else {
           new externalUser({

@@ -6,7 +6,7 @@ const cors = require('cors')
 
 const port = 5000
 const keys = require("./api/config/keys")
-const authRoute = require('./api/resources/authRoutes')
+// const authRoute = require('./api/resources/authRoutes')
 const passportStrategies = require('./api/services/passport')
 
 const app = express()
@@ -38,11 +38,13 @@ app.use(passport.session())
 
 
 // ================== server app intialization
-app.use('/auth', authRoute)
+require("./api/resources/authRoutes")(app)
 
 app.listen(port, ()=> {
     console.log("Server running at port: ", port)
 })
+
+
 
 
 
