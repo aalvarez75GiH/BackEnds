@@ -59,7 +59,7 @@ mongoose.connect(url,connectionParams)
 app.use('/api/counters', countersRouter)
 app.use('/api/interestedUsers', intUsersRouter)
 app.use('/api/users', usersRouter) 
-app.use('/extUsersAuth', extUsersRouter)
+app.use('/api/extUsers', extUsersRouter)
 
 app.use(errorHandler.processingDBErrors)
 if (config.environmentConfiguration === 'prod'){

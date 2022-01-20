@@ -1,55 +1,53 @@
 const express = require('express')
 const CLIENT_URL = "http://localhost:3000/"
 const passport = require('passport')
+const { OAuth2Client } = require('google-auth-library')
 const exUsersRouter = express.Router()
+const extUserController = require('./extUsers.controller')
+const logger = require('../../../utils/logger')
 
+REACT_APP_GOOGLE_CLIENT_ID = '257358209041-oje195aop7ppkokdlmdf33676hdl2dbk.apps.googleusercontent.com'
+const client = new OAuth2Client(REACT_APP_GOOGLE_CLIENT_ID)
 
-// router.get("/login/success", (req,res) => {
-//     if (req.user){
-//         res.status(200).json({
-//             success: true,
-//             message: "success",
-//             user: req.user,
-//         })
-//     }
-// })
+const users = []
 
-exUsersRouter.get("/login/failed", (req,res) => {
-    res.status(401).json({
-        success: false,
-        message: "failure",
-    })
-})
+const upsert = (array, item) => {
+    const i = array.findIndex((_item) => _item.email === item.email)
+    if (i > -1) array[i] = item
+    else array.push(item)
+}
 
-//facebook Auth 
-exUsersRouter.get('/facebook', passport.authenticate('facebook', { scope: ['public_profile','email']}));
+exUsersRouter.post('/google', async(req,res) => {
+  let foundUser
 
-// exUsersRouter.get('/facebook/callback', passport.authenticate('facebook', {
-//     successRedirect: CLIENT_URL,
-//     failureRedirect: "/login/failed"
-// }))
-
-// exUsersRouter.get('/facebook/callback',
-//   passport.authenticate('facebook', { failureRedirect: '/' }),
-//   function(req, res) {
-    // Successful authentication, redirect home.
-    // res.redirect('/');
-    // res.status(200).json({
-        // success: true,
-        // message: "success",
-        // user: req.user,
-    // })
-//})
-
-  exUsersRouter.get('/facebook/callback',
-  passport.authenticate('facebook', { 
-    failureRedirect: '/',
-    successRedirect: CLIENT_URL,
-}),
-  function(req, res) {    
-    res.status(200).json({
-        user: req.user,
-    })
+  const { token } = req.body
+  const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: REACT_APP_GOOGLE_CLIENT_ID,
   })
+
+  const newExtUser = {
+    fullName: ticket.getPayload().name,
+    email: ticket.getPayload().email,
+    goID: ticket.getPayload().sub,
+    typeUser:'Google',
+    phoneNumber:''
+  }
+
+  foundUser = await extUserController.findUser(newExtUser.email)
+    if (foundUser){
+      logger.info(`User with email ${newExtUser.email} already registered...`)
+      res.status(409).send(`${newExtUser.fullName}`)
+      return
+    }
+
+    console.log(ticket.getPayload().name)
+    await extUserController.createExtUser(newExtUser)
+    logger.info(`User with email [${newExtUser.email}] has been created...`)
+    // upsert(users, { name, email, picture })
+    res.status(201).json(newExtUser)
+})  
+
+
   
 module.exports = exUsersRouter
