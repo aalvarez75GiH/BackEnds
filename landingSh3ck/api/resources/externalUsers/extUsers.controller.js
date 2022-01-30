@@ -1,6 +1,11 @@
 const logger = require('../../../utils/logger')
 const extUser = require('./extUsers.model')
 
+
+const getExtUsers = () => {
+    return extUser.find({})
+}
+
 const findUser = (email) => {
     console.log('findUser:', email )
     return new Promise((resolve,reject) => {
@@ -23,5 +28,6 @@ const createExtUser = (newExtUser) => {
 
 module.exports = {
     findUser,
-    createExtUser
+    createExtUser,
+    getExtUsers
 }

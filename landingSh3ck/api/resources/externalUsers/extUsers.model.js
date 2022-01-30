@@ -21,6 +21,10 @@ const externalUser = mongoose.model('externalUsers', new Schema({
         type: String,
         required: [true, 'Failed email extraction from source api']
     },
+    picture: {
+        type: String,
+        required: [true, 'Failed picture url extraction from source api']
+    },
     phoneNumber: {
         type: String,
         match: /^[0-9]+$/
