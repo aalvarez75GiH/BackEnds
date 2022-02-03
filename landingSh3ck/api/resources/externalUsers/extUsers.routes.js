@@ -5,7 +5,8 @@ const extUsersRouter = express.Router()
 const extUserController = require('./extUsers.controller')
 const logger = require('../../../utils/logger')
 
-REACT_APP_GOOGLE_CLIENT_ID = '257358209041-oje195aop7ppkokdlmdf33676hdl2dbk.apps.googleusercontent.com'
+// REACT_APP_GOOGLE_CLIENT_ID = '257358209041-oje195aop7ppkokdlmdf33676hdl2dbk.apps.googleusercontent.com'
+REACT_APP_GOOGLE_CLIENT_ID = '915460618193-dcl1a1f3en6f3h22evu9jqk2aqdh1lcj.apps.googleusercontent.com'
 const client = new OAuth2Client(REACT_APP_GOOGLE_CLIENT_ID)
 
 extUsersRouter.get('/', (req,res) => {
