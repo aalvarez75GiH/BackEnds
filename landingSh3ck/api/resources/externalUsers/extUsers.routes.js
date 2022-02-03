@@ -37,7 +37,8 @@ extUsersRouter.post('/google', async(req,res) => {
   foundUser = await extUserController.findUser(newExtUser.email)
     if (foundUser){
       logger.info(`User with email ${newExtUser.email} already registered...`)
-      res.status(409).send(`${newExtUser.fullName}`)
+      // res.status(409).send(`${newExtUser.fullName}`)
+      res.status(409).send(newExtUser)
       return
     }
 
