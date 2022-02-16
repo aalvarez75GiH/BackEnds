@@ -62,12 +62,14 @@ usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingError
 usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], processingErrors(async(req,res) => {
     const notAuthUser = req.body
     let foundUser
+    console.log(notAuthUser)
 
     foundUser = await userController.findUserForLogin({ email: notAuthUser.email })    
     
     if (!foundUser){
         logger.info(`User with email ${notAuthUser.email} was not found at DB`)
-        res.status(400).send(`${notAuthUser.email}`)
+        res.status(400).send(`Amig@`)
+        // res.status(400).send(`${notAuthUser.email}`)
         return
     }
 
