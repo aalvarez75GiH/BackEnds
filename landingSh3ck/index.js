@@ -33,7 +33,8 @@ app.use(passport.initialize())
 
 // *********** Data Base configuration ******************
 
-const url = `mongodb+srv://sh3ckAdmin:Nm74sc84Cs97lc.@cluster0.ztfck.mongodb.net/landingSh3ckDB?retryWrites=true&w=majority`;
+
+const url = `mongodb+srv://sh3ckAdmin:Nm74sc84Cs97lc.@cluster0.ztfck.mongodb.net/sh3ckDB?retryWrites=true&w=majority`
 
 const connectionParams={
     useNewUrlParser: true,
