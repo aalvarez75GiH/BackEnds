@@ -2,11 +2,11 @@ const express = require('express')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
+const jwtAuthorization = passport.authenticate('jwt', { session: false })
 
-const user = require('./users.model')
+
 const logger = require('../../../utils/logger')
 const emailSender = require('../../../utils/emailSender').emailSenderModule
-const jwtAuthorization = passport.authenticate('jwt', { session: false })
 const config = require('../../../config')
 const validateUsers = require('./users.validate').validateUsers
 const validateLoginRequest = require('./users.validate').validateLoginRequest
@@ -15,7 +15,7 @@ const usersRouter = express.Router()
 const userController = require('./users.controller')
 const processingErrors = require('../../libs/errorHandler').processingErrors 
 const { ErrorHashingData } = require('./users.errors')
-
+ 
 
 const transformBodyToLowerCase = (req, res, next) => {
     req.body.fullName && (req.body.fullName = req.body.fullName.toLowerCase())
@@ -93,7 +93,7 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], pro
     }
 }))
 
-usersRouter.put('/newPIN', validateNewPINRequest,processingErrors(async(req,res) => {
+usersRouter.put('/newPIN', validateNewPINRequest, processingErrors(async(req,res) => {
     const requesterUser = req.body
     let foundUser
     
@@ -123,7 +123,10 @@ usersRouter.put('/newPIN', validateNewPINRequest,processingErrors(async(req,res)
 
 usersRouter.get('/me', jwtAuthorization, (req,res) => {
     let dataUser = req.user.fullName
-    logger.info(dataUser)
+    let role = req.user.role
+    logger.info(`dataUser: ${dataUser}`)
+    logger.info(`rol: ${role}`)
+
     res.send(dataUser)
 })
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const user = mongoose.model('user', new Schema({
+const adminUser = mongoose.model('adminUser', new Schema({
     fullName: {
         type: String,
         min: 3,
@@ -18,13 +18,18 @@ const user = mongoose.model('user', new Schema({
         match: /^[0-9]+$/,
         required: [true, 'You must enter a Phone Number']
 
-    }, 
-    // password: {
-    //     type: String,
-    //     min: 3,
-    //     max: 200,
-    //     required: [true, 'Please enter a Password']
-    // },
+    },
+    address: {
+        type: String,
+        length: 300,
+        required: [true, 'You must enter an address']
+
+    },
+    ID: {
+        type: String,
+        match: /^[0-9]+$/,
+        required: [true, 'You must enter an ID number']
+    },
     pin: {
         type: String,
         min: 4,
@@ -33,9 +38,9 @@ const user = mongoose.model('user', new Schema({
     },
     role: {
         type: String,
-        required: [true, 'Please enter a role']
+        required: [true, 'You must enter a role for this type of user']
     }
 
 }))
 
-module.exports = user
+module.exports = adminUser

@@ -7,6 +7,8 @@ const mongoose = require('mongoose')
 
 const logger = require('./utils/logger')
 const authJWT = require('./api/libs/auth')
+// const usersAuth = require('./api/libs/auth').usersAuth
+// const adminUsersAuth = require('./api/libs/auth').adminUsersAuth
 const config = require('./config')
 const errorHandler = require('./api/libs/errorHandler')
 const fbPassportSetup = require('./api/libs/facebookAuth')
@@ -16,6 +18,8 @@ const countersRouter = require('./api/resources/counters/counters.routes')
 const intUsersRouter = require('./api/resources/interestedUsers/interestedUsers.routes')
 const usersRouter = require('./api/resources/users/users.routes')
 const extUsersRouter = require('./api/resources/externalUsers/extUsers.routes')
+const citiesRouter = require('./api/resources/checkApp/city/city.routes')
+const adminUsersRouter = require('./api/resources/checkApp/adminUsers/adminUsers.routes')
 const app = express()
 const port = process.env.PORT || 5000
 
@@ -29,6 +33,7 @@ app.use(morgan('short', {
 }))
 
 passport.use(authJWT)
+// passport.use(adminUsersAuth)
 app.use(passport.initialize())
 
 // *********** Data Base configuration ******************
@@ -61,6 +66,8 @@ app.use('/api/counters', countersRouter)
 app.use('/api/interestedUsers', intUsersRouter)
 app.use('/api/users', usersRouter) 
 app.use('/api/extUsers', extUsersRouter)
+app.use('/api/cities', citiesRouter)
+app.use('/api/admin', adminUsersRouter)
 
 app.use(errorHandler.processingDBErrors)
 if (config.environmentConfiguration === 'prod'){

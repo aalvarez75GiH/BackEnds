@@ -34,6 +34,36 @@ const findUserForPIN = ({
     throw new Error ('Get user function from controller was called without specifying id or email')
 }
 
+
+
+const createUser = (newUser, hashedPIN) => {
+    return new user({
+        ...newUser,
+        pin: hashedPIN,
+        role: 'user'
+    }).save()      
+}
+
+const updateUserPIN = (id, hashedPIN) => {
+    return user.findOneAndUpdate({
+        _id: id
+    },{
+        pin: hashedPIN
+    },{
+        new: true
+    })
+}
+
+
+module.exports = {
+    getUsers,
+    findUser,
+    findUserForLogin,
+    createUser,
+    findUserForPIN,
+    updateUserPIN
+}
+
 // *************** with Promise
 // const findUserForLogin = ({ email, id}) => {
 //     return new Promise((resolve, reject) => {
@@ -59,40 +89,3 @@ const findUserForPIN = ({
 //         }
 //     })
 // }
-
-
-
-
-// const createUser = (newUser, hashedPassword, rawPIN) => {
-//     return new user({
-//         ...newUser,
-//         password: hashedPassword,
-//         pin: rawPIN
-//     }).save()      
-// }
-const createUser = (newUser, hashedPIN) => {
-    return new user({
-        ...newUser,
-        pin: hashedPIN
-    }).save()      
-}
-
-const updateUserPIN = (id, hashedPIN) => {
-    return user.findOneAndUpdate({
-        _id: id
-    },{
-        pin: hashedPIN
-    },{
-        new: true
-    })
-}
-
-
-module.exports = {
-    getUsers,
-    findUser,
-    findUserForLogin,
-    createUser,
-    findUserForPIN,
-    updateUserPIN
-}
