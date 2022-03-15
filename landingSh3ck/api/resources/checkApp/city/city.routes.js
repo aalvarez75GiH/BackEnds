@@ -30,7 +30,7 @@ const validarID = (req, res, next) => {
 }
 
 
-cityRouter.get('/', jwtAuthorization, processingErrors((req,res)=> {
+cityRouter.get('/', processingErrors((req,res)=> {
     let user = req.user.fullName
     let role = req.user.role
     return cityController.getCities()
