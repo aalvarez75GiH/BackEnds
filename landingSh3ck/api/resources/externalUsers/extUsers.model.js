@@ -28,6 +28,9 @@ const externalUser = mongoose.model('externalUsers', new Schema({
     phoneNumber: {
         type: String,
         match: /^[0-9]+$/
+    },
+    role:{
+        type: String
     } 
 }))
 

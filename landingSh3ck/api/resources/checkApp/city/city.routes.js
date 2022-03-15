@@ -35,11 +35,11 @@ cityRouter.get('/', processingErrors((req,res)=> {
     let role = req.user.role
     return cityController.getCities()
     .then(cities => {
-        if (role === 'user' || role === 'admin') {
+        // if (role === 'user' || role === 'admin' || role === 'google_user') {
             res.status(200).json(cities)
             logger.info(`Citie were found at DB and have been sent to requester`)
             return
-        }
+        // }
     })
 }))
 

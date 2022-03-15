@@ -31,7 +31,8 @@ extUsersRouter.post('/google', async(req,res) => {
     goID: ticket.getPayload().sub,
     typeUser:'Google',
     picture: ticket.getPayload().picture,
-    phoneNumber:''
+    phoneNumber:'', 
+    role: 'google_user'
   }
 
   foundUser = await extUserController.findUser(newExtUser.email)
