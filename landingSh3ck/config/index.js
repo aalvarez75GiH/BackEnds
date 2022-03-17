@@ -1,7 +1,3 @@
-// ****** new aws keys (March 2022) ********
-// Access Key ID: AKIA6J62GRX5VK7LBMMD
-// Secret Access Key: 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
-// *****************************************
 
 const environment = process.env.NODE_ENV || 'development'
 const baseConfiguration = {
@@ -9,7 +5,7 @@ const baseConfiguration = {
     port:5000,
     environment,
     s3:{
-        
+       
     },
     s3BucketName: 'sh3ck-s3-bucket',
     bucketPath: 'images'
