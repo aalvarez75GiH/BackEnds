@@ -18,6 +18,14 @@ exports.processingDBErrors = (err, req, res, next) => {
     next(err)
 }
 
+exports.processingBodySizeErrors = (error, req, res, next) => {
+    if (error.status === 413){
+        logger.error(`Request sent to route [${req.path}] has exceeded limit size. Request wont be processed`)
+        error.message = `Request sent to route [${req.path}] has exceeded limit size. Request wont be processed`
+    }
+    next(error)
+}
+
 exports.productionErrors = (err, req, res, next) => {
  res.status(err.status || 500)
  res.send({
