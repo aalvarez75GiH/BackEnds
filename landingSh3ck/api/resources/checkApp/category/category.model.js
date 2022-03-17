@@ -19,5 +19,3 @@ const category = mongoose.model('category', new Schema({
         type: String
     }
 }))
-
-module.exports = category
