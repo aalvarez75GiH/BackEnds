@@ -2,7 +2,7 @@ const Joi = require('@hapi/joi')
 const logger = require('../../../../utils/logger')
 const fileType = require('file-type')
 // import {fileTypeFromFile} from 'file-type'
-const CONTENT_TYPES_ALLOWED = [ 'image/jpeg', 'image/jpg', 'image/png']
+const CONTENT_TYPES_ALLOWED = [ 'image/jpeg', 'image/jpg', 'image/png', 'image/gif']
 
 const bluePrintCategory = Joi.object({
     name: Joi.string().min(3).max(50).required(),

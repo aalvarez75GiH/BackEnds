@@ -1,4 +1,3 @@
-const { string } = require('@hapi/joi')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
@@ -19,3 +18,5 @@ const category = mongoose.model('category', new Schema({
         type: String
     }
 }))
+
+module.exports = category

@@ -21,6 +21,7 @@ const extUsersRouter = require('./api/resources/externalUsers/extUsers.routes')
 const citiesRouter = require('./api/resources/checkApp/city/city.routes')
 const categoriesRouter = require('./api/resources/checkApp/category/category.routes')
 const adminUsersRouter = require('./api/resources/checkApp/adminUsers/adminUsers.routes')
+const serviceTimeRouter = require('./api/resources/checkApp/serviceTimes/serviceTime.routes')
 const app = express()
 const port = process.env.PORT || 5000
 
@@ -71,6 +72,7 @@ app.use('/api/extUsers', extUsersRouter)
 app.use('/api/cities', citiesRouter)
 app.use('/api/admin', adminUsersRouter)
 app.use('/api/category', categoriesRouter)
+app.use('/api/times', serviceTimeRouter)
 
 app.use(errorHandler.processingDBErrors)
 app.use(errorHandler.processingBodySizeErrors)
