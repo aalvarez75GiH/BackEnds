@@ -8,7 +8,7 @@ const logger = require('../../../../utils/logger')
 const processingErrors = require('../../../libs/errorHandler').processingErrors 
 const validateCategory = require('./category.validate').validateCategory
 const validateCategoryImage = require('./category.validate').validateCategoryImage
-const { saveImage } = require('../../../../aws/images.controller')
+const { saveCategoryImage } = require('../../../../aws/images.controller')
 const categoryRouter = express.Router()
 
 const validarID = (req, res, next) => {
@@ -135,7 +135,7 @@ categoryRouter.put('/:id/images', [jwtAuthorization, validateCategoryImage], pro
     
     const randomizedName = `${uuidv4()}.${req.fileExtension}`
     logger.info(randomizedName)
-    const imageURL = await saveImage(req.body, randomizedName)
+    const imageURL = await saveCategoryImage(req.body, randomizedName) //Amazon s3 process
     logger.info(`imageURL: ${imageURL}`)
     const categoryUpdated = await categoryController.saveImageUrl(id, imageURL)
     logger.info(`Category with ID [${id}] was updated with new image link [${imageURL}]
