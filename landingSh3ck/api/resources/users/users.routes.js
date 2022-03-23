@@ -121,13 +121,27 @@ usersRouter.put('/newPIN', validateNewPINRequest, processingErrors(async(req,res
 
 
 
-usersRouter.get('/me', jwtAuthorization, (req,res) => {
-    let dataUser = req.user.fullName
-    let role = req.user.role
-    logger.info(`dataUser: ${dataUser}`)
-    logger.info(`rol: ${role}`)
+// usersRouter.get('/me', jwtAuthorization, (req,res) => {
+//     let dataUser = req.user.fullName
+//     let role = req.user.role
+//     logger.info(`dataUser: ${dataUser}`)
+//     logger.info(`rol: ${role}`)
 
-    res.send(dataUser)
+//     res.send(dataUser)
+// })
+
+usersRouter.get('/me', jwtAuthorization, (req,res) => {
+    let dataUser = {
+        name: req.user.fullName,
+        email: req.user.email,
+        phoneNumber: req.user.phoneNumber,
+        role: req.user.role
+    }
+    
+    logger.info(`dataUser: ${dataUser.name}`)
+    logger.info(`rol: ${dataUser.role}`)
+
+    res.json(dataUser)
 })
 
 module.exports = usersRouter

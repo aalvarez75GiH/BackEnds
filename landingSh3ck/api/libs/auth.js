@@ -36,6 +36,7 @@ module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
         next(null, {
             fullName: foundUser.fullName,
             email: foundUser.email,
+            phoneNumber: foundUser.phoneNumber,
             role: foundUser.role
         })            
     })
