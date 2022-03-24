@@ -22,7 +22,7 @@ const findAdminUserForLogin = ({
 }) => {
     if (email) return adminUser.findOne({ email: email })
     if (id) return adminUser.findOne({ _id: id })
-    throw new Error ('Get user function from controller was called without specifying id or email')
+    throw new Error ('Get admin function from controller was called without specifying id or email')
 }
 
 const createAdminUser = (newUser, hashedPIN) => {

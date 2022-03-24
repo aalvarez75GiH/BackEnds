@@ -5,11 +5,12 @@ const baseConfiguration = {
     port:5000,
     environment,
     s3:{
-       
+
     },
     s3BucketName: 'sh3ck-s3-bucket',
     bucketPath: 'images',
-    categoryPath: 'category'
+    categoryPath: 'category',
+    checkersPath: 'checkers'
 
 }
 

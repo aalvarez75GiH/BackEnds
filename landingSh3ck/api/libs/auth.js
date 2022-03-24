@@ -3,32 +3,44 @@ const passportJWT = require('passport-jwt')
 const config = require('../../config')
 const usersController = require('../resources/users/users.controller')
 const adminUsersController = require('../resources/checkApp/adminUsers/adminUsers.controller')
-
+const checkersController = require('../resources/checkApp/checkers/checkers.controller')
 
 const jwtOptions = {
     secretOrKey: config.jwt.secret,
     jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderAsBearerToken()
 }
-
-
 module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
     logger.info('jwtPayload:', jwtPayload)
     usersController.findUserForLogin({ id: jwtPayload.id})
     .then( foundUser => {
         if(!foundUser){
             adminUsersController.findAdminUserForLogin({ id: jwtPayload.id})
-            .then( found => {
-                if(!found){
-                    // logger.warn(`JWT not valid. User with id ${ jwtPayload.id } couldn't be found...`)
-                    logger.warn(`JWT not valid. Token couldn't be found...`)
-                    next(null, false)
-                    return
+            .then( foundAdmin => {
+                if(!foundAdmin){
+                    checkersController.findCheckerForLogin({id: jwtPayload.id })
+                    .then(foundChecker => {
+                        if(!foundChecker){
+                            // logger.warn(`JWT not valid. User with id ${ jwtPayload.id } couldn't be found...`)
+                            logger.warn(`JWT not valid. Token couldn't be found...`)
+                            next(null, false)
+                            return
+                        }
+                        next(null, {
+                            fullName: foundChecker.fullName,
+                            role: foundChecker.role,
+                            id: JSON.stringify(foundChecker._id)    
+                        })
+                    }).catch(error => {
+                        logger.error(error)
+                        next(error, false)                
+                    })
+                }else{
+                    next(null, {
+                        fullName: foundAdmin.fullName,
+                        role: foundAdmin.role    
+                    }) 
                 }
-                // logger.info('its here tho:', found.fullName)
-                next(null, {
-                    fullName: found.fullName,
-                    role: found.role    
-                }) 
+                
             }) 
             return
         }
@@ -46,22 +58,44 @@ module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
     })
 })
 
-
-
-// const adminUsersAuth = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
+// module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
 //     logger.info('jwtPayload:', jwtPayload)
-//     adminUsersController.findAdminUserForLogin({ id: jwtPayload.id})
+//     usersController.findUserForLogin({ id: jwtPayload.id})
 //     .then( foundUser => {
 //         if(!foundUser){
-//             logger.warn(`JWT not valid. User with id ${ jwtPayload.id } couldn't be found...`)
-//             next(null, false)    
+//             adminUsersController.findAdminUserForLogin({ id: jwtPayload.id})
+//             .then( foundAdmin => {
+//                 if(!foundAdmin){
+//                     checkersController.findCheckerForLogin({id: jwtPayload.id })
+//                     .then(foundChecker => {
+//                         if(!foundChecker){
+//                             // logger.warn(`JWT not valid. User with id ${ jwtPayload.id } couldn't be found...`)
+//                             logger.warn(`JWT not valid. Token couldn't be found...`)
+//                             next(null, false)
+//                             return
+//                         }
+//                         next(null, {
+//                             fullName: foundChecker.fullName,
+//                             role: foundChecker.role,
+//                             id: JSON.stringify(foundChecker._id)    
+//                         })
+//                         return
+//                     })
+                    
+//                 }
+//                 // logger.info('its here tho:', found.fullName)
+//                 next(null, {
+//                     fullName: foundAdmin.fullName,
+//                     role: foundAdmin.role    
+//                 }) 
+//             }) 
 //             return
 //         }
-//         logger.info(`User ${ foundUser.email } has provided a valid admin token`)
-//         //next(null, 'hello')
+//         logger.info(`User ${ foundUser.email } has provided a valid token `)
 //         next(null, {
 //             fullName: foundUser.fullName,
 //             email: foundUser.email,
+//             phoneNumber: foundUser.phoneNumber,
 //             role: foundUser.role
 //         })            
 //     })
@@ -71,8 +105,8 @@ module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
 //     })
 // })
 
-// module.exports = usersAuth
-    // adminUsersAuth
+
+
 
 
 
