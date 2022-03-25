@@ -39,9 +39,17 @@ const checker = mongoose.model('checker', new Schema({
         type: Boolean,
         required: [true, 'Please enter if checkbackground was confirmed']
     },
+    city_name:{
+        type: String,
+        required: [true, 'Please enter City name where checker will work']
+    },
     cityToCheck:{
         type: String,
         required: [true, 'Please enter _id of City where checker will work']
+    },
+    category_name: {
+        type: String,
+        required: [true, 'Please enter category name hecker will check']
     },
     categoryToCheck:{
         type: String,

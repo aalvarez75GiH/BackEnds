@@ -8,6 +8,10 @@ const serviceTime = mongoose.model('service time', new Schema({
         max: 10,
         required: [true, 'Service Time must be entered']
     },
+    base: {
+        type: Number,
+        required: [true, 'Service time must have a service price base']
+    },
     description: {
         type: String,
         min: 1,

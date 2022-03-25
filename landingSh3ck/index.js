@@ -28,7 +28,7 @@ const port = process.env.PORT || 5000
 
 
 app.use(bodyParser.json())
-app.use(bodyParser.raw({ type: 'image/*', limit: '1mb'  }))
+app.use(bodyParser.raw({ type: 'image/*', limit: '3mb'  }))
 app.use(cors())
 app.use(morgan('short', {
     stream: {

@@ -11,7 +11,9 @@ const bluePrintCheckers = Joi.object({
     address: Joi.string().min(3).max(300).required(),
     picture: Joi.string(),
     backgroundCheck: Joi.boolean().required(),
+    city_name: Joi.string().min(3).max(100).required(),
     cityToCheck: Joi.string().required(),
+    category_name: Joi.string().min(3).max(100).required(),
     categoryToCheck: Joi.string().required(),
     serviceTime: Joi.string().required(),
     rating: Joi.number().max(5).required()
