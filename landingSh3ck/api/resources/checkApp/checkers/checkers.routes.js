@@ -46,11 +46,22 @@ checkersRouter.get('/:id', processingErrors(async(req,res)=> {
         res.json(foundChecker)
     })
 }))
-checkersRouter.get('/:id/searches', processingErrors(async(req,res)=> {
-    let categoryId = req.body.categoryId
-    let cityId = req.params.id
-    let serviceTimeId = req.body.serviceTimeId
-    logger.info(categoryId)
+// checkersRouter.get('/:id/searches', processingErrors(async(req,res)=> {
+//     // let categoryId = req.body.categoryId
+//     let cityId = req.params.id
+//     // let serviceTimeId = req.body.serviceTimeId
+//     // logger.info(categoryId)
+//     logger.info(cityId)
+//     // const categoryId = req.body.categoryId
+//     return checkersController.findCheckerByCity(cityId)
+//     .then(checkers => {
+//         res.json(checkers)
+//     })
+// }))
+
+// filtering just by city 
+checkersRouter.get('/:cityId/cities', processingErrors(async(req,res)=> {
+    let cityId = req.params.cityId
     logger.info(cityId)
     // const categoryId = req.body.categoryId
     return checkersController.findCheckerByCity(cityId)
@@ -58,18 +69,58 @@ checkersRouter.get('/:id/searches', processingErrors(async(req,res)=> {
         res.json(checkers)
     })
 }))
-// checkersRouter.get('/searches', processingErrors(async(req,res)=> {
-//     let categoryId = req.body.categoryId
-//     let cityId = req.body.categoryId
-    
-//     logger.info(categoryId)
-//     logger.info(cityId)
-//     // const categoryId = req.body.categoryId
-//     return checkersController.findCheckerByEveryThing(cityId, categoryId)
-//     .then(checkers => {
-//         res.json(checkers)
-//     })
-// }))
+
+// filtering just by category 
+checkersRouter.get('/:categoryId/categories', processingErrors(async(req,res)=> {
+    let categoryId = req.params.categoryId
+    logger.info(categoryId)
+    // const categoryId = req.body.categoryId
+    return checkersController.findCheckerByCategory(categoryId)
+    .then(checkers => {
+        res.json(checkers)
+    })
+}))
+
+// filtering just by service time 
+checkersRouter.get('/:service_time_id/servicetimes', processingErrors(async(req,res)=> {
+    let service_time_id = req.params.service_time_id
+    logger.info(service_time_id)
+    // const categoryId = req.body.categoryId
+    return checkersController.findCheckerByServiceTime(service_time_id)
+    .then(checkers => {
+        res.json(checkers)
+    })
+}))
+// filtering by city and category
+checkersRouter.get('/:cityId/:categoryId/cityandcategory', processingErrors(async(req,res)=> {
+    let cityId = req.params.cityId
+    let categoryId = req.params.categoryId
+    // let categoryId = req.body.categoryId
+    logger.info(cityId)
+    logger.info(categoryId)
+    // const categoryId = req.body.categoryId
+    return checkersController.findCheckerByCityAndCategory(cityId, categoryId)
+    .then(checkers => {
+        res.json(checkers)
+    })
+}))
+
+// filtering by city, category and Service time
+checkersRouter.get('/:cityId/:categoryId/:serviceTimeId/searches', processingErrors(async(req,res)=> {
+    let cityId = req.params.cityId
+    let categoryId = req.params.categoryId
+    let serviceTimeId = req.params.serviceTimeId
+    // let categoryId = req.body.categoryId
+    logger.info(cityId)
+    logger.info(categoryId)
+    logger.info(serviceTimeId)
+    // const categoryId = req.body.categoryId
+    return checkersController.findCheckerByEveryThing(cityId, categoryId, serviceTimeId)
+    .then(checkers => {
+        res.json(checkers)
+    })
+}))
+
 
 checkersRouter.post('/', [validateCheckers, transformBodyToLowerCase], processingErrors(async(req, res)=>{
     let newChecker = req.body

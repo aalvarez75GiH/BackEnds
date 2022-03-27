@@ -34,14 +34,75 @@ const findCheckerByCity = (cityId) => {
         cityToCheck: cityId
     })
 }
-// const findCheckerByEveryThing = (cityId, categoryId, serviceTimeId) => {
-//     return checker.find({
-//         cityToCheck: cityId,
-//         categoryToCheck: categoryId,
-//         serviceTime: serviceTimeId
 
-//     })
-// }
+const findCheckerByCategory = (categoryId) => {
+    logger.info(categoryId) 
+    return checker.find({
+        // cityId: cityId,
+        category:  
+        {$elemMatch:
+            {
+                categoryToCheck: categoryId 
+            }
+        }      
+    })
+}
+
+const findCheckerByServiceTime = (serviceTimeId) => {
+    logger.info(serviceTimeId) 
+    return checker.find({
+        // cityId: cityId,
+        service_time:  
+        {$elemMatch:
+            {
+                service_time_id: serviceTimeId 
+            }
+        }      
+    })
+}
+
+const findCheckerByCityAndCategory = (cityId, categoryId) => {
+    logger.info(cityId)
+    logger.info(categoryId) 
+    return checker.find({
+        // cityId: cityId,
+        cityToCheck: cityId,
+        category:    {
+            $elemMatch: {
+                categoryToCheck: categoryId, 
+            }
+        }
+    })
+}
+
+const findCheckerByEveryThing = (cityId, categoryId, serviceTimeId) => {
+    logger.info(cityId)
+    logger.info(categoryId) 
+    logger.info(serviceTimeId)
+    return checker.find({
+        // cityId: cityId,
+        cityToCheck: cityId,
+        category:    {
+            $elemMatch: {
+                categoryToCheck: categoryId, 
+            }
+        },
+        service_time:  {
+            $elemMatch: {
+                service_time_id: serviceTimeId 
+            }
+        }
+    })
+}
+// .find(
+//     {
+//         EmployeeDetails: {
+//             $elemMatch:{ 
+//                 EmployeePerformanceArea : "C++", 
+//                 Year : 1998
+//             }
+//         }
+//     }).pretty();
 const createChecker = (newChecker, hashedPIN) => {
     return new checker({
         ...newChecker,
@@ -89,9 +150,12 @@ module.exports = {
     findChecker,
     createChecker,
     findCheckerByCity,
+    findCheckerByCategory,
+    findCheckerByServiceTime,
+    findCheckerByCityAndCategory,
+    findCheckerByEveryThing,
     editChecker,
     deleteChecker,
     savePictureUrl,
     findCheckerForLogin,
-    // findCheckerByEveryThing
 }

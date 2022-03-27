@@ -13,10 +13,30 @@ const bluePrintCheckers = Joi.object({
     backgroundCheck: Joi.boolean().required(),
     city_name: Joi.string().min(3).max(100).required(),
     cityToCheck: Joi.string().required(),
-    category_name: Joi.string().min(3).max(100).required(),
-    categoryToCheck: Joi.string().required(),
-    serviceTime: Joi.string().required(),
+    category: Joi.array().items({
+        category_name: Joi.string().min(3).max(50).required(),
+        categoryToCheck: Joi.string().required(),
+    }),
+    service_time: Joi.array().items({
+        service_time_caption: Joi.string().min(1).max(10).required(),
+        service_time_id: Joi.string().required()
+
+    }),
     rating: Joi.number().max(5).required()
+
+    // fullName: Joi.string().min(3).max(100).required(),
+    // email: Joi.string().email().required(),
+    // phoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required(),
+    // identification: Joi.string().min(3).max(10).required(),
+    // address: Joi.string().min(3).max(300).required(),
+    // picture: Joi.string(),
+    // backgroundCheck: Joi.boolean().required(),
+    // city_name: Joi.string().min(3).max(100).required(),
+    // cityToCheck: Joi.string().required(),
+    // category_name: Joi.string().min(3).max(100).required(),
+    // categoryToCheck: Joi.string().required(),
+    // serviceTime: Joi.string().required(),
+    // rating: Joi.number().max(5).required()
 
 })
 
