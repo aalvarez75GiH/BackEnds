@@ -75,9 +75,9 @@ app.use('/api/admin', adminUsersRouter)
 app.use('/api/category', categoriesRouter)
 app.use('/api/times', serviceTimeRouter)
 app.use('/api/checkers', checkersRouter)
+app.use('/api/checkTypes', checkTypesRouter)
 app.use(errorHandler.processingDBErrors)
 app.use(errorHandler.processingBodySizeErrors)
-app.use('/api/checkTypes', checkTypesRouter)
 
 
 if (config.environmentConfiguration === 'prod'){

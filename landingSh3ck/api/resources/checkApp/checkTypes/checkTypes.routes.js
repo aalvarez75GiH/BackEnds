@@ -11,11 +11,13 @@ const CTRouter = express.Router()
 
 CTRouter.get('/', processingErrors(async(req,res) => {
     return await checkTypesController.getCheckTypes()
-    .then((CheckTypes) => {
-        logger.info(CheckTypes)
-        res.status(200).json(CheckTypes)
+    .then((checkTypes) => {
+        logger.info(checkTypes)
+        res.status(200).json(checkTypes) 
+        return
     }) 
 }))
+
 
 CTRouter.get('/:id', processingErrors(async(req,res) => {
     let id = req.params.id
@@ -23,6 +25,7 @@ CTRouter.get('/:id', processingErrors(async(req,res) => {
     .then((checkType) => {
         logger.info(checkType)
         res.status(200).json(checkType)
+        return 
     }) 
 }))
 
@@ -61,7 +64,7 @@ CTRouter.put('/:id', [validateCheckTypes, jwtAuthorization], processingErrors(as
     logger.info(`CheckTypeTime caption: ${newCheckType.caption}`)
     logger.info(`newCheckType: ${newCheckType}`)
     let foundCheckType
-    foundCheckType = await checkTypesController.findCheckTypeByCaption(newCheckType.caption)
+    foundCheckType = await checkTypesController.getOneCheckTypeById(id)
     if (!foundCheckType){
         logger.info(`foundCheckType: ${foundCheckType}`)
         res.status(409).send(`Check Tipe:${foundCheckType} does NOT exists at DB...`)
