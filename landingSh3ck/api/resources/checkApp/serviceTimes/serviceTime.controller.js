@@ -25,6 +25,7 @@ const editServiceTime = (id, newServiceTime) => {
     return serviceTime.findOneAndUpdate({_id: id}, {
         ...newServiceTime,
         caption: newServiceTime.caption,
+        base: newServiceTime.base,
         description: newServiceTime.description
     },{
         new: true //This option is in order to return the new document modified

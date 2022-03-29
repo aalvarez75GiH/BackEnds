@@ -14,7 +14,6 @@ const errorHandler = require('./api/libs/errorHandler')
 const fbPassportSetup = require('./api/libs/facebookAuth')
 
 
-const countersRouter = require('./api/resources/counters/counters.routes')
 const intUsersRouter = require('./api/resources/interestedUsers/interestedUsers.routes')
 const usersRouter = require('./api/resources/users/users.routes')
 const extUsersRouter = require('./api/resources/externalUsers/extUsers.routes')
@@ -23,6 +22,7 @@ const categoriesRouter = require('./api/resources/checkApp/category/category.rou
 const adminUsersRouter = require('./api/resources/checkApp/adminUsers/adminUsers.routes')
 const serviceTimeRouter = require('./api/resources/checkApp/serviceTimes/serviceTime.routes')
 const checkersRouter = require('./api/resources/checkApp/checkers/checkers.routes')
+const checkTypesRouter = require('./api/resources/checkApp/checkTypes/checkTypes.routes')
 const app = express()
 const port = process.env.PORT || 5000
 
@@ -66,7 +66,7 @@ mongoose.connect(url,connectionParams)
 // ******************************************************
 
 
-app.use('/api/counters', countersRouter)
+
 app.use('/api/interestedUsers', intUsersRouter)
 app.use('/api/users', usersRouter) 
 app.use('/api/extUsers', extUsersRouter)
@@ -77,6 +77,8 @@ app.use('/api/times', serviceTimeRouter)
 app.use('/api/checkers', checkersRouter)
 app.use(errorHandler.processingDBErrors)
 app.use(errorHandler.processingBodySizeErrors)
+app.use('/api/checkTypes', checkTypesRouter)
+
 
 if (config.environmentConfiguration === 'prod'){
     app.use(errorHandler.productionErrors)   
