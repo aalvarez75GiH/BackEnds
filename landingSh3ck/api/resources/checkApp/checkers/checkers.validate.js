@@ -22,23 +22,19 @@ const bluePrintCheckers = Joi.object({
         service_time_id: Joi.string().required()
 
     }),
-    rating: Joi.number().max(5).required()
+    rating: Joi.number().max(5).required(),
+    ratings: Joi.object({
+        rating_r: Joi.number().max(5).required(),
+        rating_p: Joi.number().max(5).required(),
+        rating_k: Joi.number().max(5).required(),
+        rating_kw: Joi.number().max(5).required(),
+        rating_t: Joi.number().max(5).required(),
+        rating_c: Joi.number().max(5).required(),
 
-    // fullName: Joi.string().min(3).max(100).required(),
-    // email: Joi.string().email().required(),
-    // phoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required(),
-    // identification: Joi.string().min(3).max(10).required(),
-    // address: Joi.string().min(3).max(300).required(),
-    // picture: Joi.string(),
-    // backgroundCheck: Joi.boolean().required(),
-    // city_name: Joi.string().min(3).max(100).required(),
-    // cityToCheck: Joi.string().required(),
-    // category_name: Joi.string().min(3).max(100).required(),
-    // categoryToCheck: Joi.string().required(),
-    // serviceTime: Joi.string().required(),
-    // rating: Joi.number().max(5).required()
-
+    }),
+    number_of_checks: Joi.number().max(5).required()
 })
+
 
 const validateCheckers = ( req, res, next ) => {
     const result = bluePrintCheckers.validate(req.body, {abortEarly: false, convert: false})

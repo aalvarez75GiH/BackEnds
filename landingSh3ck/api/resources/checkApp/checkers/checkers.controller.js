@@ -107,7 +107,15 @@ const createChecker = (newChecker, hashedPIN) => {
     return new checker({
         ...newChecker,
         pin: hashedPIN,
-        role: 'checker'
+        role: 'checker',
+        ratings: {
+           rating_r: 5,
+           rating_p: 5,
+           rating_k: 5,
+           rating_kw: 5,
+           rating_t: 5,
+           rating_c: 5
+        }
     }).save()      
 }
 
@@ -128,6 +136,24 @@ const editChecker = (updatedChecker, id) => {
     
     },{
         new: true //This option is in order to return the new document modified
+    })
+}
+
+const updatingRatingAndChecksNumberByChecker = (newRatings, id, overallRating) => {
+    logger.info(`Overall Raiting at Controller: ${overallRating}`)
+
+    return checker.findOneAndUpdate({ _id: id },{
+        ...newRatings,
+        rating: overallRating,
+        ratings:{
+            rating_r: newRatings.rating_r,
+            rating_p: newRatings.rating_p,
+            rating_k: newRatings.rating_k,
+            rating_kw: newRatings.rating_kw,
+            rating_t: newRatings.rating_t,
+            rating_c: newRatings.rating_c,
+        },
+        number_of_checks: newRatings.number_of_checks
     })
 }
 
@@ -158,4 +184,5 @@ module.exports = {
     deleteChecker,
     savePictureUrl,
     findCheckerForLogin,
+    updatingRatingAndChecksNumberByChecker
 }

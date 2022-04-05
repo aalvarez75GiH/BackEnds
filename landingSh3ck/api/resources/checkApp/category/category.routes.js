@@ -81,7 +81,7 @@ categoryRouter.put('/:id', [validarID, validateCategory, jwtAuthorization ], asy
     
     if (!foundCategory){
         logger.info(`foundCategory: ${foundCategory}`)
-        res.status(409).send(`Category:${foundCategory} has not beedn found at DB...`)
+        res.status(409).send(`Category:${foundCategory} has not been found at DB...`)
         return
     }
     if (role === 'user') {

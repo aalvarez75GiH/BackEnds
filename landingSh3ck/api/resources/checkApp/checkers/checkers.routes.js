@@ -215,6 +215,61 @@ checkersRouter.put('/:id', [validateCheckers, transformBodyToLowerCase, jwtAutho
     
 }))
 
+checkersRouter.put('/:id/ratings', processingErrors(async(req, res)=>{
+    // let role = req.user.role
+    // let user = req.user.fullName
+    let raitingsToUpdate = req.body
+    let foundChecker
+    let id = req.params.id
+    let overallRatingSum
+    let overallRating
+    foundChecker = await checkersController.findOneChecker(id)     
+    
+    if (!foundChecker){
+        logger.info(`foundChecker: ${updatedChecker}`)
+        res.status(409).send(`Checker:${updatedChecker} has not been found at DB...`)
+        return
+    }
+    // logger.info(foundChecker)
+    const newRatings = {
+        rating_r: foundChecker.ratings.rating_r + raitingsToUpdate.ratings.rating_r,
+        rating_p: foundChecker.ratings.rating_p + raitingsToUpdate.ratings.rating_p,
+        rating_k: foundChecker.ratings.rating_k + raitingsToUpdate.ratings.rating_k,
+        rating_kw: foundChecker.ratings.rating_kw + raitingsToUpdate.ratings.rating_kw,
+        rating_t: foundChecker.ratings.rating_t + raitingsToUpdate.ratings.rating_t,
+        rating_c: foundChecker.ratings.rating_c + raitingsToUpdate.ratings.rating_c,
+        number_of_checks: foundChecker.number_of_checks + 1
+    }
+    overallRating = (newRatings.rating_r + newRatings.rating_p + newRatings.rating_k + newRatings.rating_kw + newRatings.rating_t + newRatings.rating_c)/6/(newRatings.number_of_checks)
+    const newRatingsDivided = {
+        rating_r: (newRatings.rating_r)/(newRatings.number_of_checks),
+        rating_p: (newRatings.rating_p)/(newRatings.number_of_checks),
+        rating_k: (newRatings.rating_k)/(newRatings.number_of_checks),
+        rating_kw: (newRatings.rating_kw)/(newRatings.number_of_checks),
+        rating_t: (newRatings.rating_t)/(newRatings.number_of_checks),
+        rating_c: (newRatings.rating_c)/(newRatings.number_of_checks),
+        number_of_checks: newRatings.number_of_checks
+    }
+    
+    logger.info(newRatings.rating_t)
+    logger.info(newRatings.number_of_checks)
+    await checkersController.updatingRatingAndChecksNumberByChecker(newRatings, id, overallRating)
+
+    // if (role === 'user') {
+    //     logger.info(`The user with name: ${user} does NOT have privileges to Update this collection`)
+    //     res.status(403).send(`Usuario ${user} sin privilégios suficientes para actualizar datos en esta colección`)
+    //     return
+    // }
+    // if (role === 'admin'){
+    //     await checkersController.editChecker(updatedChecker, id)
+        logger.info(`Ratings of Checker with name "${foundChecker.fullName}" has been updated at DB`)
+        res.status(200).send(`Los ratings del chequeador con nombre ${foundChecker.fullName} fuéron actualizados con éxito`)
+    //     return
+    // }
+    
+    
+}))
+
 checkersRouter.delete('/:id', [jwtAuthorization], processingErrors(async(req,res)=>{
     let user = req.user.fullName
     let role = req.user.role

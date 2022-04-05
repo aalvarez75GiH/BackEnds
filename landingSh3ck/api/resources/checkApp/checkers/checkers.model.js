@@ -73,8 +73,48 @@ const checker = mongoose.model('checker', new Schema({
     },
     rating:{
         type: Number,
-        max: 5,
+        max: 0,
         required: [true, 'Please enter checker rating']
+
+    },
+    ratings:{
+        type: Object,
+        required: [true, 'Controller should add these ratings automatically'],
+        rating_r: {
+            type: Number,
+            max: 0,
+            required: [true, 'Please enter checker rating for responsability']
+        },
+        rating_p: {
+            type: Number,
+            max: 0,
+            required: [true, 'Please enter checker rating for puntuality']
+        },
+        rating_k: {
+            type: Number,
+            max: 0,
+            required: [true, 'Please enter checker rating for kindness']
+        },
+        rating_kw: {
+            type: Number,
+            max: 0,
+            required: [true, 'Please enter checker rating for Knowledge']
+        },
+        rating_t: {
+            type: Number,
+            max: 0,
+            required: [true, 'Please enter checker rating for trust']
+        },
+        rating_c: {
+            type: Number,
+            max: 0,
+            required: [true, 'Please enter checker rating for communicative']
+        },
+    },
+    number_of_checks:{
+        type: Number,
+        max: 5,
+        required: [true, 'Please enter checker number of checks']
 
     },
     pin: {
