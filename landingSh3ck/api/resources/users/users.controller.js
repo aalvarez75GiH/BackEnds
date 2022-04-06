@@ -18,6 +18,10 @@ const findUser = (newUser) => {
     })
 }
 
+const findOneUser = (id) => {
+    return user.findById(id)
+}
+
 const findUserForLogin = ({
     email,
     id
@@ -39,11 +43,32 @@ const findUserForPIN = ({
 const createUser = (newUser, hashedPIN) => {
     return new user({
         ...newUser,
+        picture:"picture",
         pin: hashedPIN,
         role: 'user'
     }).save()      
 }
 
+const updateUser = (updatedUser, id) => {
+    return user.findOneAndUpdate({_id: id}, {
+        ...updatedUser,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+        phoneNumber: updatedUser.phoneNumber,
+        picture: updatedUser.picture
+    },{
+        new: true //This option is in order to return the new document modified
+    })
+}
+
+const savePictureUrl = (id, pictureUrl) => {
+    logger.info(`this is pictureUrl at controller: ${pictureUrl}`)
+    return user.findOneAndUpdate({_id: id},{
+        picture: pictureUrl
+    },{
+        new: true //This option is in order to return the new document modified
+    })
+}
 const updateUserPIN = (id, hashedPIN) => {
     return user.findOneAndUpdate({
         _id: id
@@ -58,10 +83,13 @@ const updateUserPIN = (id, hashedPIN) => {
 module.exports = {
     getUsers,
     findUser,
+    findOneUser,
     findUserForLogin,
     createUser,
     findUserForPIN,
-    updateUserPIN
+    updateUserPIN,
+    updateUser,
+    savePictureUrl
 }
 
 // *************** with Promise

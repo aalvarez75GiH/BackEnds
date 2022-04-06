@@ -5,6 +5,7 @@ console.log(config.s3)
 const awsCredentials = config.s3
 const categoryPath = config.categoryPath
 const checkersPath = config.checkersPath
+const usersPath = config.usersPath
 const bucketName = config.s3BucketName
 const bucketPath = config.bucketPath
 const s3Client = new AWS.S3(awsCredentials)
@@ -30,9 +31,20 @@ const saveCheckerPicture = (picture, fileName) => {
     
     return `https://s3.amazonaws.com/${bucketName}/${bucketPath}/${checkersPath}/${fileName}`
 }
+const saveUserPicture = (picture, fileName) => {
+    s3Client.putObject({
+        Body: picture,
+        Bucket: bucketName,
+        Key: `${bucketPath}/${usersPath}/${fileName}`
+
+    }).promise()
+    
+    return `https://s3.amazonaws.com/${bucketName}/${bucketPath}/${usersPath}/${fileName}`
+}
 
 
 module.exports = {
     saveCategoryImage,
-    saveCheckerPicture
+    saveCheckerPicture,
+    saveUserPicture
 }

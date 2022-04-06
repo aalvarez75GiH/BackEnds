@@ -3,14 +3,16 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const jwtAuthorization = passport.authenticate('jwt', { session: false })
-
+const { v4: uuidv4 } = require('uuid')
 
 const logger = require('../../../utils/logger')
 const emailSender = require('../../../utils/emailSender').emailSenderModule
 const config = require('../../../config')
 const validateUsers = require('./users.validate').validateUsers
+const validateUsersPicture = require('./users.validate').validateUserPicture
 const validateLoginRequest = require('./users.validate').validateLoginRequest
 const validateNewPINRequest = require('./users.validate').validateNewPINRequest
+const { saveUserPicture } = require('../../../aws/images.controller')
 const usersRouter = express.Router()
 const userController = require('./users.controller')
 const processingErrors = require('../../libs/errorHandler').processingErrors 
@@ -58,6 +60,81 @@ usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingError
     
 }))
 
+usersRouter.put('/:id', [validateUsers, transformBodyToLowerCase, jwtAuthorization], processingErrors(async(req, res)=>{
+    let role = req.user.role
+    let user = req.user.fullName
+    let token_id = req.user.token_id
+    let updatedUser = req.body
+    let foundUser
+    let id = req.params.id
+    
+    foundUser = await userController.findOneUser(id)     
+    
+    if (!foundUser){
+        logger.info(`foundUser: ${updatedUser}`)
+        res.status(409).send(`User:${updatedUser} has not been found at DB...`)
+        return
+    }
+    
+    if (role === 'checker') {
+        logger.info(`The user with name: ${user} does NOT have privileges to Update this collection`)
+        res.status(403).send(`Usuario ${user} sin privilégios suficientes para actualizar datos en esta colección`)
+        return
+    }
+    if (role === 'user' && id === token_id){
+        await userController.updateUser(updatedUser, id)
+        logger.info(`User with name "${foundUser.name}" has been updated at DB`)
+        res.status(200).send(`El usuario con nombre ${updatedUser.fullName} fué actualizado con éxito`)
+        return
+    }else{
+        logger.info(`Token NOT valid to update this user account`)
+        res.status(404).send(`El token usado no es valido o  No tiene privilegios para actiualizar esta cuenta`)
+        return
+    }
+}))
+
+usersRouter.put('/:id/pictures', [validateUsersPicture, jwtAuthorization], processingErrors(async(req, res ) => {
+    let id = req.params.id
+    let user = req.user.fullName
+    let role = req.user.role
+    let token_id = req.user.token_id
+    logger.info(role)
+    logger.info(id)
+    logger.info(token_id)
+    logger.info(`Request from User [${user}] was received. We are processing image with category ID [${id}] `)
+    let foundUser
+    foundUser = await userController.findOneUser(id)
+    
+    if (!foundUser){
+        logger.info(`foundUser: ${updatedUser}`)
+        res.status(409).send(`User:${updatedUser} has not been found at DB...`)
+        return
+    }
+    
+    if (role === 'checker') {
+        logger.info(`The user with name: ${user} does NOT have privileges to Update this collection`)
+        res.status(403).send(`Usuario ${user} sin privilégios suficientes para actualizar datos en esta colección`)
+        return
+    }
+    
+    if (role === 'user' && id === token_id){
+        logger.info(`User with name ${user} is going to proceed to update a User profile picture`)
+        const randomizedName = `${uuidv4()}.${req.fileExtension}`
+        logger.info(randomizedName)
+        const pictureURL = await saveUserPicture(req.body, randomizedName) //Amazon s3 process
+        logger.info(`Picture URL: ${pictureURL}`)
+        const userUpdated = await userController.savePictureUrl(id, pictureURL)
+        logger.info(`User with ID [${id}] was updated with new picture link [${pictureURL}]
+        changed by user [${user}]`)
+        res.json(userUpdated)
+        return
+    }else{
+        logger.info(`Token NOT valid to update this user account`)
+        res.status(404).send(`El token usado no es valido o  No tiene privilegios para actiualizar esta cuenta`)
+        return
+    }
+    
+}))
 
 usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], processingErrors(async(req,res) => {
     const notAuthUser = req.body
@@ -126,6 +203,7 @@ usersRouter.get('/me', jwtAuthorization, (req,res) => {
         name: req.user.fullName,
         email: req.user.email,
         phoneNumber: req.user.phoneNumber,
+        picture: req.user.picture,
         role: req.user.role
     }
     

@@ -1,5 +1,6 @@
 const logger = require('../../../../utils/logger')
-const checker = require('./checkers.model')
+const  checker = require('./checkers.model')
+
 
 const getCheckers = () => {
     return checker.find({}) 
@@ -26,6 +27,7 @@ const findCheckerForLogin = ({
 }
 
 const findOneChecker = (id) => {
+    logger.info(`at controller: ${id}`)
     return checker.findById(id)
 }
 
@@ -169,6 +171,11 @@ const savePictureUrl = (id, pictureUrl) => {
         new: true //This option is in order to return the new document modified
     })
 }
+
+// Review Comments Controllers *****************************
+
+
+
 
 module.exports = {
     getCheckers,

@@ -23,6 +23,8 @@ const adminUsersRouter = require('./api/resources/checkApp/adminUsers/adminUsers
 const serviceTimeRouter = require('./api/resources/checkApp/serviceTimes/serviceTime.routes')
 const checkersRouter = require('./api/resources/checkApp/checkers/checkers.routes')
 const checkTypesRouter = require('./api/resources/checkApp/checkTypes/checkTypes.routes')
+const reviewsRouter = require('./api/resources/checkApp/reviewsAndComments/reviews.routes')
+
 const app = express()
 const port = process.env.PORT || 5000
 
@@ -76,6 +78,7 @@ app.use('/api/category', categoriesRouter)
 app.use('/api/times', serviceTimeRouter)
 app.use('/api/checkers', checkersRouter)
 app.use('/api/checkTypes', checkTypesRouter)
+app.use('/api/reviews', reviewsRouter)
 app.use(errorHandler.processingDBErrors)
 app.use(errorHandler.processingBodySizeErrors)
 

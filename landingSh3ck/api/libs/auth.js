@@ -49,7 +49,9 @@ module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
             fullName: foundUser.fullName,
             email: foundUser.email,
             phoneNumber: foundUser.phoneNumber,
-            role: foundUser.role
+            picture: foundUser.picture,
+            role: foundUser.role,
+            token_id: jwtPayload.id
         })            
     })
     .catch(error => {

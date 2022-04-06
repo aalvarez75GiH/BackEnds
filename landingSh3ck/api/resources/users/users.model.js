@@ -18,13 +18,10 @@ const user = mongoose.model('user', new Schema({
         match: /^[0-9]+$/,
         required: [true, 'You must enter a Phone Number']
 
+    },
+    picture: {
+        type: String
     }, 
-    // password: {
-    //     type: String,
-    //     min: 3,
-    //     max: 200,
-    //     required: [true, 'Please enter a Password']
-    // },
     pin: {
         type: String,
         min: 4,

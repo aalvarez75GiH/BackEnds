@@ -241,18 +241,6 @@ checkersRouter.put('/:id/ratings', processingErrors(async(req, res)=>{
         number_of_checks: foundChecker.number_of_checks + 1
     }
     overallRating = (newRatings.rating_r + newRatings.rating_p + newRatings.rating_k + newRatings.rating_kw + newRatings.rating_t + newRatings.rating_c)/6/(newRatings.number_of_checks)
-    const newRatingsDivided = {
-        rating_r: (newRatings.rating_r)/(newRatings.number_of_checks),
-        rating_p: (newRatings.rating_p)/(newRatings.number_of_checks),
-        rating_k: (newRatings.rating_k)/(newRatings.number_of_checks),
-        rating_kw: (newRatings.rating_kw)/(newRatings.number_of_checks),
-        rating_t: (newRatings.rating_t)/(newRatings.number_of_checks),
-        rating_c: (newRatings.rating_c)/(newRatings.number_of_checks),
-        number_of_checks: newRatings.number_of_checks
-    }
-    
-    logger.info(newRatings.rating_t)
-    logger.info(newRatings.number_of_checks)
     await checkersController.updatingRatingAndChecksNumberByChecker(newRatings, id, overallRating)
 
     // if (role === 'user') {
@@ -341,6 +329,65 @@ checkersRouter.put('/:id/pictures', [validateCheckerPicture, jwtAuthorization], 
         return
     }
 }))
+
+
+// Reviews End Points ******************************************
+checkersRouter.get('/reviews', (req,res) => {
+    return checkersController.getReviews()
+    .then(foundReviews => {
+        res.json(foundReviews)
+    })
+})
+
+// checkersRouter.get('/', (req,res)=> {
+//     return checkersController.getCheckers()
+//     .then(checkers => {
+//         res.json(checkers)
+//     })
+// })
+
+checkersRouter.post('/reviews', processingErrors(async(req,res) => {
+    const newReview = req.body
+    let foundChecker
+    foundChecker = await checkersController.findOneChecker(newReview.user_id)
+
+    if (!foundChecker){
+        logger.info(`Checker with Id ${newreView.user_id} has not been found at DB`)
+        res.status(404).send(`El chequeador con ID ${newreView.user_id} no ha sido encontrado en la BD`)
+        return
+    }
+    await checkersController.createReview(newReview)
+    logger.info(`Review for checker: [${foundChecker.fullName}] has been registered`)
+    res.status(201).send(newRevie)
+    return
+}))
+
+// checkersRouter.post('/', [validateCheckers, transformBodyToLowerCase], processingErrors(async(req, res)=>{
+//     let newChecker = req.body
+//     let foundChecker
+    
+//     foundChecker = await checkersController.findChecker(newChecker)     
+    
+//     if (foundChecker){
+//         logger.info(`Checker with email ${newChecker.email} already registered...`)
+//         res.status(409).send(`${newChecker.fullName}`)
+//         return
+//     }
+//     const randomPIN = Math.floor(1000 + Math.random() * 9000)
+//     const PIN = randomPIN.toString()
+//     logger.info(PIN)
+//     bcrypt.hash(PIN, 10, async(error, hashedPIN) => {
+//         if (error){
+//             logger.info(`Error trying hashing PIN...`)
+//             throw new ErrorHashingData()
+//         }
+//         await checkersController.createChecker(newChecker, hashedPIN)
+//         logger.info(`Checker with email [${newChecker.email}] has been created...`)
+//         emailSender('checkers', newChecker.email, randomPIN)
+//         res.status(201).send(newChecker.fullName)
+//     })
+    
+// }))
 
 
 
