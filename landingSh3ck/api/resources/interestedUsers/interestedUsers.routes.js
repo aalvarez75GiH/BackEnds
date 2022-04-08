@@ -25,19 +25,41 @@ intUsersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingEr
     let newUser = req.body
     let foundInterestedUser
     
-    foundInterestedUser = await interestedUsersController.findInterestedUser(newUser) 
+    foundInterestedUser = await interestedUsersController.findInterestedUserByEmail({email: newUser.email}) 
     
     if (foundInterestedUser){
+        
+        let dataInterestedUser = {
+            name: foundInterestedUser.fullName,
+            email: foundInterestedUser.email,
+            city: foundInterestedUser.city
+        }
+        
         logger.info(` User with email ${newUser.email} is already registered as interested User `)
-        res.status(409).send(`${newUser.fullName}`)
+        res.status(409).send(dataInterestedUser)
         return
     }
-    
+
     const interestedUser = await interestedUsersController.createInterestedUser(newUser)
     logger.info(`User [${interestedUser.email}] has been created...`)
+    const userCreationConfirmation = await interestedUsersController.findInterestedUserByEmail({email: newUser.email})
+    logger.info(`This is userCreationConfirmation: ${userCreationConfirmation}`)
+        if (userCreationConfirmation){
+            let dataInterestedUser = {
+                    name: userCreationConfirmation.fullName,
+                    email: userCreationConfirmation.email,
+                    city: userCreationConfirmation.city
+            }
+            emailSender('interestedUsers', interestedUser.email)
+            res.status(201).send(dataInterestedUser)        
+            
+        }else{
+            logger.error(`There was a problem with creation process at DB`)
+            res.status(400).send(`Ha ocurrido un problema al momento de crear el usuario interesado en la Base de datos`)
+        }
     // sendingEmailToInterestedUsers()
-    emailSender('interestedUsers', interestedUser.email)
-    res.status(201).send(`${interestedUser.fullName}`)
+    // emailSender('interestedUsers', interestedUser.email)
+    // res.status(201).send(`${interestedUser.fullName}`)
     
            
 }))

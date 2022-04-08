@@ -36,11 +36,18 @@ usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingError
     let newUser = req.body
     let foundUser
     
-    foundUser = await userController.findUser(newUser)     
+    foundUser = await userController.findUserByEmail({email: newUser.email})     
     
     if (foundUser){
         logger.info(`User with email ${newUser.email} already registered...`)
-        res.status(409).send(`${newUser.fullName}`)
+        let dataUser = {
+            name: foundUser.fullName,
+            email: foundUser.email,
+            phoneNumber: foundUser.phoneNumber,
+            picture: foundUser.picture,
+            role: foundUser.role
+        }
+        res.status(409).send(dataUser)
         return
     }
     const randomPIN = Math.floor(1000 + Math.random() * 9000)
@@ -53,8 +60,26 @@ usersRouter.post('/', [validateUsers, transformBodyToLowerCase], processingError
         }
         await userController.createUser(newUser, hashedPIN)
         logger.info(`User with email [${newUser.email}] has been created...`)
-        emailSender('users', newUser.email, randomPIN)
-        res.status(201).send(newUser.fullName)
+        // *****************************************************
+        const userCreationConfirmation = await userController.findUserByEmail({email: newUser.email})
+        logger.info(userCreationConfirmation)
+        if (userCreationConfirmation){
+            let dataUser = {
+                name: userCreationConfirmation.fullName,
+                email: userCreationConfirmation.email,
+                phoneNumber: userCreationConfirmation.phoneNumber,
+                picture: userCreationConfirmation.picture,
+                role: userCreationConfirmation.role
+            }
+            emailSender('users', newUser.email, randomPIN)
+            res.status(201).send(dataUser)
+        }else{
+            logger.error(`There was a problem with creation process at DB`)
+            res.status(400).send(`Ha ocurrido un problema al momento de crear el usuario en la Base de datos`)
+        }
+        // *****************************************************
+        // emailSender('users', newUser.email, randomPIN)
+        // res.status(201).send(newUser.fullName)
 
     })
     
@@ -136,12 +161,14 @@ usersRouter.put('/:id/pictures', [validateUsersPicture, jwtAuthorization], proce
     
 }))
 
+
 usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], processingErrors(async(req,res) => {
     const notAuthUser = req.body
     let foundUser
     console.log(notAuthUser)
 
-    foundUser = await userController.findUserForLogin({ email: notAuthUser.email })    
+    foundUser = await userController.findUserForLogin({ email: notAuthUser.email })
+    logger.info(`this is foundUser: ${foundUser}`)    
     
     if (!foundUser){
         logger.info(`User with email ${notAuthUser.email} was not found at DB`)
@@ -165,19 +192,32 @@ usersRouter.post('/login', [validateLoginRequest, transformBodyToLowerCase], pro
         res.status(200).send({token})
         return        
     }else{
-        logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
-        res.status(400).send(`${foundUser.fullName}`)     
+        let dataUser = {
+            name: foundUser.fullName,
+            email: foundUser.email,
+            phoneNumber: foundUser.phoneNumber,
+            picture: foundUser.picture,
+            role: foundUser.role
+        }
+        logger.info(`User with email ${foundUser.email} didn't complete authentication process`)
+        res.status(400).send(dataUser)     
     }
 }))
 
-usersRouter.put('/newPIN', validateNewPINRequest, processingErrors(async(req,res) => {
-    const requesterUser = req.body
+
+usersRouter.put('/:email/newPIN', processingErrors(async(req,res) => {
+    let email = req.params.email
+    logger.info(`this is requesterUser email: ${email}`)
     let foundUser
     
-    foundUser  = await userController.findUserForPIN({ email: requesterUser.email})
+    foundUser  = await userController.findUserForPIN({ email: email})
     if (!foundUser) {
-        logger.info(`User with email ${requesterUser.email} was not found at DB`)
-        res.status(400).send(`${requesterUser.email}`)
+        let dataUser = {
+            name: email,
+            email: email
+        }
+        logger.info(`User with email ${email} was not found at DB`)
+        res.status(400).send(dataUser)
         return
     }
     logger.info(foundUser)
@@ -190,9 +230,16 @@ usersRouter.put('/newPIN', validateNewPINRequest, processingErrors(async(req,res
             throw new ErrorHashingData()
         }
         let updatedUser = await userController.updateUserPIN(foundUser.id, hashedPIN) 
+        let dataUser = {
+            name: foundUser.fullName,
+            email: foundUser.email,
+            phoneNumber: foundUser.phoneNumber,
+            picture: foundUser.picture,
+            role: foundUser.role
+        }
         logger.info(updatedUser)
-        emailSender('users', updatedUser.email, randomPIN)
-        res.status(200).send(foundUser.fullName)
+        emailSender('users', foundUser.email, randomPIN)
+        res.status(200).send(dataUser)
     })
 }))
 

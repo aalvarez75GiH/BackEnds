@@ -15,6 +15,14 @@ const findInterestedUser = (newUser) => {
        }) 
     })
 }
+
+const findInterestedUserByEmail = ({
+    email
+}) => {
+    if (email) return interestedUser.findOne({ email: email})
+    throw new Error ('Get user function from controller was called without specifying id or email')
+}
+
  
 const createInterestedUser = (newUser) => {
     return new interestedUser({
@@ -26,5 +34,6 @@ const createInterestedUser = (newUser) => {
 module.exports = {
     getInterestedUsers,
     findInterestedUser, 
-    createInterestedUser,
+    findInterestedUserByEmail,
+    createInterestedUser
 }

@@ -55,7 +55,7 @@ const validateNewPINRequest = (req, res, next) => {
         const validationErrors = result.error.details.reduce((accumulator, error)=> {
             return accumulator + `[${error.message}]`
         },"")
-        logger.warn(`Creadentials sent by user is not complete ${validationErrors}`)
+        logger.warn(`Credentials sent by user is not complete ${validationErrors}`)
         res.status(400).send(`Errors at the request: ${validationErrors}`)
     }
 }

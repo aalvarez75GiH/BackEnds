@@ -22,6 +22,13 @@ const findOneUser = (id) => {
     return user.findById(id)
 }
 
+const findUserByEmail = ({
+    email
+}) => {
+    if (email) return user.findOne({ email: email})
+    throw new Error ('Get user function from controller was called without specifying id or email')
+}
+
 const findUserForLogin = ({
     email,
     id
@@ -69,6 +76,7 @@ const savePictureUrl = (id, pictureUrl) => {
         new: true //This option is in order to return the new document modified
     })
 }
+
 const updateUserPIN = (id, hashedPIN) => {
     return user.findOneAndUpdate({
         _id: id
@@ -83,6 +91,7 @@ const updateUserPIN = (id, hashedPIN) => {
 module.exports = {
     getUsers,
     findUser,
+    findUserByEmail,
     findOneUser,
     findUserForLogin,
     createUser,
