@@ -3,12 +3,17 @@ const logger = require('../../../../utils/logger')
 const CONTENT_TYPES_ALLOWED = [ 'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/svg']
 const fileType = require('file-type')
 
-const bluePrintCheckers = Joi.object({
-    fullName: Joi.string().min(3).max(100).required(),
+const bluePrintAuthCenters = Joi.object({
+    businessName: Joi.string().min(3).max(100).required(),
     email: Joi.string().email().required(),
-    phoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required(),
-    identification: Joi.string().min(3).max(10).required(),
+    businessPhoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required(),
+    rifNumber: Joi.string().min(3).max(15).required(),
     address: Joi.string().min(3).max(300).required(),
+    representative: Joi.object({
+        fullName: Joi.string().min(3).max(100).required(),
+        identification: Joi.string().min(3).max(10).required(),
+        phoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required()
+    }),
     picture: Joi.string(),
     backgroundCheck: Joi.boolean().required(),
     city_name: Joi.string().min(3).max(100).required(),
@@ -36,41 +41,41 @@ const bluePrintCheckers = Joi.object({
 })
 
 
-const validateCheckers = ( req, res, next ) => {
-    const result = bluePrintCheckers.validate(req.body, {abortEarly: false, convert: false})
+const validateAuthCenters = ( req, res, next ) => {
+    const result = bluePrintAuthCenters.validate(req.body, {abortEarly: false, convert: false})
     if (result.error === undefined){
         next()
     }else{
         const validationErrors = result.error.details.reduce((accumulator, error)=> {
             return accumulator + `[${error.message}]`
         },"")
-        logger.warn(`Information sent by user is not complete ${validationErrors}`)
+        logger.warn(`Information sent by auth center is not complete ${validationErrors}`)
         res.status(400).send(`Errors at the request: ${validationErrors}`)
     }
 }
-const bluePrintCheckersLoginRequest = Joi.object({
+const bluePrintAuthCentersLoginRequest = Joi.object({
     email: Joi.string().email().required(),
     pin: Joi.string().required()
 }) 
 
-const validateCheckersLoginRequest = ( req, res, next ) => {
-    const result = bluePrintCheckersLoginRequest.validate(req.body, {abortEarly:false, convert: false})
+const validateAuthCentersLoginRequest = ( req, res, next ) => {
+    const result = bluePrintAuthCentersLoginRequest.validate(req.body, {abortEarly:false, convert: false})
     if (result.error === undefined){
         next()
     }else {
         const validationErrors = result.error.details.reduce((accumulator, error)=> {
             return accumulator + `[${error.message}]`
         },"")
-        logger.warn(`Creadentials sent by checker is not complete ${validationErrors}`)
+        logger.warn(`Creadentials sent by auth center is not complete ${validationErrors}`)
         res.status(400).send(`Errors at the request: ${validationErrors}`)
     }
 
 }
 
-const validateCheckerPicture = async(req, res, next) => {
+const validateAuthCentersPicture = async(req, res, next) => {
     const contentType = req.get('Content-Type')
     if (!CONTENT_TYPES_ALLOWED.includes(contentType)){
-        logger.warn(`Request to modify picture of checker with ID [${req.params.id}] DO NOT contain a valid content type [${contentType}]`)
+        logger.warn(`Request to modify picture of auth center with ID [${req.params.id}] DO NOT contain a valid content type [${contentType}]`)
         res.status(400).send(`File of type: ${contentType} is not supported. Please, use one
         of these types of images ${CONTENT_TYPES_ALLOWED.join(", ")}`)
         return
@@ -91,19 +96,7 @@ const validateCheckerPicture = async(req, res, next) => {
 
 
 module.exports = {
-    validateCheckers,
-    validateCheckerPicture,
-    validateCheckersLoginRequest
+    validateAuthCenters,
+    validateAuthCentersPicture,
+    validateAuthCentersLoginRequest
 }
-
-
-
- 
-
-
-
-
-
-
-
-

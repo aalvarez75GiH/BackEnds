@@ -46,18 +46,6 @@ checkersRouter.get('/:id', processingErrors(async(req,res)=> {
         res.json(foundChecker)
     })
 }))
-// checkersRouter.get('/:id/searches', processingErrors(async(req,res)=> {
-//     // let categoryId = req.body.categoryId
-//     let cityId = req.params.id
-//     // let serviceTimeId = req.body.serviceTimeId
-//     // logger.info(categoryId)
-//     logger.info(cityId)
-//     // const categoryId = req.body.categoryId
-//     return checkersController.findCheckerByCity(cityId)
-//     .then(checkers => {
-//         res.json(checkers)
-//     })
-// }))
 
 // filtering just by city 
 checkersRouter.get('/:cityId/cities', processingErrors(async(req,res)=> {
@@ -192,10 +180,11 @@ checkersRouter.put('/:id', [validateCheckers, transformBodyToLowerCase, jwtAutho
     let foundChecker
     let id = req.params.id
     
-    foundChecker = await checkersController.findOneChecker(id)     
+    foundChecker = await checkersController.findOneChecker(id)
+    // logger.info(foundChecker)     
+    logger.info(`foundChecker: ${updatedChecker.category[0].category_name}`)
     
     if (!foundChecker){
-        logger.info(`foundChecker: ${updatedChecker}`)
         res.status(409).send(`Checker:${updatedChecker} has not been found at DB...`)
         return
     }
@@ -207,7 +196,7 @@ checkersRouter.put('/:id', [validateCheckers, transformBodyToLowerCase, jwtAutho
     }
     if (role === 'admin'){
         await checkersController.editChecker(updatedChecker, id)
-        logger.info(`Checker with name "${foundChecker.name}" has been updated at DB`)
+        logger.info(`Checker with name "${foundChecker.fullName}" has been updated at DB`)
         res.status(200).send(`El chequeador con nombre ${updatedChecker.fullName} fué actualizado con éxito`)
         return
     }
@@ -361,34 +350,6 @@ checkersRouter.post('/reviews', processingErrors(async(req,res) => {
     res.status(201).send(newRevie)
     return
 }))
-
-// checkersRouter.post('/', [validateCheckers, transformBodyToLowerCase], processingErrors(async(req, res)=>{
-//     let newChecker = req.body
-//     let foundChecker
-    
-//     foundChecker = await checkersController.findChecker(newChecker)     
-    
-//     if (foundChecker){
-//         logger.info(`Checker with email ${newChecker.email} already registered...`)
-//         res.status(409).send(`${newChecker.fullName}`)
-//         return
-//     }
-//     const randomPIN = Math.floor(1000 + Math.random() * 9000)
-//     const PIN = randomPIN.toString()
-//     logger.info(PIN)
-//     bcrypt.hash(PIN, 10, async(error, hashedPIN) => {
-//         if (error){
-//             logger.info(`Error trying hashing PIN...`)
-//             throw new ErrorHashingData()
-//         }
-//         await checkersController.createChecker(newChecker, hashedPIN)
-//         logger.info(`Checker with email [${newChecker.email}] has been created...`)
-//         emailSender('checkers', newChecker.email, randomPIN)
-//         res.status(201).send(newChecker.fullName)
-//     })
-    
-// }))
-
 
 
 module.exports = checkersRouter

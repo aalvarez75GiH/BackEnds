@@ -4,6 +4,7 @@ const config = require('../../config')
 const usersController = require('../resources/users/users.controller')
 const adminUsersController = require('../resources/checkApp/adminUsers/adminUsers.controller')
 const checkersController = require('../resources/checkApp/checkers/checkers.controller')
+const authCentersController = require('../resources/checkApp/authCenters/authCenter.controller')
 
 const jwtOptions = {
     secretOrKey: config.jwt.secret,
@@ -20,10 +21,20 @@ module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
                     checkersController.findCheckerForLogin({id: jwtPayload.id })
                     .then(foundChecker => {
                         if(!foundChecker){
-                            // logger.warn(`JWT not valid. User with id ${ jwtPayload.id } couldn't be found...`)
-                            logger.warn(`JWT not valid. Token couldn't be found...`)
-                            next(null, false)
-                            return
+                            authCentersController.findAuthCenterForLogin({id: jwtPayload.id})
+                            .then(foundAuthCenter => {
+                                if(!foundAuthCenter){
+                                    logger.warn(`JWT not valid. Token couldn't be found...`)
+                                    next(null, false)
+                                    return
+                                }
+                                next(null,{
+                                    fullName: foundAuthCenter.businessName,
+                                    role: foundAuthCenter.role,
+                                    id: JSON.stringify(foundAuthCenter._id)
+                                })
+                            })
+                            return 
                         }
                         next(null, {
                             fullName: foundChecker.fullName,

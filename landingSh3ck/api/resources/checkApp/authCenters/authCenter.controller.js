@@ -1,15 +1,16 @@
 const logger = require('../../../../utils/logger')
-const  checker = require('./checkers.model')
+const  authCenter = require('./authCenter.model')
 
 
-const getCheckers = () => {
-    return checker.find({}) 
+const getAuthCenters = () => {
+    return authCenter.find({}) 
 }
-const findChecker = (newChecker) => {
+
+const findAuthCenter = (newAuthCenter) => {
     return new Promise((resolve,reject) => {
-        checker.find({email: newChecker.email})
-        .then( checkers => {
-            resolve( checkers.length > 0)
+        authCenter.find({email: newAuthCenter.email})
+        .then( authCenters => {
+            resolve( authCenters > 0)
         })
         .catch(error => {
             reject(error)
@@ -17,29 +18,29 @@ const findChecker = (newChecker) => {
     })
 }
 
-const findCheckerForLogin = ({
+const findAuthCenterForLogin = ({
     email,
     id
 }) => {
-    if (email) return checker.findOne({ email: email })
-    if (id) return checker.findOne({ _id: id })
+    if (email) return authCenter.findOne({ email: email })
+    if (id) return authCenter.findOne({ _id: id })
     throw new Error ('Get checker function from controller was called without specifying id or email')
 }
 
-const findOneChecker = (id) => {
+const findOneAuthCenter = (id) => {
     logger.info(`at controller: ${id}`)
-    return checker.findById(id)
+    return authCenter.findById(id)
 }
 
-const findCheckerByCity = (cityId) => {
-    return checker.find({
+const findAuthCenterByCity = (cityId) => {
+    return authCenter.find({
         cityToCheck: cityId
     })
 }
 
-const findCheckerByCategory = (categoryId) => {
+const findAuthCenterByCategory = (categoryId) => {
     logger.info(categoryId) 
-    return checker.find({
+    return authCenter.find({
         // cityId: cityId,
         category:  
         {$elemMatch:
@@ -50,9 +51,9 @@ const findCheckerByCategory = (categoryId) => {
     })
 }
 
-const findCheckerByServiceTime = (serviceTimeId) => {
+const findAuthCenterByServiceTime = (serviceTimeId) => {
     logger.info(serviceTimeId) 
-    return checker.find({
+    return authCenter.find({
         // cityId: cityId,
         service_time:  
         {$elemMatch:
@@ -63,10 +64,10 @@ const findCheckerByServiceTime = (serviceTimeId) => {
     })
 }
 
-const findCheckerByCityAndCategory = (cityId, categoryId) => {
+const findAuthCenterByCityAndCategory = (cityId, categoryId) => {
     logger.info(cityId)
     logger.info(categoryId) 
-    return checker.find({
+    return authCenter.find({
         // cityId: cityId,
         cityToCheck: cityId,
         category:    {
@@ -77,11 +78,11 @@ const findCheckerByCityAndCategory = (cityId, categoryId) => {
     })
 }
 
-const findCheckerByEveryThing = (cityId, categoryId, serviceTimeId) => {
+const findAuthCenterByEveryThing = (cityId, categoryId, serviceTimeId) => {
     logger.info(cityId)
     logger.info(categoryId) 
     logger.info(serviceTimeId)
-    return checker.find({
+    return authCenter.find({
         // cityId: cityId,
         cityToCheck: cityId,
         category:    {
@@ -105,49 +106,48 @@ const findCheckerByEveryThing = (cityId, categoryId, serviceTimeId) => {
 //             }
 //         }
 //     }).pretty();
-const createChecker = (newChecker, hashedPIN) => {
-    return new checker({
-        ...newChecker,
+const createAuthCenter = (newAuthCenter, hashedPIN) => {
+    return new authCenter({
+        ...newAuthCenter,
         pin: hashedPIN,
-        role: 'checker',
+        role: 'auth center',
         rating: 5,
         ratings: {
-           rating_r: 5,
-           rating_p: 5,
-           rating_k: 5,
-           rating_kw: 5,
-           rating_t: 5,
-           rating_c: 5
+           rating_r: 0,
+           rating_p: 0,
+           rating_k: 0,
+           rating_kw: 0,
+           rating_t: 0,
+           rating_c: 0
         },
         number_of_checks: 0
     }).save()      
 }
 
-const editChecker = (updatedChecker, id) => {
-    // const editingCategory = updatedChecker.category.map((category) => {
-    //     category.push(category)
-    // })
-    return checker.findOneAndUpdate({_id: id}, {
-        ...updatedChecker,
-        fullName: updatedChecker.fullName,
-        email: updatedChecker.email,
-        phoneNumber: updatedChecker.phoneNumber,
-        identification: updatedChecker.identification,
-        address: updatedChecker.address,
-        picture: updatedChecker.picture,
-        backgroundCheck: updatedChecker.backgroundCheck,
-        cityToCheck: updatedChecker.cityToCheck,
-        category: updatedChecker.category, 
-        service_time: updatedChecker.service_time       
+const editAuthCenter = (updatedAuthCenter, id) => {
+    return authCenter.findOneAndUpdate({_id: id}, {
+        ...updatedAuthCenter,
+        businessName: updatedAuthCenter.businessName,
+        email: updatedAuthCenter.email,
+        businessPhoneNumber: updatedAuthCenter.businessPhoneNumber,
+        rifNumber: updatedAuthCenter.rifNumber,
+        address: updatedAuthCenter.address,
+        representative: updatedAuthCenter.representative,
+        picture: updatedAuthCenter.picture,
+        backgroundCheck: updatedAuthCenter.backgroundCheck,
+        city_name: updatedAuthCenter.cityName,
+        cityToCheck: updatedAuthCenter.cityToCheck,
+        category: updatedAuthCenter.category,
+        service_time: updatedAuthCenter.service_time 
     },{
         new: true //This option is in order to return the new document modified
     })
 }
 
-const updatingRatingAndChecksNumberByChecker = (newRatings, id, overallRating) => {
+const updatingRatingAndChecksNumberByAuthCenter = (newRatings, id, overallRating) => {
     logger.info(`Overall Raiting at Controller: ${overallRating}`)
 
-    return checker.findOneAndUpdate({ _id: id },{
+    return authCenter.findOneAndUpdate({ _id: id },{
         ...newRatings,
         rating: overallRating,
         ratings:{
@@ -162,13 +162,13 @@ const updatingRatingAndChecksNumberByChecker = (newRatings, id, overallRating) =
     })
 }
 
-const deleteChecker = (id) => {
-    return checker.findByIdAndRemove(id)
+const deleteAuthCenter = (id) => {
+    return authCenter.findByIdAndRemove(id)
 }
 
 const savePictureUrl = (id, pictureUrl) => {
     logger.info(`this is pictureUrl at controller: ${pictureUrl}`)
-    return checker.findOneAndUpdate({_id: id},{
+    return authCenter.findOneAndUpdate({_id: id},{
         picture: pictureUrl
     },{
         new: true //This option is in order to return the new document modified
@@ -181,18 +181,18 @@ const savePictureUrl = (id, pictureUrl) => {
 
 
 module.exports = {
-    getCheckers,
-    findOneChecker,
-    findChecker,
-    createChecker,
-    findCheckerByCity,
-    findCheckerByCategory,
-    findCheckerByServiceTime,
-    findCheckerByCityAndCategory,
-    findCheckerByEveryThing,
-    editChecker,
-    deleteChecker,
+    getAuthCenters,
+    findOneAuthCenter,
+    findAuthCenter,
+    createAuthCenter,
+    findAuthCenterByCity,
+    findAuthCenterByCategory,
+    findAuthCenterByServiceTime,
+    findAuthCenterByCityAndCategory,
+    findAuthCenterByEveryThing,
+    editAuthCenter,
+    deleteAuthCenter,
     savePictureUrl,
-    findCheckerForLogin,
-    updatingRatingAndChecksNumberByChecker
+    findAuthCenterForLogin,
+    updatingRatingAndChecksNumberByAuthCenter
 }
