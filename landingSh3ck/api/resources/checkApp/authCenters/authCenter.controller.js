@@ -136,7 +136,7 @@ const editAuthCenter = (updatedAuthCenter, id) => {
         representative: updatedAuthCenter.representative,
         picture: updatedAuthCenter.picture,
         backgroundCheck: updatedAuthCenter.backgroundCheck,
-        city_name: updatedAuthCenter.cityName,
+        city_name: updatedAuthCenter.city_name,
         cityToCheck: updatedAuthCenter.cityToCheck,
         category: updatedAuthCenter.category,
         service_time: updatedAuthCenter.service_time 
