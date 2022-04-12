@@ -37,7 +37,8 @@ const bluePrintAuthCenters = Joi.object({
         rating_c: Joi.number().max(5).required(),
 
     }),
-    number_of_checks: Joi.number().max(5)
+    number_of_checks: Joi.number().max(5),
+    earnings: Joi.number().required()
 })
 
 

@@ -149,6 +149,10 @@ const authCenter = mongoose.model('auth center', new Schema({
     role: {
         type: String,
         required: [true, 'Please enter a role']
+    },
+    earnings: {
+        type: Number,
+        required: [true, 'Please enter an earning']
     }    
 }))
 

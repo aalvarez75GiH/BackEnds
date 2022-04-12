@@ -120,7 +120,8 @@ const createAuthCenter = (newAuthCenter, hashedPIN) => {
            rating_t: 0,
            rating_c: 0
         },
-        number_of_checks: 0
+        number_of_checks: 0,
+        earnings: 0 
     }).save()      
 }
 

@@ -279,46 +279,31 @@ authCenterRouter.put('/:id/pictures', [validateAuthCentersPicture, jwtAuthorizat
 
 
 authCenterRouter.put('/:id/ratings', processingErrors(async(req, res)=>{
-    // let role = req.user.role
-    // let user = req.user.fullName
     let raitingsToUpdate = req.body
-    let foundChecker
+    let foundAuthCenter
     let id = req.params.id
-    let overallRatingSum
     let overallRating
-    foundChecker = await checkersController.findOneChecker(id)     
+    foundAuthCenter = await authCentersController.findOneAuthCenter(id)     
     
-    if (!foundChecker){
-        logger.info(`foundChecker: ${updatedChecker}`)
+    if (!foundAuthCenter){
+        logger.info(`foundAuthCenter: ${updatedChecker}`)
         res.status(409).send(`Checker:${updatedChecker} has not been found at DB...`)
         return
     }
-    // logger.info(foundChecker)
+    // logger.info(foundAuthCenter)
     const newRatings = {
-        rating_r: foundChecker.ratings.rating_r + raitingsToUpdate.ratings.rating_r,
-        rating_p: foundChecker.ratings.rating_p + raitingsToUpdate.ratings.rating_p,
-        rating_k: foundChecker.ratings.rating_k + raitingsToUpdate.ratings.rating_k,
-        rating_kw: foundChecker.ratings.rating_kw + raitingsToUpdate.ratings.rating_kw,
-        rating_t: foundChecker.ratings.rating_t + raitingsToUpdate.ratings.rating_t,
-        rating_c: foundChecker.ratings.rating_c + raitingsToUpdate.ratings.rating_c,
-        number_of_checks: foundChecker.number_of_checks + 1
+        rating_r: foundAuthCenter.ratings.rating_r + raitingsToUpdate.ratings.rating_r,
+        rating_p: foundAuthCenter.ratings.rating_p + raitingsToUpdate.ratings.rating_p,
+        rating_k: foundAuthCenter.ratings.rating_k + raitingsToUpdate.ratings.rating_k,
+        rating_kw: foundAuthCenter.ratings.rating_kw + raitingsToUpdate.ratings.rating_kw,
+        rating_t: foundAuthCenter.ratings.rating_t + raitingsToUpdate.ratings.rating_t,
+        rating_c: foundAuthCenter.ratings.rating_c + raitingsToUpdate.ratings.rating_c,
+        number_of_checks: foundAuthCenter.number_of_checks + 1
     }
     overallRating = (newRatings.rating_r + newRatings.rating_p + newRatings.rating_k + newRatings.rating_kw + newRatings.rating_t + newRatings.rating_c)/6/(newRatings.number_of_checks)
-    await checkersController.updatingRatingAndChecksNumberByChecker(newRatings, id, overallRating)
-
-    // if (role === 'user') {
-    //     logger.info(`The user with name: ${user} does NOT have privileges to Update this collection`)
-    //     res.status(403).send(`Usuario ${user} sin privilégios suficientes para actualizar datos en esta colección`)
-    //     return
-    // }
-    // if (role === 'admin'){
-    //     await checkersController.editChecker(updatedChecker, id)
-        logger.info(`Ratings of Checker with name "${foundChecker.fullName}" has been updated at DB`)
-        res.status(200).send(`Los ratings del chequeador con nombre ${foundChecker.fullName} fuéron actualizados con éxito`)
-    //     return
-    // }
-    
-    
+    await authCentersController.updatingRatingAndChecksNumberByAuthCenter(newRatings, id, overallRating)
+    logger.info(`Ratings of Checker with name "${foundAuthCenter.businessName}" has been updated at DB`)
+    res.status(200).send(`Los ratings del Centro autorizado con nombre ${foundAuthCenter.businessName} fuéron actualizados con éxito`)
 }))
 
 

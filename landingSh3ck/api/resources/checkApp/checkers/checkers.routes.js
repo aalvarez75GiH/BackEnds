@@ -210,7 +210,6 @@ checkersRouter.put('/:id/ratings', processingErrors(async(req, res)=>{
     let raitingsToUpdate = req.body
     let foundChecker
     let id = req.params.id
-    let overallRatingSum
     let overallRating
     foundChecker = await checkersController.findOneChecker(id)     
     
@@ -231,19 +230,8 @@ checkersRouter.put('/:id/ratings', processingErrors(async(req, res)=>{
     }
     overallRating = (newRatings.rating_r + newRatings.rating_p + newRatings.rating_k + newRatings.rating_kw + newRatings.rating_t + newRatings.rating_c)/6/(newRatings.number_of_checks)
     await checkersController.updatingRatingAndChecksNumberByChecker(newRatings, id, overallRating)
-
-    // if (role === 'user') {
-    //     logger.info(`The user with name: ${user} does NOT have privileges to Update this collection`)
-    //     res.status(403).send(`Usuario ${user} sin privilégios suficientes para actualizar datos en esta colección`)
-    //     return
-    // }
-    // if (role === 'admin'){
-    //     await checkersController.editChecker(updatedChecker, id)
-        logger.info(`Ratings of Checker with name "${foundChecker.fullName}" has been updated at DB`)
-        res.status(200).send(`Los ratings del chequeador con nombre ${foundChecker.fullName} fuéron actualizados con éxito`)
-    //     return
-    // }
-    
+    logger.info(`Ratings of Checker with name "${foundChecker.fullName}" has been updated at DB`)
+    res.status(200).send(`Los ratings del chequeador con nombre ${foundChecker.fullName} fuéron actualizados con éxito`)
     
 }))
 

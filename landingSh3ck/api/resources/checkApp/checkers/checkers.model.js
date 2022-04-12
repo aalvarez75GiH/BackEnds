@@ -115,7 +115,6 @@ const checker = mongoose.model('checker', new Schema({
         type: Number,
         max: 5,
         required: [true, 'Please enter checker number of checks']
-
     },
     pin: {
         type: String,
@@ -126,6 +125,10 @@ const checker = mongoose.model('checker', new Schema({
     role: {
         type: String,
         required: [true, 'Please enter a role']
+    },
+    earnings: {
+        type: Number,
+        required: [true, 'Please enter an earning']
     }    
 }))
 

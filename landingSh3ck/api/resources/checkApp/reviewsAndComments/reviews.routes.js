@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require('uuid')
 const logger = require('../../../../utils/logger')
 const reviewsController = require('./reviews.controllers')
 const checkerController = require('../checkers/checkers.controller')
+const authCentersController = require('../authCenters/authCenter.controller')
 const processingErrors = require('../../../libs/errorHandler').processingErrors
 const reviewsRouter = express.Router()
 
@@ -31,17 +32,21 @@ reviewsRouter.post('/', processingErrors(async(req,res) => {
     const newReview = req.body
     logger.info(newReview)
     let foundChecker
+    let foundAuthCenter
     foundChecker = await checkerController.findOneChecker(newReview.checker_id)
-
-    if (!foundChecker){
-        logger.info(`Checker with Id ${newReview.user_id} has not been found at DB`)
-        res.status(404).send(`El chequeador con ID ${newReview.user_id} no ha sido encontrado en la BD`)
+    foundAuthCenter = await authCentersController.findOneAuthCenter(newReview.checker_id)
+    
+    if (foundChecker || foundAuthCenter){
+        await reviewsController.createReview(newReview)
+        logger.info(`Review for checker: [${foundChecker ? foundChecker.fullName : foundAuthCenter.businessName}] has been registered`)
+        res.status(201).send(newReview)
+        return
+    }else{
+        logger.info(`Checker with Id ${newReview.checker_id} has not been found at DB`)
+        res.status(404).send(`El chequeador con ID ${newReview.checker_id} no ha sido encontrado en la BD`)
         return
     }
-    await reviewsController.createReview(newReview)
-    logger.info(`Review for checker: [${foundChecker.fullName}] has been registered`)
-    res.status(201).send(newReview)
-    return
+
 }))
 
 module.exports = reviewsRouter

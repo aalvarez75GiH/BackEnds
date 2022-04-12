@@ -119,7 +119,8 @@ const createChecker = (newChecker, hashedPIN) => {
            rating_t: 5,
            rating_c: 5
         },
-        number_of_checks: 0
+        number_of_checks: 0,
+        earnings: 0
     }).save()      
 }
 
@@ -138,7 +139,8 @@ const editChecker = (updatedChecker, id) => {
         backgroundCheck: updatedChecker.backgroundCheck,
         cityToCheck: updatedChecker.cityToCheck,
         category: updatedChecker.category, 
-        service_time: updatedChecker.service_time       
+        service_time: updatedChecker.service_time,
+        earnings:updatedChecker.earnings       
     },{
         new: true //This option is in order to return the new document modified
     })
