@@ -16,7 +16,7 @@ const emailSenderModule = (typeOfUser, email, rawPIN) => {
             service: 'gmail',
             auth:{
                 user: 'alvarez.arnoldo@gmail.com',
-                pass: '7066124602'
+                pass: 'Wh7uVm01'
             }
         })
     
