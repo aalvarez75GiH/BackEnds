@@ -39,7 +39,7 @@ const deletePayment = (id) => {
 
 const saveImageUrl = (id, imageUrl) => {
     return payment.findOneAndUpdate({_id: id},{
-        image: imageUrl
+        picture: imageUrl
     },{
         new: true //This option is in order to return the new document modified
     })

@@ -5,11 +5,11 @@ const CONTENT_TYPES_ALLOWED = [ 'image/jpeg', 'image/jpg', 'image/png', 'image/g
 
 const bluePrintPayment = Joi.object({
     name: Joi.string().min(3).max(50).required(),
-    description: Joi.string().min(1).max(300).required(),
     email: Joi.string().email().required(),
     phoneNumber: Joi.string().length(11).pattern(/^[0-9]+$/).required(),
     bank_name: Joi.string().min(3).max(150).required(),
     identification: Joi.string().min(3).max(10).required(), 
+    description: Joi.string().min(1).max(300).required(),
     picture: Joi.string(),
 })
 
