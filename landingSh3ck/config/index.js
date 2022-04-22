@@ -12,7 +12,8 @@ const baseConfiguration = {
     categoryPath: 'category',
     checkersPath: 'checkers',
     usersPath: 'users',
-    authCentersPath: 'authCenters'
+    authCentersPath: 'authCenters',
+    paymentsPath: 'payments'
 
 }
 

@@ -25,6 +25,7 @@ const checkersRouter = require('./api/resources/checkApp/checkers/checkers.route
 const checkTypesRouter = require('./api/resources/checkApp/checkTypes/checkTypes.routes')
 const reviewsRouter = require('./api/resources/checkApp/reviewsAndComments/reviews.routes')
 const authCentersRouter = require('./api/resources/checkApp/authCenters/authCenter.routes')
+const paymentsRouter = require('./api/resources/checkApp/payments/payments.routes')
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -81,6 +82,7 @@ app.use('/api/checkers', checkersRouter)
 app.use('/api/checkTypes', checkTypesRouter)
 app.use('/api/reviews', reviewsRouter)
 app.use('/api/authCenters', authCentersRouter)
+app.use('/api/payments', paymentsRouter)
 app.use(errorHandler.processingDBErrors)
 app.use(errorHandler.processingBodySizeErrors)
 
