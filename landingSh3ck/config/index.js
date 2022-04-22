@@ -5,8 +5,7 @@ const baseConfiguration = {
     port:5000,
     environment,
     s3:{
-        accessKeyId: 'AKIA6J62GRX5XQYN4FGS',
-        secretAccessKey: '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'
+        
     },
     s3BucketName: 'sh3ck-s3-bucket',
     bucketPath: 'images',
