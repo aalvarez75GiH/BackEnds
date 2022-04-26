@@ -26,6 +26,7 @@ const checkTypesRouter = require('./api/resources/checkApp/checkTypes/checkTypes
 const reviewsRouter = require('./api/resources/checkApp/reviewsAndComments/reviews.routes')
 const authCentersRouter = require('./api/resources/checkApp/authCenters/authCenter.routes')
 const paymentsRouter = require('./api/resources/checkApp/payments/payments.routes')
+const transactionsRouter = require('./api/resources/checkApp/transactions/transactions.routes')
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -83,6 +84,7 @@ app.use('/api/checkTypes', checkTypesRouter)
 app.use('/api/reviews', reviewsRouter)
 app.use('/api/authCenters', authCentersRouter)
 app.use('/api/payments', paymentsRouter)
+app.use('/api/transactions', transactionsRouter)
 app.use(errorHandler.processingDBErrors)
 app.use(errorHandler.processingBodySizeErrors)
 
