@@ -2,12 +2,28 @@ const nodemailer = require('nodemailer')
 const logger = require('./logger')
 
 const emailSenderModule = (typeOfUser, email, rawPIN) => {
+    logger.info(`this is the info from bank: ${email}`)
     const interestedUsersMessage = `Hola ${email}. Gracias por estar interesado en sh3ck`
     const usersMessage = `Hola ${email}. Gracias por registrarte en sh3ck. 
     Hemos generado el #PIN: ${rawPIN} para que ppuedas entrar. 
     `
     const checkersMessage = `Hola ${email}. Gracias por registrarte como chequeador en Sh3ck. 
     Hemos generado el #PIN: ${rawPIN} para que puedas entrar para ver tus chequeos asignados. 
+    `
+    const usersBankMessage = `Hola ${email.fullName}. Hemos recibido tu pago:
+    Los datos son los suigientes:
+    Código cuenta cliente debitada Nro: ${email.account_number}
+    Monto transferido: ${email.amount}$
+    fecha: ${email.date}
+    `
+    const sh3ckBankMessage = 
+    `BANESCO REGISTRO: Pago 
+    recibido a través de pago 
+    Móvil de ${email.fullName} por
+    Bs. ${email.amount} 
+    fecha: ${email.date}
+    REF: ${email.reference_number}. Para más inf.
+    llama al +582123451111 
     `
 
    
@@ -20,34 +36,7 @@ const emailSenderModule = (typeOfUser, email, rawPIN) => {
             }
         })
     
-        // switch (typeOfUser) {
-        //     case 'interestedUser': 
-        //         const mailOptions = {
-        //         from: 'alvarez.arnoldo@gmail.com',
-        //         to: `${email}`,
-        //         subject: 'Testing emails from BackEnd',
-        //         text: interestedUserMessage
-        //         }  
-        //         return 
-        //     case 'users':
-        //         const mailOptions = {
-        //         from: 'alvarez.arnoldo@gmail.com',
-        //         to: `${email}`,
-        //         subject: 'Testing emails from BackEnd',
-        //         text: userMessage
-        //         }  
-        //     case 'checker':
-        //         const mailOptions = {
-        //         from: 'alvarez.arnoldo@gmail.com',
-        //         to: `${email}`,
-        //         subject: 'Testing emails from BackEnd',
-        //         text: checkerMessage
-        //         }   
-                
-        
-        //     default:
-        //         break;
-        // }
+    
 
         if (typeOfUser === 'users'){
             const mailOptions = {
@@ -97,6 +86,40 @@ const emailSenderModule = (typeOfUser, email, rawPIN) => {
             })
             return 
         }
+
+        if (typeOfUser === 'userFromBank'){
+            const mailOptions = {
+            from: 'alvarez.arnoldo@gmail.com',
+            to: `${email.email}`,
+            subject: 'Confirmación Banesco',
+            text: usersBankMessage
+            }
+            transporter.sendMail(mailOptions, function(error, info) {
+                if(error) {
+                    logger.error(error)
+                }else{
+                    logger.info(`Email was sent with this response: [${info.response}]`)
+                }
+            })
+            return 
+        }
+        if (typeOfUser === 'sh3ckFromBank'){
+            const mailOptions = {
+            from: 'alvarez.arnoldo@gmail.com',
+            to: `${email.sh3ck_email}`,
+            subject: 'Banesco Registro',
+            text: sh3ckBankMessage
+            }
+            transporter.sendMail(mailOptions, function(error, info) {
+                if(error) {
+                    logger.error(error)
+                }else{
+                    logger.info(`Email was sent with this response: [${info.response}]`)
+                }
+            })
+            return 
+        }
+        
         // const mailOptions = {
         //     from: 'alvarez.arnoldo@gmail.com',
         //     to: `${email}`,

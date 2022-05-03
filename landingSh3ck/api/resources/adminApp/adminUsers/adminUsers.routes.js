@@ -62,13 +62,18 @@ adminUsersRouter.post('/', [validateAdminUsers, transformBodyToLowerCase], proce
 adminUsersRouter.post('/login', [validateAdminLoginRequest, transformBodyToLowerCase], processingErrors(async(req,res) => {
     const notAuthUser = req.body
     let foundUser
+    let dataUser
     console.log(notAuthUser)
 
     foundUser = await adminUserController.findAdminUserForLogin({ email: notAuthUser.email })    
     
     if (!foundUser){
+        dataUser = {
+            name: 'Amig@',
+            email: notAuthUser.email
+        }
         logger.info(`User with email ${notAuthUser.email} was not found at DB`)
-        res.status(400).send(`Amig@`)
+        res.status(404).send(dataUser)
         // res.status(400).send(`${notAuthUser.email}`)
         return
     }
@@ -88,17 +93,89 @@ adminUsersRouter.post('/login', [validateAdminLoginRequest, transformBodyToLower
         res.status(200).send({token})
         return        
     }else{
-        logger.info(`User with email ${notAuthUser.email} didn't complete authentication process`)
-        res.status(400).send(`${foundUser.fullName}`)     
+        dataUser = {
+            name: foundUser.fullName,
+            email: foundUser.email,
+            role: foundUser.role
+        }
+        logger.info(`User with email ${notAuthUser.email} entered a wrong PIN number and we couldn't find it`)
+        res.status(400).send(dataUser)     
+    }
+}))
+
+adminUsersRouter.put('/:id', [validateAdminUsers, transformBodyToLowerCase, jwtAuthorization], processingErrors(async(req, res)=>{
+    let role = req.user.role
+    let user = req.user.fullName
+    let updatedUser = req.body
+    let foundUser
+    let id = req.params.id
+    
+    foundUser = await adminUserController.findOneAdminUser(id)     
+    
+    if (!foundUser){
+        logger.info(`foundUser: ${updatedUser}`)
+        res.status(409).send(`Admin User:${updatedUser} has not been found at DB...`)
+        return
+    }
+    
+    if (role === 'checker' || role === 'user') {
+        logger.info(`The user with name: ${user} does NOT have privileges to Update this collection`)
+        res.status(403).send(`Usuario ${user} sin privilégios suficientes para actualizar datos en esta colección`)
+        return
+    }
+    if (role === 'admin'){
+        await adminUserController.updateAdminUser(updatedUser, id)
+        logger.info(`User with name "${foundUser.fullName}" has been updated at DB`)
+        res.status(200).send(`El usuario con nombre ${updatedUser.fullName} fué actualizado con éxito`)
+        return
+    }else{
+        logger.info(`Token NOT valid to update this user account`)
+        res.status(404).send(`El token usado no es valido o  No tiene privilegios para actualizar esta cuenta`)
+        return
+    }
+}))
+
+adminUsersRouter.delete('/:id', jwtAuthorization, processingErrors(async(req, res)=>{
+    let role = req.user.role
+    let user = req.user.fullName
+    let foundUser
+    let id = req.params.id
+    
+    foundUser = await adminUserController.findOneAdminUser(id)     
+    
+    if (!foundUser){
+        logger.info(`foundUser: ${id}`)
+        res.status(409).send(`Admin User with ID:${id} has not been found at DB...`)
+        return
+    }
+    
+    if (role === 'checker' || role === 'user') {
+        logger.info(`The user with name: ${user} does NOT have privileges to delete from this collection`)
+        res.status(403).send(`Usuario ${user} sin privilégios suficientes para eliminar datos en esta colección`)
+        return
+    }
+    if (role === 'admin'){
+        await adminUserController.deleteAdminUser(id)
+        logger.info(`User with ID "${id}" and name ${foundUser.fullName} has been deleted from DB`)
+        res.status(200).send(`El usuario de ID ${id} fué eliminado con éxito`)
+        return
+    }else{
+        logger.info(`Token NOT valid to update this user account`)
+        res.status(404).send(`El token usado no es valido o  no tiene privilegios para eliminar esta cuenta`)
+        return
     }
 }))
 
 adminUsersRouter.get('/me', jwtAuthorization, (req,res) => {
-    let dataUser = req.user.fullName
-    let role = req.user.role
+    // let dataUser = req.user.fullName
+    let dataUser = {
+        name: req.user.fullName,
+        email: req.user.email,
+        phoneNumber: req.user.phoneNumber,
+        address: req.user.address,
+        role: req.user.role
+    }
     logger.info(dataUser)
-    logger.info(role)
-
     res.send(dataUser)
 })
 

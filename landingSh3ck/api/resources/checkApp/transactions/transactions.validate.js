@@ -2,7 +2,7 @@ const Joi = require('@hapi/joi')
 const logger = require('../../../../utils/logger')
 
 const bluePrintTransaction = Joi.object({
-    user_name: Joi.string().min(1).max(50),
+    user_name: Joi.string().max(50).allow(""),
     reference_number: Joi.string().min(1).max(12).required(),
     date: Joi.string().required(),
     amount: Joi.number().required()

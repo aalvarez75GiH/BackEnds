@@ -4,7 +4,6 @@ const Schema = mongoose.Schema
 const transaction = mongoose.model('transactions', new Schema({
     user_name: {
         type: String,
-        min: 3,
         max: 50
     },
     reference_number:{

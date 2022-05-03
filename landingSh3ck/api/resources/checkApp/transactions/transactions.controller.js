@@ -25,7 +25,7 @@ const editTransaction = (id, transactionToUpdate) => {
         ...transactionToUpdate,
         user_name: transactionToUpdate.user_name,
         amount: transactionToUpdate.amount,
-        data: transactionToUpdate.date,
+        date: transactionToUpdate.date,
         reference_number: transactionToUpdate.reference_number,
 
     },{

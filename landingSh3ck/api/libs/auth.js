@@ -2,7 +2,7 @@ const logger = require('../../utils/logger')
 const passportJWT = require('passport-jwt')
 const config = require('../../config')
 const usersController = require('../resources/users/users.controller')
-const adminUsersController = require('../resources/checkApp/adminUsers/adminUsers.controller')
+const adminUsersController = require('../resources/adminApp/adminUsers/adminUsers.controller')
 const checkersController = require('../resources/checkApp/checkers/checkers.controller')
 const authCentersController = require('../resources/checkApp/authCenters/authCenter.controller')
 
@@ -48,7 +48,11 @@ module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
                 }else{
                     next(null, {
                         fullName: foundAdmin.fullName,
-                        role: foundAdmin.role    
+                        email: foundAdmin.email,
+                        phoneNumber: foundAdmin.phoneNumber,
+                        address: foundAdmin.address,
+                        role: foundAdmin.role
+                            
                     }) 
                 }
                 

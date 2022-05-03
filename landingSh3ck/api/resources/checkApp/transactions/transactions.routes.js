@@ -1,13 +1,14 @@
 const express = require('express')
 const passport = require('passport')
 const jwtAuthorization = passport.authenticate('jwt', { session: false })
+const Intl = require("intl")
 
 const logger = require('../../../../utils/logger')
 const transactionController = require('./transactions.controller')
 const processingErrors = require('../../../libs/errorHandler').processingErrors 
 const validateTransaction = require('./transactions.validate')
 const {paymentNotFoundFound} = require('./transactions.errors')
-
+const emailSender = require('../../../../utils/emailSender').emailSenderModule
 const transactionRouter = express.Router()
 
 transactionRouter.get('/', processingErrors(async(req,res) => {
@@ -37,17 +38,19 @@ transactionRouter.get('/:ref_number', processingErrors(async(req,res) => {
 }))
 
 // Transaction created by Admin User
-transactionRouter.post('/',[jwtAuthorization] , processingErrors(async(req,res) => {
+transactionRouter.post('/',[validateTransaction, jwtAuthorization] , processingErrors(async(req,res) => {
     let user = req.user.fullName
     let role = req.user.role
     let newTransaction = req.body
+    
+     
     logger.info(`Transaction Ref #: ${newTransaction.reference_number}`)
     logger.info(`newTransaction: ${newTransaction}`)
     let foundTransaction
     foundTransaction = await transactionController.findTransactionByReferenceNumber(newTransaction.reference_number)
     if (foundTransaction){
-        logger.info(`foundTransaction: ${foundTransaction}`)
-        res.status(409).send(`Transaction with Ref #:${foundTransaction.reference_number} already exists and can not be duplicated`)
+        logger.info(`Transaction with Ref #:${foundTransaction.reference_number} already exists and can not be duplicated`)
+        res.status(409).send(foundTransaction.reference_number)
         return
     }
     if (role === 'user') {
@@ -55,12 +58,44 @@ transactionRouter.post('/',[jwtAuthorization] , processingErrors(async(req,res) 
         res.status(403).send('Usuario sin privilégios suficientes para agregar datos a esta colección')
         return
     }
-    if (role === 'admin'){
+    if (role === 'collections'){
         await transactionController.createTransaction(newTransaction)
         logger.info(`Transaction with ref # ${newTransaction.reference_number} has been created successfully at DB`)
-        res.status(201).send(newTransaction.reference_number)
+        res.status(201).send(newTransaction)
         return
     }
+ 
+}))
+
+// ************************** Bank simulator
+transactionRouter.post('/bankUser', processingErrors(async(req,res) => {
+    let emailInfoToSend = req.body
+    logger.info(`Email to send #: ${emailInfoToSend}`)
+    
+    return new Promise((resolve,reject) => {
+        resolve(emailSender('userFromBank', emailInfoToSend))
+    }).then((response) => {
+        logger.info(response)
+        res.status(200).send(response)
+    }).catch(error => {
+        logger.info(error)
+    })
+    
+ 
+}))
+transactionRouter.post('/bankSh3ck', processingErrors(async(req,res) => {
+    let emailInfoToSend = req.body
+    logger.info(`Email to send #: ${emailInfoToSend}`)
+    
+    return new Promise((resolve,reject) => {
+        resolve(emailSender('sh3ckFromBank', emailInfoToSend))
+    }).then((response) => {
+        logger.info(response)
+        res.status(200).send(response)
+    }).catch(error => {
+        logger.info(error)
+    })
+    
  
 }))
 
