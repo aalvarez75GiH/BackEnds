@@ -10,10 +10,14 @@ const emailSenderModule = (typeOfUser, email, rawPIN) => {
     const checkersMessage = `Hola ${email}. Gracias por registrarte como chequeador en Sh3ck. 
     Hemos generado el #PIN: ${rawPIN} para que puedas entrar para ver tus chequeos asignados. 
     `
+    const newPINMessage = `Hola ${email}. Hemos generado este nuevo #PIN: ${rawPIN} para que puédas entrar y
+    disfrutar de nuesto servicio de chequeos, vé e inicia sesión. 
+    `
     const usersBankMessage = `Hola ${email.fullName}. Hemos recibido tu pago:
     Los datos son los suigientes:
     Código cuenta cliente debitada Nro: ${email.account_number}
     Monto transferido: ${email.amount}$
+    REF: ${email.reference_number}
     fecha: ${email.date}
     `
     const sh3ckBankMessage = 
@@ -54,6 +58,23 @@ const emailSenderModule = (typeOfUser, email, rawPIN) => {
             })
             return 
         }
+        if (typeOfUser === 'user_new_PIN'){
+            const mailOptions = {
+            from: 'alvarez.arnoldo@gmail.com',
+            to: `${email}`,
+            subject: 'Bienvenido nuevo usuario',
+            text: newPINMessage
+            }
+            transporter.sendMail(mailOptions, function(error, info) {
+                if(error) {
+                    logger.error(error)
+                }else{
+                    logger.info(`Email was sent with this response: [${info.response}]`)
+                }
+            })
+            return 
+        }
+        
         if (typeOfUser === 'checkers'){
             const mailOptions = {
             from: 'alvarez.arnoldo@gmail.com',

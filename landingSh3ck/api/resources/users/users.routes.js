@@ -238,7 +238,7 @@ usersRouter.put('/:email/newPIN', processingErrors(async(req,res) => {
             role: foundUser.role
         }
         logger.info(updatedUser)
-        emailSender('users', foundUser.email, randomPIN)
+        emailSender('user_new_PIN', foundUser.email, randomPIN)
         res.status(200).send(dataUser)
     })
 }))
