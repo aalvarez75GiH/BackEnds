@@ -70,21 +70,3 @@ module.exports = {
   updateWarehouse,
   deleteWarehouse,
 };
-
-// [
-
-//   {
-//       "name": "Mr Emilio Store - Winder",
-//       "address": "79 E Athens St, Winder, GA 30680",
-//       "work_hour": "9:00 am - 10:00 pm",
-//       "geometry": {
-//           "location": {
-//               "lat": 33.99142934065858,
-//               "lng": -83.71976174174195
-//           }
-//       },
-//       "picture": "",
-//       "max_limit_ratio_pickup": 32186.9,
-//       "max_limit_ratio_delivery": 32186.9
-//   }
-// ]
