@@ -35,7 +35,7 @@ ordersRouter.get("/", (req, res) => {
             stripe_order_id: doc.data().stripe_order_id,
             warehouse_to_pickup: doc.data().warehouse_to_pickup,
           };
-          console.log(selectedOrder);
+          //   console.log(selectedOrder);
           orders.push(selectedOrder);
         });
         console.log(orders);
@@ -73,7 +73,7 @@ ordersRouter.get("/customer/:uid", (req, res) => {
   (async () => {
     try {
       await ordersController.getOrderByCustomerUID(uid).then((data) => {
-        console.log("DATA:", data);
+        // console.log("DATA:", data);
         res.status(200).json(data);
       });
     } catch (error) {

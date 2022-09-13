@@ -21,7 +21,7 @@ paymentsRouter.post("/", (req, res) => {
         },
         confirm: true,
       });
-      console.log(paymentIntentResponse);
+      //   console.log(paymentIntentResponse);
       res.json(paymentIntentResponse);
       return;
     } catch (error) {

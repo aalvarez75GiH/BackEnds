@@ -18,7 +18,7 @@ companyRouter.get("/:id", validateID, (req, res) => {
   const id = req.params.id;
   (async () => {
     await companyController.getCompanyDataById(id).then((response) => {
-      console.log("COMPANY DATA AT END POINT:", response);
+      //   console.log("COMPANY DATA AT END POINT:", response);
       res.status(200).json(response);
     });
   })();

@@ -4,14 +4,6 @@ const validate = require("uuid-validate");
 const productController = require("./products.controllers");
 const productsRouter = express.Router();
 
-// const validateID = (req, res, next) => {
-//   let id = req.params.id;
-//   if (id.match(/^[0-9]{13}$/) === null) {
-//     res.status(400).send(`id [${id}] entered is not valid...`);
-//     return;
-//   }
-//   next();
-// };
 const validateID = (req, res, next) => {
   let id = req.params.id;
   const validation = validate(id);
@@ -43,7 +35,7 @@ productsRouter.get("/", (req, res) => {
           console.log(selectedProduct);
           products.push(selectedProduct);
         });
-        console.log(products);
+        // console.log(products);
         res.status(200).json(products);
       });
     } catch (error) {

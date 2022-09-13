@@ -91,11 +91,14 @@ warehousesRouter.get("/geocoding", (req, res) => {
     var config = {
       method: "get",
       url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&result_type=street_address&key=${process.env.GOOGLE_KEY}`,
+      // url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&result_type=street_address&types=administrative_area_level_1&key=${process.env.GOOGLE_KEY}`,
+
       headers: {},
     };
 
     await axios(config)
       .then((responseFromGoogle) => {
+        // console.log("RESULTS:", responseFromGoogle.data);
         console.log(
           "response from Google",
           responseFromGoogle.data.results[0].address_components
@@ -183,7 +186,7 @@ warehousesRouter.get("/distanceMatrix", (req, res) => {
               : current;
           }
         );
-        // console.log("Most Closest Warehouse to customer:", closest_warehouse);
+        console.log("Most Closest Warehouse to customer:", closest_warehouse);
         most_optimum_warehouse_forCustomer.push(closest_warehouse);
         res.status(200).send(most_optimum_warehouse_forCustomer);
       });
