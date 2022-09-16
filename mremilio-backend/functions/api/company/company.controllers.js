@@ -1,7 +1,7 @@
-const db = require("../../fb");
+const firebase_controller = require("../../fb");
 
 const getCompanyDataById = async (id) => {
-  return await db
+  return await firebase_controller.db
     .collection("company")
     .doc(id)
     .get()
@@ -20,20 +20,23 @@ const createCompany = async (company) => {
     company_id,
   } = company;
   console.log(company);
-  return await db.collection("company").doc(`/${company_id}/`).create({
-    company_id,
-    companyOfficialInfo: {
-      company_name,
-      address,
-      owner,
-    },
-    companyFeesAndTaxes: {
-      shippingAndHandling_fee,
-      pickup_fee,
-      discount,
-      tax_fee,
-    },
-  });
+  return await firebase_controller.db
+    .collection("company")
+    .doc(`/${company_id}/`)
+    .create({
+      company_id,
+      companyOfficialInfo: {
+        company_name,
+        address,
+        owner,
+      },
+      companyFeesAndTaxes: {
+        shippingAndHandling_fee,
+        pickup_fee,
+        discount,
+        tax_fee,
+      },
+    });
 };
 
 module.exports = {

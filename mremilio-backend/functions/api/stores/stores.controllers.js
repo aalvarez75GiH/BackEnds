@@ -1,14 +1,14 @@
-const db = require("../../fb");
+const firebase_controller = require("../../fb");
 
 const getAllStores = async () => {
-  return await db
+  return await firebase_controller.db
     .collection("stores")
     .get()
     .then((data) => data);
 };
 
 const getStoreById = async (id) => {
-  return await db
+  return await firebase_controller.db
     .collection("stores")
     .doc(id)
     .get()
@@ -18,7 +18,7 @@ const getStoreById = async (id) => {
 const getStoresByCity = async (city) => {
   console.log(city);
   let stores = [];
-  return await db
+  return await firebase_controller.db
     .collection("stores")
     .where(`city`, "==", city)
     .get()
@@ -45,18 +45,21 @@ const createStore = async (store) => {
     city,
     store_products,
   } = store;
-  return await db.collection("stores").doc(`/${store_id}/`).create({
-    name,
-    address,
-    work_hour,
-    phone_number,
-    geometry,
-    picture,
-    place_id,
-    store_id,
-    city,
-    store_products,
-  });
+  return await firebase_controller.db
+    .collection("stores")
+    .doc(`/${store_id}/`)
+    .create({
+      name,
+      address,
+      work_hour,
+      phone_number,
+      geometry,
+      picture,
+      place_id,
+      store_id,
+      city,
+      store_products,
+    });
 };
 
 const updateStore = async (store, id) => {
@@ -72,7 +75,7 @@ const updateStore = async (store, id) => {
     city,
     store_products,
   } = store;
-  return await db.collection("stores").doc(id).update({
+  return await firebase_controller.db.collection("stores").doc(id).update({
     name,
     address,
     work_hour,
@@ -87,7 +90,7 @@ const updateStore = async (store, id) => {
 };
 
 const deleteStore = async (id) => {
-  return await db.collection("stores").doc(id).delete();
+  return await firebase_controller.db.collection("stores").doc(id).delete();
 };
 
 module.exports = {

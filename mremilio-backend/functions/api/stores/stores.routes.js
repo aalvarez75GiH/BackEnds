@@ -1,9 +1,8 @@
 const express = require("express");
-const url = require("url");
+
 const { v4: uuidv4 } = require("uuid");
 const validate = require("uuid-validate");
 const storesRouter = express.Router();
-const axios = require("axios");
 require("dotenv").config();
 const storesControllers = require("./stores.controllers");
 

@@ -1,14 +1,14 @@
-const db = require("../../fb");
+const firebase_controller = require("../../fb");
 
 const getAllProducts = async () => {
-  return await db
+  return await firebase_controller.db
     .collection("products")
     .get()
     .then((data) => data);
 };
 
 const getProductById = async (id) => {
-  return await db
+  return await firebase_controller.db
     .collection("products")
     .doc(id)
     .get()
@@ -28,23 +28,26 @@ const createProduct = async (product) => {
     product_id,
   } = product;
   // return await db.collection("products").doc(`/${Date.now()}/`).create({
-  return await db.collection("products").doc(`/${product_id}/`).create({
-    name,
-    description,
-    price,
-    stock,
-    size,
-    quantity,
-    picture,
-    rating,
-    product_id,
-  });
+  return await firebase_controller.db
+    .collection("products")
+    .doc(`/${product_id}/`)
+    .create({
+      name,
+      description,
+      price,
+      stock,
+      size,
+      quantity,
+      picture,
+      rating,
+      product_id,
+    });
 };
 
 const updateProduct = async (product, id) => {
   const { name, description, price, stock, size, quantity, picture, rating } =
     product;
-  return await db.collection("products").doc(id).update({
+  return await firebase_controller.db.collection("products").doc(id).update({
     name,
     description,
     price,
@@ -56,7 +59,7 @@ const updateProduct = async (product, id) => {
   });
 };
 const deleteProduct = async (id) => {
-  return await db.collection("products").doc(id).delete();
+  return await firebase_controller.db.collection("products").doc(id).delete();
 };
 
 module.exports = {

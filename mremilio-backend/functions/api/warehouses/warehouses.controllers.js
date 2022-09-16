@@ -1,14 +1,14 @@
-const db = require("../../fb");
+const firebase_controller = require("../../fb");
 
 const getAllWarehouses = async () => {
-  return await db
+  return await firebase_controller.db
     .collection("warehouses")
     .get()
     .then((data) => data);
 };
 
 const getWarehouseById = async (id) => {
-  return await db
+  return await firebase_controller.db
     .collection("warehouses")
     .doc(id)
     .get()
@@ -49,7 +49,7 @@ const updateWarehouse = async (warehouse, id) => {
     max_limit_ratio_delivery,
     picture,
   } = warehouse;
-  return await db.collection("warehouses").doc(id).update({
+  return await firebase_controller.db.collection("warehouses").doc(id).update({
     name,
     geometry,
     work_hour,
@@ -60,7 +60,7 @@ const updateWarehouse = async (warehouse, id) => {
   });
 };
 const deleteWarehouse = async (id) => {
-  return await db.collection("warehouses").doc(id).delete();
+  return await firebase_controller.db.collection("warehouses").doc(id).delete();
 };
 
 module.exports = {

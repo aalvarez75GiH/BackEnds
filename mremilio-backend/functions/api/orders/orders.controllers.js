@@ -1,14 +1,14 @@
-const db = require("../../fb");
+const firebase_controller = require("../../fb");
 
 const getAllOrders = async () => {
-  return await db
+  return await firebase_controller.db
     .collection("orders")
     .get()
     .then((data) => data);
 };
 
 const getOrderById = async (id) => {
-  return await db
+  return await firebase_controller.db
     .collection("orders")
     .doc(id)
     .get()
@@ -18,7 +18,7 @@ const getOrderById = async (id) => {
 const getOrderByCustomerUID = async (uid) => {
   console.log(uid);
   let orders = [];
-  return await db
+  return await firebase_controller.db
     .collection("orders")
     .where(`customer.uid`, "==", uid)
     .get()
@@ -36,7 +36,7 @@ const getOrderByCustomerUID = async (uid) => {
 const getOrderByCustomerEmail = async (email) => {
   console.log(email);
   let orders = [];
-  return await db
+  return await firebase_controller.db
     .collection("orders")
     .where(`customer.email`, "==", email)
     .get()
@@ -50,8 +50,8 @@ const getOrderByCustomerEmail = async (email) => {
     });
 };
 
-// var db = firebase.firestore();
-//     var query = db.collection('orders').where("customer", "==", { uid: "xyz", userName: "abc" });
+// var firebase_controller.db = firebase.firestore();
+//     var query = firebase_controller.db.collection('orders').where("customer", "==", { uid: "xyz", userName: "abc" });
 
 const createOrder = async (order) => {
   const {
@@ -67,18 +67,21 @@ const createOrder = async (order) => {
     warehouse_to_pickup,
     order_id,
   } = order;
-  return await db.collection("orders").doc(`/${order_id}/`).create({
-    customer,
-    delivery_type,
-    order_date,
-    order_number,
-    order_products,
-    order_total,
-    payment_information,
-    status,
-    stripe_order_id,
-    warehouse_to_pickup,
-  });
+  return await firebase_controller.db
+    .collection("orders")
+    .doc(`/${order_id}/`)
+    .create({
+      customer,
+      delivery_type,
+      order_date,
+      order_number,
+      order_products,
+      order_total,
+      payment_information,
+      status,
+      stripe_order_id,
+      warehouse_to_pickup,
+    });
 };
 
 const updateOrder = async (order, id) => {
@@ -94,7 +97,7 @@ const updateOrder = async (order, id) => {
     stripe_order_id,
     warehouse_to_pickup,
   } = order;
-  return await db.collection("orders").doc(id).update({
+  return await firebase_controller.db.collection("orders").doc(id).update({
     customer,
     delivery_type,
     order_date,
@@ -109,7 +112,7 @@ const updateOrder = async (order, id) => {
 };
 
 const deleteOrder = async (id) => {
-  return await db.collection("orders").doc(id).delete();
+  return await firebase_controller.db.collection("orders").doc(id).delete();
 };
 
 module.exports = {
