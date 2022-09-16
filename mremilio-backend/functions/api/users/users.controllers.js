@@ -19,17 +19,27 @@ const getUserByUID = async (uid) => {
 const createUser = async (user) => {
   const { name, email, address, phone_number, role, uid, user_id, favourites } =
     user;
+  await firebase_controller.db.collection("users").doc(`/${user_id}/`).create({
+    name,
+    email,
+    address,
+    phone_number,
+    role,
+    uid,
+    favourites,
+  });
+  let newUser = [];
   return await firebase_controller.db
     .collection("users")
-    .doc(`/${user_id}/`)
-    .create({
-      name,
-      email,
-      address,
-      phone_number,
-      role,
-      uid,
-      favourites,
+    .where(`uid`, "==", uid)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data());
+        newUser.push(doc.data());
+      });
+      console.log("NEW USER:", newUser);
+      return newUser;
     });
 };
 

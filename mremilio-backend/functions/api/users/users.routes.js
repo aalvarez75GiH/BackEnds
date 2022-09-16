@@ -47,11 +47,12 @@ usersRouter.post("/", (req, res) => {
   console.log("USER AT END POINT:", user);
   (async () => {
     try {
-      await usersControllers.createUser(user).then(() => {
-        return res.status(201).send({
-          status: "Success",
-          msg: "User saved successfully...",
-        });
+      await usersControllers.createUser(user).then((newUser) => {
+        res.status(201).json(newUser);
+        // return res.status(201).send({
+        //   status: "Success",
+        //   msg: "User saved successfully...",
+        // });
       });
     } catch (error) {
       console.log(error);
