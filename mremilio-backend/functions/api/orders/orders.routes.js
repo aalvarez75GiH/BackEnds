@@ -175,6 +175,24 @@ ordersRouter.put("/:id", (req, res) => {
   })();
 });
 
+ordersRouter.delete("/", (req, res) => {
+  (async () => {
+    try {
+      await ordersController.deleteAllOrder().then(() => {
+        return res.status(200).send({
+          status: "Success",
+          msg: "Orders deleted successfully...",
+        });
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: "Failed",
+        msg: error,
+      });
+    }
+  })();
+});
+
 ordersRouter.delete("/:id", validateID, (req, res) => {
   const id = req.params.id;
   (async () => {

@@ -114,6 +114,16 @@ const updateOrder = async (order, id) => {
 const deleteOrder = async (id) => {
   return await firebase_controller.db.collection("orders").doc(id).delete();
 };
+const deleteAllOrder = async () => {
+  return await firebase_controller.db
+    .collection("orders")
+    .listDocuments()
+    .then((val) => {
+      val.map((val) => {
+        val.delete();
+      });
+    });
+};
 
 module.exports = {
   getAllOrders,
@@ -123,4 +133,5 @@ module.exports = {
   createOrder,
   updateOrder,
   deleteOrder,
+  deleteAllOrder,
 };
