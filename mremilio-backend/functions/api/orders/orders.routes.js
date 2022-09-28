@@ -115,6 +115,7 @@ ordersRouter.post("/", (req, res) => {
   const order = {
     customer: req.body.customer,
     delivery_type: req.body.delivery_type,
+    delivery_time: req.body.delivery_time,
     order_date: req.body.order_date,
     order_products: req.body.order_products,
     order_total: req.body.order_total,
@@ -148,6 +149,7 @@ ordersRouter.put("/:id", (req, res) => {
   const order = {
     customer: req.body.customer,
     delivery_type: req.body.delivery_type,
+    delivery_time: req.body.delivery_time,
     order_date: req.body.order_date,
     order_number: req.body.order_number,
     order_products: req.body.order_products,

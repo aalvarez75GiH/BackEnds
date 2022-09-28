@@ -24,6 +24,7 @@ const createWarehouse = async (warehouse) => {
     picture,
     max_limit_ratio_pickup,
     max_limit_ratio_delivery,
+    max_delivery_time,
     warehouse_id,
   } = warehouse;
   return await db.collection("warehouses").doc(`/${warehouse_id}/`).create({
@@ -35,6 +36,7 @@ const createWarehouse = async (warehouse) => {
     picture,
     max_limit_ratio_pickup,
     max_limit_ratio_delivery,
+    max_delivery_time,
     warehouse_id,
   });
 };
@@ -47,6 +49,7 @@ const updateWarehouse = async (warehouse, id) => {
     address,
     max_limit_ratio_pickup,
     max_limit_ratio_delivery,
+    max_delivery_time,
     picture,
   } = warehouse;
   return await firebase_controller.db.collection("warehouses").doc(id).update({
@@ -56,6 +59,7 @@ const updateWarehouse = async (warehouse, id) => {
     address,
     max_limit_ratio_pickup,
     max_limit_ratio_delivery,
+    max_delivery_time,
     picture,
   });
 };

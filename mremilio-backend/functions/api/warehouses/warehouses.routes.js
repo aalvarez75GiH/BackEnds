@@ -30,6 +30,7 @@ const arrayingWarehouses = (data) => {
       picture: doc.data().picture,
       max_limit_ratio_pickup: doc.data().max_limit_ratio_pickup,
       max_limit_ratio_delivery: doc.data().max_limit_ratio_delivery,
+      max_delivery_time: doc.data().max_delivery_time,
       warehouse_id: doc.data().warehouse_id,
     };
     console.log(selectedWarehouse);
@@ -56,32 +57,6 @@ warehousesRouter.get("/", (req, res) => {
     }
   })();
 });
-
-// Determine Physical Address of device current location
-// warehousesRouter.get("/geocoding", (req, res) => {
-//   (async () => {
-//     const { lat, lng } = url.parse(req.url, true).query;
-//     console.log("Lat:", lat, "Lng:", lng);
-
-//     var config = {
-//       method: "get",
-//       url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&result_type=street_address&key=${process.env.GOOGLE_KEY}`,
-//       headers: {},
-//     };
-
-//     await axios(config)
-//       .then((responseFromGoogle) => {
-//         console.log(
-//           "response from Google",
-//           responseFromGoogle.data.results[0].address_components
-//         );
-//         res.json(responseFromGoogle.data.results[0].formatted_address);
-//       })
-//       .catch((error) => {
-//         console.log("ERROR:", error);
-//       });
-//   })();
-// });
 
 warehousesRouter.get("/geocoding", (req, res) => {
   (async () => {
@@ -229,6 +204,7 @@ warehousesRouter.post("/", (req, res) => {
     picture: req.body.picture,
     max_limit_ratio_pickup: req.body.max_limit_ratio_pickup,
     max_limit_ratio_delivery: req.body.max_limit_ratio_delivery,
+    max_delivery_time: req.body.max_delivery_time,
     warehouse_id,
   };
   (async () => {
@@ -259,6 +235,7 @@ warehousesRouter.put("/:id", validateID, (req, res) => {
     address: req.body.address,
     max_limit_ratio_pickup: req.body.max_limit_ratio_pickup,
     max_limit_ratio_delivery: req.body.max_limit_ratio_delivery,
+    max_delivery_time: req.body.max_delivery_time,
     picture: req.body.picture,
   };
   (async () => {

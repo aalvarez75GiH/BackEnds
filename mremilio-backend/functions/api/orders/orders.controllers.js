@@ -57,6 +57,7 @@ const createOrder = async (order) => {
   const {
     customer,
     delivery_type,
+    delivery_time,
     order_date,
     order_number,
     order_products,
@@ -73,6 +74,7 @@ const createOrder = async (order) => {
     .create({
       customer,
       delivery_type,
+      delivery_time,
       order_date,
       order_number,
       order_products,
@@ -88,6 +90,7 @@ const updateOrder = async (order, id) => {
   const {
     customer,
     delivery_type,
+    delivery_time,
     order_date,
     order_number,
     order_products,
@@ -100,6 +103,7 @@ const updateOrder = async (order, id) => {
   return await firebase_controller.db.collection("orders").doc(id).update({
     customer,
     delivery_type,
+    delivery_time,
     order_date,
     order_number,
     order_products,
