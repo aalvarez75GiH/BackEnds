@@ -32,6 +32,7 @@ const arrayingWarehouses = (data) => {
       max_limit_ratio_delivery: doc.data().max_limit_ratio_delivery,
       max_delivery_time: doc.data().max_delivery_time,
       warehouse_id: doc.data().warehouse_id,
+      products: doc.data().products,
     };
     console.log(selectedWarehouse);
     warehouses.push(selectedWarehouse);
@@ -206,6 +207,7 @@ warehousesRouter.post("/", (req, res) => {
     max_limit_ratio_delivery: req.body.max_limit_ratio_delivery,
     max_delivery_time: req.body.max_delivery_time,
     warehouse_id,
+    products: req.body.products,
   };
   (async () => {
     try {
@@ -237,6 +239,7 @@ warehousesRouter.put("/:id", validateID, (req, res) => {
     max_limit_ratio_delivery: req.body.max_limit_ratio_delivery,
     max_delivery_time: req.body.max_delivery_time,
     picture: req.body.picture,
+    products: req.body.products,
   };
   (async () => {
     try {

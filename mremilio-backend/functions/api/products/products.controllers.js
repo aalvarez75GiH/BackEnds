@@ -26,6 +26,7 @@ const createProduct = async (product) => {
     picture,
     rating,
     product_id,
+    area_availability,
   } = product;
   // return await db.collection("products").doc(`/${Date.now()}/`).create({
   return await firebase_controller.db
@@ -41,12 +42,22 @@ const createProduct = async (product) => {
       picture,
       rating,
       product_id,
+      area_availability,
     });
 };
 
 const updateProduct = async (product, id) => {
-  const { name, description, price, stock, size, quantity, picture, rating } =
-    product;
+  const {
+    name,
+    description,
+    price,
+    stock,
+    size,
+    quantity,
+    picture,
+    rating,
+    area_availability,
+  } = product;
   return await firebase_controller.db.collection("products").doc(id).update({
     name,
     description,
@@ -56,6 +67,7 @@ const updateProduct = async (product, id) => {
     quantity,
     picture,
     rating,
+    area_availability,
   });
 };
 const deleteProduct = async (id) => {

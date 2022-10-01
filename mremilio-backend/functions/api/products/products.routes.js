@@ -31,6 +31,7 @@ productsRouter.get("/", (req, res) => {
             picture: doc.data().picture,
             rating: doc.data().rating,
             product_id: doc.data().product_id,
+            area_availability: doc.data().area_availability,
           };
           console.log(selectedProduct);
           products.push(selectedProduct);
@@ -76,6 +77,7 @@ productsRouter.post("/", (req, res) => {
     picture: req.body.picture,
     rating: req.body.rating,
     product_id,
+    area_availability: req.body.area_availability,
   };
   (async () => {
     try {
@@ -106,6 +108,7 @@ productsRouter.put("/:id", validateID, (req, res) => {
     quantity: req.body.quantity,
     picture: req.body.picture,
     rating: req.body.rating,
+    area_availability: req.body.area_availability,
   };
   (async () => {
     try {
