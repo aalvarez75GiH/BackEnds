@@ -5,6 +5,7 @@ const validate = require("uuid-validate");
 
 const ordersController = require("./orders.controllers");
 const ordersRouter = express.Router();
+const warehouseControllers = require("../warehouses/warehouses.controllers");
 
 const validateID = (req, res, next) => {
   let id = req.params.id;
@@ -91,7 +92,7 @@ ordersRouter.get("/customer/email/:email", (req, res) => {
   (async () => {
     try {
       await ordersController.getOrderByCustomerEmail(email).then((data) => {
-        console.log("DATA:", data);
+        // console.log("DATA:", data);
         res.status(200).json(data);
       });
     } catch (error) {
@@ -103,14 +104,36 @@ ordersRouter.get("/customer/email/:email", (req, res) => {
   })();
 });
 
+const handlingProductsQuantity = async (data) => {
+  (async () => {
+    try {
+      const products =
+        await warehouseControllers.updateProductsQuantityAtWarehouse(
+          data.warehouse,
+          data.order_products
+        );
+    } catch (error) {
+      return res.status(500).send({
+        status: "Failed",
+        msg: "Something went wrong updating Quantity of products at waerehouse",
+      });
+    }
+  })();
+};
+
 ordersRouter.post("/", (req, res) => {
   // Generating Order number
   const randomOrderNumber = Math.floor(100000 + Math.random() * 900000);
   const order_number = `ME-${randomOrderNumber.toString()}`;
-  console.log(order_number);
+  // console.log(order_number);
 
   // Generating Order Document Id
   const order_id = uuidv4();
+
+  const dataToQuantity = {
+    warehouse: req.body.warehouse_to_pickup,
+    order_products: req.body.order_products,
+  };
 
   const order = {
     customer: req.body.customer,
@@ -125,10 +148,12 @@ ordersRouter.post("/", (req, res) => {
     warehouse_to_pickup: req.body.warehouse_to_pickup,
     order_id,
   };
-  //   console.log("ORDER:", order);
 
   Object.assign(order, { order_number: order_number });
-  console.log("ORDER WITH NUMBER:", order);
+
+  const response = handlingProductsQuantity(dataToQuantity);
+
+  // console.log("ORDER WITH NUMBER:", order);
   (async () => {
     try {
       await ordersController.createOrder(order).then(() => {

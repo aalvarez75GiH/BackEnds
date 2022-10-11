@@ -14,6 +14,13 @@ const getWarehouseById = async (id) => {
     .get()
     .then((warehouse) => warehouse.data());
 };
+const getWarehouseByIdReturningProducts = async (id) => {
+  return await firebase_controller.db
+    .collection("warehouses")
+    .doc(id)
+    .get()
+    .then((warehouse) => warehouse.data().products);
+};
 
 const createWarehouse = async (warehouse) => {
   const {
@@ -70,6 +77,30 @@ const updateWarehouse = async (warehouse, id) => {
     products,
   });
 };
+
+const updateProductsQuantityAtWarehouse = async (warehouse, order_products) => {
+  console.log("WAREHOUSE_PRODUCTS:", warehouse.products);
+  console.log("ORDER_PRODUCTS:", order_products);
+  let warehouse_products = warehouse.products;
+
+  const new_array = warehouse_products.map((element, index) => {
+    order_products.map((order_product) => {
+      if (order_product.product_id === element.product_id) {
+        element.stock = element.stock - order_product.quantity;
+      }
+    });
+    return element;
+  });
+  console.log("NEW ARRAY:", new_array);
+
+  await firebase_controller.db
+    .collection("warehouses")
+    .doc(warehouse.warehouse_id)
+    .update({
+      products: new_array,
+    });
+};
+
 const deleteWarehouse = async (id) => {
   return await firebase_controller.db.collection("warehouses").doc(id).delete();
 };
@@ -77,7 +108,9 @@ const deleteWarehouse = async (id) => {
 module.exports = {
   getAllWarehouses,
   getWarehouseById,
+  getWarehouseByIdReturningProducts,
   createWarehouse,
   updateWarehouse,
+  updateProductsQuantityAtWarehouse,
   deleteWarehouse,
 };

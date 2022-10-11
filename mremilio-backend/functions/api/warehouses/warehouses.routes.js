@@ -75,10 +75,10 @@ warehousesRouter.get("/geocoding", (req, res) => {
     await axios(config)
       .then((responseFromGoogle) => {
         // console.log("RESULTS:", responseFromGoogle.data);
-        console.log(
-          "response from Google",
-          responseFromGoogle.data.results[0].address_components
-        );
+        // console.log(
+        //   "response from Google",
+        //   responseFromGoogle.data.results[0].address_components
+        // );
         res.json(responseFromGoogle.data.results[0]);
       })
       .catch((error) => {
@@ -89,7 +89,7 @@ warehousesRouter.get("/geocoding", (req, res) => {
 
 // Determine nearest warehose from device location
 warehousesRouter.get("/distanceMatrix", (req, res) => {
-  console.log("PASA AL MENOS X AQUI");
+  // console.log("PASA AL MENOS X AQUI");
   (async () => {
     const { lat, lng } = url.parse(req.url, true).query;
     const origin = {
@@ -162,7 +162,7 @@ warehousesRouter.get("/distanceMatrix", (req, res) => {
               : current;
           }
         );
-        console.log("Most Closest Warehouse to customer:", closest_warehouse);
+        // console.log("Most Closest Warehouse to customer:", closest_warehouse);
         most_optimum_warehouse_forCustomer.push(closest_warehouse);
         res.status(200).send(most_optimum_warehouse_forCustomer);
       });
