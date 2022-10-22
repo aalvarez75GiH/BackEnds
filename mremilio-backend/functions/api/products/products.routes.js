@@ -96,7 +96,7 @@ productsRouter.post("/", (req, res) => {
     }
   })();
 });
-// 7e5f4d0e-a024-4bf5-8651-d75d0e7e6a56
+
 productsRouter.put("/:id", validateID, (req, res) => {
   const id = req.params.id;
   const product = {
