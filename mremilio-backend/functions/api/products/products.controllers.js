@@ -46,6 +46,18 @@ const createProduct = async (product) => {
     });
 };
 
+const createProductPicture = async (product_picture) => {
+  const { url, picture_id } = product_picture;
+  // return await db.collection("products").doc(`/${Date.now()}/`).create({
+  return await firebase_controller.db
+    .collection("products_pictures")
+    .doc(`/${picture_id}/`)
+    .create({
+      picture_id,
+      url,
+    });
+};
+
 const updateProduct = async (product, id) => {
   const {
     name,
@@ -80,4 +92,5 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  createProductPicture,
 };

@@ -97,6 +97,30 @@ productsRouter.post("/", (req, res) => {
   })();
 });
 
+productsRouter.post("/product_picture", (req, res) => {
+  const picture_id = uuidv4();
+  const product_picture = {
+    url: req.body.url,
+    picture_id,
+  };
+  (async () => {
+    try {
+      await productController.createProductPicture(product_picture).then(() => {
+        return res.status(201).send({
+          status: "Success",
+          msg: "Picture created successfully...",
+        });
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        status: "Failed",
+        msg: "Something went wrong saving Data...",
+      });
+    }
+  })();
+});
+
 productsRouter.put("/:id", validateID, (req, res) => {
   const id = req.params.id;
   const product = {
