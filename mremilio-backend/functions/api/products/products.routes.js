@@ -48,6 +48,32 @@ productsRouter.get("/", (req, res) => {
   })();
 });
 
+productsRouter.get("/product_pictures", (req, res) => {
+  (async () => {
+    try {
+      await productController.getAllProducts_pics().then((data) => {
+        let products_pics = [];
+        let docs = data.docs;
+        docs.map((doc) => {
+          const selectedProductPic = {
+            picture_id: doc.data().picture_id,
+            url: doc.data().url,
+          };
+          console.log(selectedProductPic);
+          products_pics.push(selectedProductPic);
+        });
+        // console.log(products);
+        res.status(200).json(products_pics);
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: "Failed",
+        msg: error,
+      });
+    }
+  })();
+});
+
 productsRouter.get("/:id", validateID, (req, res) => {
   const id = req.params.id;
   (async () => {

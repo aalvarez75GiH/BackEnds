@@ -6,6 +6,12 @@ const getAllProducts = async () => {
     .get()
     .then((data) => data);
 };
+const getAllProducts_pics = async () => {
+  return await firebase_controller.db
+    .collection("products_pictures")
+    .get()
+    .then((data) => data);
+};
 
 const getProductById = async (id) => {
   return await firebase_controller.db
@@ -93,4 +99,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   createProductPicture,
+  getAllProducts_pics,
 };
