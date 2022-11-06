@@ -88,6 +88,22 @@ const updateProduct = async (product, id) => {
     area_availability,
   });
 };
+
+const updateProductPicture = async (product_picture) => {
+  console.log("PRODUCT_PICTURE:", product_picture);
+  const { url, picture_id } = product_picture;
+  console.log("URL:", url);
+  console.log("PICTURE_ID:", picture_id);
+  // return await db.collection("products").doc(`/${Date.now()}/`).create({
+  return await firebase_controller.db
+    .collection("products_pictures")
+    .doc(`/${picture_id}/`)
+    .update({
+      picture_id,
+      url,
+    });
+};
+
 const deleteProduct = async (id) => {
   return await firebase_controller.db.collection("products").doc(id).delete();
 };
@@ -98,6 +114,7 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
-  createProductPicture,
   getAllProducts_pics,
+  createProductPicture,
+  updateProductPicture,
 };
