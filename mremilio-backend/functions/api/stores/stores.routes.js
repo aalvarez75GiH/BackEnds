@@ -53,6 +53,32 @@ storesRouter.get("/", (req, res) => {
   })();
 });
 
+storesRouter.get("/store_pictures", (req, res) => {
+  (async () => {
+    try {
+      await storesControllers.getAllStores_pics().then((data) => {
+        let stores_pics = [];
+        let docs = data.docs;
+        docs.map((doc) => {
+          const selectedStorePic = {
+            picture_id: doc.data().picture_id,
+            url: doc.data().url,
+          };
+          console.log(selectedStorePic);
+          stores_pics.push(selectedStorePic);
+        });
+        // console.log(products);
+        res.status(200).json(stores_pics);
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: "Failed",
+        msg: error,
+      });
+    }
+  })();
+});
+
 storesRouter.get("/:id", validateID, (req, res) => {
   const id = req.params.id;
   (async () => {
@@ -118,6 +144,30 @@ storesRouter.post("/", (req, res) => {
   })();
 });
 
+storesRouter.post("/store_picture", (req, res) => {
+  const picture_id = uuidv4();
+  const store_picture = {
+    url: req.body.url,
+    picture_id,
+  };
+  (async () => {
+    try {
+      await storesControllers.createStorePicture(store_picture).then(() => {
+        return res.status(201).send({
+          status: "Success",
+          msg: "Picture created successfully...",
+        });
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        status: "Failed",
+        msg: "Something went wrong saving Data...",
+      });
+    }
+  })();
+});
+
 storesRouter.put("/:id", validateID, (req, res) => {
   const id = req.params.id;
   const store = {
@@ -127,7 +177,6 @@ storesRouter.put("/:id", validateID, (req, res) => {
     phone_number: req.body.phone_number,
     geometry: req.body.geometry,
     picture: req.body.picture,
-
     city: req.body.city,
     store_products: req.body.store_products,
     store_id: req.body.store_id,

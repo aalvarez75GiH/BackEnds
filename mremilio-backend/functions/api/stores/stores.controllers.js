@@ -7,6 +7,13 @@ const getAllStores = async () => {
     .then((data) => data);
 };
 
+const getAllStores_pics = async () => {
+  return await firebase_controller.db
+    .collection("stores_pictures")
+    .get()
+    .then((data) => data);
+};
+
 const getStoreById = async (id) => {
   return await firebase_controller.db
     .collection("stores")
@@ -61,6 +68,17 @@ const createStore = async (store) => {
       store_products,
     });
 };
+const createStorePicture = async (store_picture) => {
+  const { url, picture_id } = store_picture;
+  // return await db.collection("products").doc(`/${Date.now()}/`).create({
+  return await firebase_controller.db
+    .collection("stores_pictures")
+    .doc(`/${picture_id}/`)
+    .create({
+      picture_id,
+      url,
+    });
+};
 
 const updateStore = async (store, id) => {
   const {
@@ -93,9 +111,11 @@ const deleteStore = async (id) => {
 
 module.exports = {
   getAllStores,
+  getAllStores_pics,
   getStoresByCity,
   getStoreById,
   createStore,
   updateStore,
   deleteStore,
+  createStorePicture,
 };
