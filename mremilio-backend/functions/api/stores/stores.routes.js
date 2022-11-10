@@ -1,5 +1,4 @@
 const express = require("express");
-
 const { v4: uuidv4 } = require("uuid");
 const validate = require("uuid-validate");
 const storesRouter = express.Router();
@@ -26,7 +25,6 @@ const arrayingStores = (data) => {
       phone_number: doc.data().phone_number,
       geometry: doc.data().geometry,
       picture: doc.data().picture,
-      place_id: doc.data().place_id,
       city: doc.data().city,
       store_products: doc.data().store_products,
       store_id: doc.data().store_id,
@@ -98,7 +96,6 @@ storesRouter.post("/", (req, res) => {
     phone_number: req.body.phone_number,
     geometry: req.body.geometry,
     picture: req.body.picture,
-    place_id: req.body.place_id,
     city: req.body.city,
     store_products: req.body.store_products,
     store_id,
@@ -130,11 +127,12 @@ storesRouter.put("/:id", validateID, (req, res) => {
     phone_number: req.body.phone_number,
     geometry: req.body.geometry,
     picture: req.body.picture,
-    place_id: req.body.place_id,
+
     city: req.body.city,
     store_products: req.body.store_products,
     store_id: req.body.store_id,
   };
+  console.log("STORE:", store);
   (async () => {
     try {
       await storesControllers.updateStore(store, id).then(() => {
