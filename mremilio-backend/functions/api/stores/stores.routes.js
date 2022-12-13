@@ -21,7 +21,8 @@ const arrayingStores = (data) => {
     const selectedStore = {
       name: doc.data().name,
       address: doc.data().address,
-      work_hour: doc.data().work_hour,
+      openingTime: doc.data().openingTime,
+      closingTime: doc.data().closingTime,
       phone_number: doc.data().phone_number,
       geometry: doc.data().geometry,
       picture: doc.data().picture,
@@ -118,12 +119,13 @@ storesRouter.post("/", (req, res) => {
   const store = {
     name: req.body.name,
     address: req.body.address,
-    work_hour: req.body.work_hour,
     phone_number: req.body.phone_number,
     geometry: req.body.geometry,
     picture: req.body.picture,
     city: req.body.city,
     store_products: req.body.store_products,
+    openingTime: req.body.openingTime,
+    closingTime: req.body.closingTime,
     store_id,
   };
   (async () => {
@@ -173,13 +175,14 @@ storesRouter.put("/:id", validateID, (req, res) => {
   const store = {
     name: req.body.name,
     address: req.body.address,
-    work_hour: req.body.work_hour,
     phone_number: req.body.phone_number,
     geometry: req.body.geometry,
     picture: req.body.picture,
     city: req.body.city,
     store_products: req.body.store_products,
     store_id: req.body.store_id,
+    openingTime: req.body.openingTime,
+    closingTime: req.body.closingTime,
   };
   console.log("STORE:", store);
   (async () => {
@@ -202,6 +205,7 @@ storesRouter.put("/:id", validateID, (req, res) => {
 
 storesRouter.delete("/:id", validateID, (req, res) => {
   const id = req.params.id;
+  console.log("STORE ID AT END POINT:", id);
   (async () => {
     try {
       await storesControllers.deleteStore(id).then(() => {

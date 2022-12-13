@@ -43,13 +43,15 @@ const createStore = async (store) => {
   const {
     name,
     address,
-    work_hour,
+    // work_hour,
     phone_number,
     geometry,
     picture,
     store_id,
     city,
     store_products,
+    openingTime,
+    closingTime,
   } = store;
   return await firebase_controller.db
     .collection("stores")
@@ -57,13 +59,15 @@ const createStore = async (store) => {
     .create({
       name,
       address,
-      work_hour,
+      // work_hour,
       phone_number,
       geometry,
       picture,
       store_id,
       city,
       store_products,
+      openingTime,
+      closingTime,
     });
 };
 const createStorePicture = async (store_picture) => {
@@ -82,24 +86,28 @@ const updateStore = async (store, id) => {
   const {
     name,
     address,
-    work_hour,
+    // work_hour,
     phone_number,
     geometry,
     picture,
     store_id,
     city,
     store_products,
+    openingTime,
+    closingTime,
   } = store;
   return await firebase_controller.db.collection("stores").doc(id).update({
     name,
     address,
-    work_hour,
+    // work_hour,
     phone_number,
     geometry,
     picture,
     store_id,
     city,
     store_products,
+    openingTime,
+    closingTime,
   });
 };
 
