@@ -26,6 +26,8 @@ const arrayingWarehouses = (data) => {
       name: doc.data().name,
       address: doc.data().address,
       work_hour: doc.data().work_hour,
+      openingTime: doc.data().openingTime,
+      closingTime: doc.data().closingTime,
       geometry: doc.data().geometry,
       picture: doc.data().picture,
       max_limit_ratio_pickup: doc.data().max_limit_ratio_pickup,
@@ -33,6 +35,7 @@ const arrayingWarehouses = (data) => {
       max_delivery_time: doc.data().max_delivery_time,
       warehouse_id: doc.data().warehouse_id,
       products: doc.data().products,
+      phone_number: doc.data().phone_number,
     };
     console.log(selectedWarehouse);
     warehouses.push(selectedWarehouse);
@@ -197,18 +200,33 @@ warehousesRouter.get("/:id", validateID, (req, res) => {
 // Create warehouse at Firestore
 warehousesRouter.post("/", (req, res) => {
   const warehouse_id = uuidv4();
+
+  const maxDistanceDeliveryMeters =
+    parseInt(req.body.max_limit_ratio_delivery) * 1609.34;
+  const maxDistancePickupMeters =
+    parseInt(req.body.max_limit_ratio_pickup) * 1609.34;
+
+  const maxDeliveryTime = parseInt(req.body.max_delivery_time);
+  // const maxDistanceDelivery = parseInt(req.body.max_limit_ratio_delivery);
+  // const maxDistancePickup = parseInt(req.body.max_limit_ratio_pickup);
+  console.log("MAX DELIVERY TIME:", maxDeliveryTime);
+  console.log("MAX DISTANCE DELIVERY:", maxDistanceDeliveryMeters);
+  console.log("MAX DISTANCE PICKUP:", maxDistancePickupMeters);
   const warehouse = {
     name: req.body.name,
     address: req.body.address,
-    work_hour: req.body.work_hour,
     geometry: req.body.geometry,
     picture: req.body.picture,
-    max_limit_ratio_pickup: req.body.max_limit_ratio_pickup,
-    max_limit_ratio_delivery: req.body.max_limit_ratio_delivery,
-    max_delivery_time: req.body.max_delivery_time,
+    max_limit_ratio_pickup: maxDistancePickupMeters,
+    max_limit_ratio_delivery: maxDistanceDeliveryMeters,
+    max_delivery_time: maxDeliveryTime,
     warehouse_id,
     products: req.body.products,
+    city: req.body.city,
+    openingTime: req.body.openingTime,
+    closingTime: req.body.closingTime,
   };
+  console.log("WAREHOUSE AT END POINT:", warehouse);
   (async () => {
     try {
       await warehousesController.createWarehouse(warehouse).then(() => {
@@ -240,6 +258,10 @@ warehousesRouter.put("/:id", validateID, (req, res) => {
     max_delivery_time: req.body.max_delivery_time,
     picture: req.body.picture,
     products: req.body.products,
+    phone_number: req.body.phone_number,
+    openingTime: req.body.openingTime,
+    closingTime: req.body.closingTime,
+    city: req.body.city,
   };
   (async () => {
     try {

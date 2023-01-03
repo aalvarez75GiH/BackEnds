@@ -23,10 +23,10 @@ const getWarehouseByIdReturningProducts = async (id) => {
 };
 
 const createWarehouse = async (warehouse) => {
+  console.log("WAREHOUSE AT CONTROLLER:", warehouse);
   const {
     name,
     address,
-    work_hour,
     geometry,
     picture,
     max_limit_ratio_pickup,
@@ -34,6 +34,9 @@ const createWarehouse = async (warehouse) => {
     max_delivery_time,
     warehouse_id,
     products,
+    city,
+    openingTime,
+    closingTime,
   } = warehouse;
   return await firebase_controller.db
     .collection("warehouses")
@@ -42,7 +45,6 @@ const createWarehouse = async (warehouse) => {
       id: Date.now(),
       name,
       address,
-      work_hour,
       geometry,
       picture,
       max_limit_ratio_pickup,
@@ -50,6 +52,9 @@ const createWarehouse = async (warehouse) => {
       max_delivery_time,
       warehouse_id,
       products,
+      city,
+      openingTime,
+      closingTime,
     });
 };
 
@@ -64,6 +69,10 @@ const updateWarehouse = async (warehouse, id) => {
     max_delivery_time,
     picture,
     products,
+    phone_number,
+    openingTime,
+    closingTime,
+    city,
   } = warehouse;
   return await firebase_controller.db.collection("warehouses").doc(id).update({
     name,
@@ -75,6 +84,10 @@ const updateWarehouse = async (warehouse, id) => {
     max_delivery_time,
     picture,
     products,
+    phone_number,
+    openingTime,
+    closingTime,
+    city,
   });
 };
 
