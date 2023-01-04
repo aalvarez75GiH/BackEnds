@@ -36,6 +36,7 @@ const arrayingWarehouses = (data) => {
       warehouse_id: doc.data().warehouse_id,
       products: doc.data().products,
       phone_number: doc.data().phone_number,
+      city: doc.data().city,
     };
     console.log(selectedWarehouse);
     warehouses.push(selectedWarehouse);

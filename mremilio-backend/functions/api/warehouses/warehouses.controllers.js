@@ -64,7 +64,6 @@ const updateWarehouse = async (warehouse, id) => {
   const {
     name,
     geometry,
-    work_hour,
     address,
     max_limit_ratio_pickup,
     max_limit_ratio_delivery,
@@ -79,7 +78,6 @@ const updateWarehouse = async (warehouse, id) => {
   return await firebase_controller.db.collection("warehouses").doc(id).update({
     name,
     geometry,
-    work_hour,
     address,
     max_limit_ratio_pickup,
     max_limit_ratio_delivery,
