@@ -225,6 +225,7 @@ warehousesRouter.post("/", (req, res) => {
     city: req.body.city,
     openingTime: req.body.openingTime,
     closingTime: req.body.closingTime,
+    phone_number: req.body.phone_number,
   };
   console.log("WAREHOUSE AT END POINT:", warehouse);
   (async () => {

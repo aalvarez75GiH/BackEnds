@@ -37,6 +37,7 @@ const createWarehouse = async (warehouse) => {
     city,
     openingTime,
     closingTime,
+    phone_number,
   } = warehouse;
   return await firebase_controller.db
     .collection("warehouses")
@@ -55,6 +56,7 @@ const createWarehouse = async (warehouse) => {
       city,
       openingTime,
       closingTime,
+      phone_number,
     });
 };
 
