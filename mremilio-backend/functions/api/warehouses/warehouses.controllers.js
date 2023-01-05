@@ -7,6 +7,13 @@ const getAllWarehouses = async () => {
     .then((data) => data);
 };
 
+const getAllWarehouses_pics = async () => {
+  return await firebase_controller.db
+    .collection("warehouses_pictures")
+    .get()
+    .then((data) => data);
+};
+
 const getWarehouseById = async (id) => {
   return await firebase_controller.db
     .collection("warehouses")
@@ -57,6 +64,18 @@ const createWarehouse = async (warehouse) => {
       openingTime,
       closingTime,
       phone_number,
+    });
+};
+
+const createWarehousePicture = async (warehouse_picture) => {
+  const { url, picture_id } = warehouse_picture;
+  // return await db.collection("products").doc(`/${Date.now()}/`).create({
+  return await firebase_controller.db
+    .collection("warehouses_pictures")
+    .doc(`/${picture_id}/`)
+    .create({
+      picture_id,
+      url,
     });
 };
 
@@ -126,4 +145,6 @@ module.exports = {
   updateWarehouse,
   updateProductsQuantityAtWarehouse,
   deleteWarehouse,
+  createWarehousePicture,
+  getAllWarehouses_pics,
 };

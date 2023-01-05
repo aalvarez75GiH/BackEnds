@@ -63,6 +63,32 @@ warehousesRouter.get("/", (req, res) => {
   })();
 });
 
+warehousesRouter.get("/warehouse_pictures", (req, res) => {
+  (async () => {
+    try {
+      await warehousesController.getAllWarehouses_pics().then((data) => {
+        let warehouses_pics = [];
+        let docs = data.docs;
+        docs.map((doc) => {
+          const selectedWarehousePic = {
+            picture_id: doc.data().picture_id,
+            url: doc.data().url,
+          };
+          console.log(selectedWarehousePic);
+          warehouses_pics.push(selectedWarehousePic);
+        });
+        // console.log(products);
+        res.status(200).json(warehouses_pics);
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: "Failed",
+        msg: error,
+      });
+    }
+  })();
+});
+
 warehousesRouter.get("/geocoding", (req, res) => {
   (async () => {
     const { lat, lng } = url.parse(req.url, true).query;
@@ -237,6 +263,32 @@ warehousesRouter.post("/", (req, res) => {
           msg: "Data saved successfully...",
         });
       });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        status: "Failed",
+        msg: "Something went wrong saving Data...",
+      });
+    }
+  })();
+});
+
+warehousesRouter.post("/warehouse_picture", (req, res) => {
+  const picture_id = uuidv4();
+  const warehouse_picture = {
+    url: req.body.url,
+    picture_id,
+  };
+  (async () => {
+    try {
+      await warehousesController
+        .createWarehousePicture(warehouse_picture)
+        .then(() => {
+          return res.status(201).send({
+            status: "Success",
+            msg: "Picture created successfully...",
+          });
+        });
     } catch (error) {
       console.log(error);
       return res.status(500).send({
