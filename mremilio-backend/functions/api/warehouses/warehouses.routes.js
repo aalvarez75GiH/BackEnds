@@ -234,8 +234,7 @@ warehousesRouter.post("/", (req, res) => {
     parseInt(req.body.max_limit_ratio_pickup) * 1609.34;
 
   const maxDeliveryTime = parseInt(req.body.max_delivery_time);
-  // const maxDistanceDelivery = parseInt(req.body.max_limit_ratio_delivery);
-  // const maxDistancePickup = parseInt(req.body.max_limit_ratio_pickup);
+
   console.log("MAX DELIVERY TIME:", maxDeliveryTime);
   console.log("MAX DISTANCE DELIVERY:", maxDistanceDeliveryMeters);
   console.log("MAX DISTANCE PICKUP:", maxDistancePickupMeters);
@@ -302,14 +301,25 @@ warehousesRouter.post("/warehouse_picture", (req, res) => {
 // Update a warehouse by Id at Firestore
 warehousesRouter.put("/:id", validateID, (req, res) => {
   const id = req.params.id;
+
+  const maxDistanceDeliveryMeters =
+    parseInt(req.body.max_limit_ratio_delivery) * 1609.34;
+  const maxDistancePickupMeters =
+    parseInt(req.body.max_limit_ratio_pickup) * 1609.34;
+
+  const maxDeliveryTime = parseInt(req.body.max_delivery_time);
+
+  console.log("MAX DELIVERY TIME:", maxDeliveryTime);
+  console.log("MAX DISTANCE DELIVERY:", maxDistanceDeliveryMeters);
+  console.log("MAX DISTANCE PICKUP:", maxDistancePickupMeters);
   const warehouse = {
     name: req.body.name,
     geometry: req.body.geometry,
     work_hour: req.body.work_hour,
     address: req.body.address,
-    max_limit_ratio_pickup: req.body.max_limit_ratio_pickup,
-    max_limit_ratio_delivery: req.body.max_limit_ratio_delivery,
-    max_delivery_time: req.body.max_delivery_time,
+    max_limit_ratio_pickup: maxDistancePickupMeters,
+    max_limit_ratio_delivery: maxDistanceDeliveryMeters,
+    max_delivery_time: maxDeliveryTime,
     picture: req.body.picture,
     products: req.body.products,
     phone_number: req.body.phone_number,
