@@ -25,7 +25,6 @@ const arrayingWarehouses = (data) => {
     const selectedWarehouse = {
       name: doc.data().name,
       address: doc.data().address,
-      work_hour: doc.data().work_hour,
       openingTime: doc.data().openingTime,
       closingTime: doc.data().closingTime,
       geometry: doc.data().geometry,
