@@ -35,6 +35,7 @@ ordersRouter.get("/", (req, res) => {
             status: doc.data().status,
             stripe_order_id: doc.data().stripe_order_id,
             warehouse_to_pickup: doc.data().warehouse_to_pickup,
+            delivery_time: doc.data().delivery_time,
           };
           //   console.log(selectedOrder);
           orders.push(selectedOrder);
