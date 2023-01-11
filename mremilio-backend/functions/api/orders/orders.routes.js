@@ -36,6 +36,7 @@ ordersRouter.get("/", (req, res) => {
             stripe_order_id: doc.data().stripe_order_id,
             warehouse_to_pickup: doc.data().warehouse_to_pickup,
             delivery_time: doc.data().delivery_time,
+            order_id: doc.data().order_id,
           };
           //   console.log(selectedOrder);
           orders.push(selectedOrder);
@@ -188,6 +189,29 @@ ordersRouter.put("/:id", (req, res) => {
   (async () => {
     try {
       await ordersController.updateOrder(order, id).then(() => {
+        return res.status(201).send({
+          status: "Success",
+          msg: "Order updated successfully...",
+        });
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        status: "Failed",
+        msg: "Something went wrong saving Data...",
+      });
+    }
+  })();
+});
+
+ordersRouter.put("/order_status/:id", (req, res) => {
+  const id = req.params.id;
+  const order = {
+    status: req.body.status,
+  };
+  (async () => {
+    try {
+      await ordersController.updateOrderStatus(order, id).then(() => {
         return res.status(201).send({
           status: "Success",
           msg: "Order updated successfully...",

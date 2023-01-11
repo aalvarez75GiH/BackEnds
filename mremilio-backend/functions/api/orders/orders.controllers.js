@@ -83,6 +83,7 @@ const createOrder = async (order) => {
       status,
       stripe_order_id,
       warehouse_to_pickup,
+      order_id,
     });
 };
 
@@ -115,6 +116,13 @@ const updateOrder = async (order, id) => {
   });
 };
 
+const updateOrderStatus = async (order, id) => {
+  const { status } = order;
+  return await firebase_controller.db.collection("orders").doc(id).update({
+    status,
+  });
+};
+
 const deleteOrder = async (id) => {
   return await firebase_controller.db.collection("orders").doc(id).delete();
 };
@@ -138,4 +146,5 @@ module.exports = {
   updateOrder,
   deleteOrder,
   deleteAllOrder,
+  updateOrderStatus,
 };

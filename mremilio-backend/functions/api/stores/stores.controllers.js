@@ -43,7 +43,6 @@ const createStore = async (store) => {
   const {
     name,
     address,
-    // work_hour,
     phone_number,
     geometry,
     picture,
@@ -59,7 +58,6 @@ const createStore = async (store) => {
     .create({
       name,
       address,
-      // work_hour,
       phone_number,
       geometry,
       picture,
