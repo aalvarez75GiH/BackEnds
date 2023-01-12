@@ -50,6 +50,23 @@ const getOrderByCustomerEmail = async (email) => {
     });
 };
 
+const getOrderByCustomerPhoneNumber = async (phone_number) => {
+  console.log(phone_number);
+  let orders = [];
+  return await firebase_controller.db
+    .collection("orders")
+    .where(`customer.phone_number`, "==", phone_number)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data());
+        orders.push(doc.data());
+      });
+      console.log("ORDERS BY PHONE NUMBER ARRAY:", orders);
+      return orders;
+    });
+};
+
 // var firebase_controller.db = firebase.firestore();
 //     var query = firebase_controller.db.collection('orders').where("customer", "==", { uid: "xyz", userName: "abc" });
 
@@ -147,4 +164,5 @@ module.exports = {
   deleteOrder,
   deleteAllOrder,
   updateOrderStatus,
+  getOrderByCustomerPhoneNumber,
 };
