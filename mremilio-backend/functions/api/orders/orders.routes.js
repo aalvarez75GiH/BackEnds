@@ -126,6 +126,26 @@ ordersRouter.get("/customer/phone/:phone", (req, res) => {
   })();
 });
 
+ordersRouter.get("/order_number/:order_number", (req, res) => {
+  const order_number = req.params.order_number;
+  console.log("ORDER NUMBER:", order_number);
+  (async () => {
+    try {
+      await ordersController
+        .getOrderByCustomerOrderNumber(order_number)
+        .then((data) => {
+          // console.log("DATA:", data);
+          res.status(200).json(data);
+        });
+    } catch (error) {
+      return res.status(500).send({
+        status: "Failed",
+        msg: error,
+      });
+    }
+  })();
+});
+
 const handlingProductsQuantity = async (data) => {
   (async () => {
     try {
