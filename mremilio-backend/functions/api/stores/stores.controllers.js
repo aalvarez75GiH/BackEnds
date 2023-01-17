@@ -69,14 +69,14 @@ const createStore = async (store) => {
     });
 };
 const createStorePicture = async (store_picture) => {
-  const { url, picture_id } = store_picture;
+  const { picture, picture_id } = store_picture;
   // return await db.collection("products").doc(`/${Date.now()}/`).create({
   return await firebase_controller.db
     .collection("stores_pictures")
     .doc(`/${picture_id}/`)
     .create({
       picture_id,
-      url,
+      picture,
     });
 };
 

@@ -57,7 +57,7 @@ productsRouter.get("/product_pictures", (req, res) => {
         docs.map((doc) => {
           const selectedProductPic = {
             picture_id: doc.data().picture_id,
-            url: doc.data().url,
+            picture: doc.data().picture,
           };
           console.log(selectedProductPic);
           products_pics.push(selectedProductPic);
@@ -126,7 +126,7 @@ productsRouter.post("/", (req, res) => {
 productsRouter.post("/product_picture", (req, res) => {
   const picture_id = uuidv4();
   const product_picture = {
-    url: req.body.url,
+    picture: req.body.picture,
     picture_id,
   };
   (async () => {

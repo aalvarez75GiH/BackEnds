@@ -146,6 +146,26 @@ ordersRouter.get("/order_number/:order_number", (req, res) => {
   })();
 });
 
+ordersRouter.get("/warehouse/:warehouse_id", (req, res) => {
+  const warehouse_id = req.params.warehouse_id;
+  console.log("WAREHOUSE ID:", warehouse_id);
+  (async () => {
+    try {
+      await ordersController
+        .getOrdersByWarehouseID(warehouse_id)
+        .then((data) => {
+          // console.log("DATA:", data);
+          res.status(200).json(data);
+        });
+    } catch (error) {
+      return res.status(500).send({
+        status: "Failed",
+        msg: error,
+      });
+    }
+  })();
+});
+
 const handlingProductsQuantity = async (data) => {
   (async () => {
     try {

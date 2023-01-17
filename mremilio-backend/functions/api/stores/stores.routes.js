@@ -63,7 +63,7 @@ storesRouter.get("/store_pictures", (req, res) => {
         docs.map((doc) => {
           const selectedStorePic = {
             picture_id: doc.data().picture_id,
-            url: doc.data().url,
+            picture: doc.data().picture,
           };
           console.log(selectedStorePic);
           stores_pics.push(selectedStorePic);
@@ -149,7 +149,7 @@ storesRouter.post("/", (req, res) => {
 storesRouter.post("/store_picture", (req, res) => {
   const picture_id = uuidv4();
   const store_picture = {
-    url: req.body.url,
+    picture: req.body.picture,
     picture_id,
   };
   (async () => {

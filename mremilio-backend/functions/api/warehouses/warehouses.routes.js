@@ -71,7 +71,7 @@ warehousesRouter.get("/warehouse_pictures", (req, res) => {
         docs.map((doc) => {
           const selectedWarehousePic = {
             picture_id: doc.data().picture_id,
-            url: doc.data().url,
+            picture: doc.data().picture,
           };
           console.log(selectedWarehousePic);
           warehouses_pics.push(selectedWarehousePic);
@@ -274,7 +274,7 @@ warehousesRouter.post("/", (req, res) => {
 warehousesRouter.post("/warehouse_picture", (req, res) => {
   const picture_id = uuidv4();
   const warehouse_picture = {
-    url: req.body.url,
+    picture: req.body.picture,
     picture_id,
   };
   (async () => {

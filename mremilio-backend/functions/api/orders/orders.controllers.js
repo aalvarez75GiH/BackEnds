@@ -83,6 +83,23 @@ const getOrderByCustomerOrderNumber = async (order_number) => {
     });
 };
 
+const getOrdersByWarehouseID = async (warehouse_id) => {
+  console.log("WAREHOUSE ID AT CONTROLLER:", warehouse_id);
+  let orders = [];
+  return await firebase_controller.db
+    .collection("orders")
+    .where(`warehouse_to_pickup.warehouse_id`, "==", warehouse_id)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data());
+        orders.push(doc.data());
+      });
+      console.log("ORDER BY ORDER NUMBER ARRAY:", orders);
+      return orders;
+    });
+};
+
 // var firebase_controller.db = firebase.firestore();
 //     var query = firebase_controller.db.collection('orders').where("customer", "==", { uid: "xyz", userName: "abc" });
 
@@ -182,4 +199,5 @@ module.exports = {
   updateOrderStatus,
   getOrderByCustomerPhoneNumber,
   getOrderByCustomerOrderNumber,
+  getOrdersByWarehouseID,
 };
