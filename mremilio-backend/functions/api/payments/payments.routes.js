@@ -76,4 +76,34 @@ paymentsRouter.post("/", (req, res) => {
   })();
 });
 
+paymentsRouter.post("/refund/:stripe_id", (req, res) => {
+  (async () => {
+    const payment_intent_id = req.params.stripe_id;
+    console.log("PAYMENT INTENT:", payment_intent_id);
+
+    try {
+      const refundIntentResponse = await stripeClient.refunds.create({
+        payment_intent: payment_intent_id,
+      });
+      //   console.log(paymentIntentResponse);
+      res.json(refundIntentResponse);
+      return;
+    } catch (error) {
+      console.log("ERROR CATCHED:", error);
+      // if (error.code === "incorrect_cvc") {
+      //   res
+      //     .status(402)
+      //     .send(
+      //       "We're sorry, it looks like your cvc number is not correct, try again.. "
+      //     );
+      // }
+      // if (error.code === "incorrect_number") {
+      //   res
+      //     .status(402)
+      //     .send("Sorry, Your card number is invalid, try again... ");
+      // }
+    }
+  })();
+});
+
 module.exports = paymentsRouter;

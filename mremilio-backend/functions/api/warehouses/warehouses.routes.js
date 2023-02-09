@@ -36,10 +36,10 @@ const arrayingWarehouses = (data) => {
       products: doc.data().products,
       phone_number: doc.data().phone_number,
       city: doc.data().city,
+      representative: doc.data().representative,
     };
     console.log(selectedWarehouse);
     warehouses.push(selectedWarehouse);
-    // console.log("WAREHOUSES AT ARRAYING:", warehouses);
   });
   return warehouses;
 };
@@ -245,12 +245,13 @@ warehousesRouter.post("/", (req, res) => {
     max_limit_ratio_pickup: maxDistancePickupMeters,
     max_limit_ratio_delivery: maxDistanceDeliveryMeters,
     max_delivery_time: maxDeliveryTime,
-    warehouse_id,
     products: req.body.products,
     city: req.body.city,
     openingTime: req.body.openingTime,
     closingTime: req.body.closingTime,
     phone_number: req.body.phone_number,
+    representative: req.body.representative,
+    warehouse_id,
   };
   console.log("WAREHOUSE AT END POINT:", warehouse);
   (async () => {
@@ -325,6 +326,7 @@ warehousesRouter.put("/:id", validateID, (req, res) => {
     openingTime: req.body.openingTime,
     closingTime: req.body.closingTime,
     city: req.body.city,
+    representative: req.body.representative,
   };
   (async () => {
     try {
