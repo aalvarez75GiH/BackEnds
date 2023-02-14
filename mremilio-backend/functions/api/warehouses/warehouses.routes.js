@@ -96,18 +96,11 @@ warehousesRouter.get("/geocoding", (req, res) => {
     var config = {
       method: "get",
       url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&result_type=street_address&key=${process.env.GOOGLE_KEY}`,
-      // url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&result_type=street_address&types=administrative_area_level_1&key=${process.env.GOOGLE_KEY}`,
-
       headers: {},
     };
 
     await axios(config)
       .then((responseFromGoogle) => {
-        // console.log("RESULTS:", responseFromGoogle.data);
-        // console.log(
-        //   "response from Google",
-        //   responseFromGoogle.data.results[0].address_components
-        // );
         res.json(responseFromGoogle.data.results[0]);
       })
       .catch((error) => {
@@ -125,12 +118,10 @@ warehousesRouter.get("/distanceMatrix", (req, res) => {
       lat: lat,
       lng: lng,
     };
-    // console.log(origin);
     let warehouses = [];
     try {
       await warehousesController.getAllWarehouses().then(async (data) => {
         warehouses = arrayingWarehouses(data);
-        // console.log("WAREHOUSES AT DISTANCE MATRIX:", warehouses);
         let available_warehouses = [];
         let most_optimum_warehouse_forCustomer = [];
         const warehouses_with_distance_from_google = await Promise.all(
@@ -234,9 +225,6 @@ warehousesRouter.post("/", (req, res) => {
 
   const maxDeliveryTime = parseInt(req.body.max_delivery_time);
 
-  console.log("MAX DELIVERY TIME:", maxDeliveryTime);
-  console.log("MAX DISTANCE DELIVERY:", maxDistanceDeliveryMeters);
-  console.log("MAX DISTANCE PICKUP:", maxDistancePickupMeters);
   const warehouse = {
     name: req.body.name,
     address: req.body.address,
@@ -253,7 +241,7 @@ warehousesRouter.post("/", (req, res) => {
     representative: req.body.representative,
     warehouse_id,
   };
-  console.log("WAREHOUSE AT END POINT:", warehouse);
+
   (async () => {
     try {
       await warehousesController.createWarehouse(warehouse).then(() => {
@@ -309,9 +297,6 @@ warehousesRouter.put("/:id", validateID, (req, res) => {
 
   const maxDeliveryTime = parseInt(req.body.max_delivery_time);
 
-  console.log("MAX DELIVERY TIME:", maxDeliveryTime);
-  console.log("MAX DISTANCE DELIVERY:", maxDistanceDeliveryMeters);
-  console.log("MAX DISTANCE PICKUP:", maxDistancePickupMeters);
   const warehouse = {
     name: req.body.name,
     geometry: req.body.geometry,
@@ -366,32 +351,3 @@ warehousesRouter.delete("/:id", validateID, (req, res) => {
 });
 
 module.exports = warehousesRouter;
-
-// {
-//   "name": "Main Warehouse",
-//   "address": "6650 Cold Stream Dr, Cumming, GA 30040",
-//   "work_hour": "9:00 am - 7:00 pm",
-//   "geometry": {
-//       "location": {
-//           "lat": 34.17399635788976,
-//           "lng": -84.1764201453649
-//       }
-//   },
-//   "picture": "",
-//   "max_limit_ratio_pickup": 32186.9,
-//   "max_limit_ratio_delivery": 32186.9
-// },
-// {
-//   "name": "Mr Emilio Store - Winder",
-//   "address": "79 E Athens St, Winder, GA 30680",
-//   "work_hour": "9:00 am - 10:00 pm",
-//   "geometry": {
-//       "location": {
-//           "lng": -83.71976174174195,
-//           "lat": 33.99142934065858
-//       }
-//   },
-//   "picture": "",
-//   "max_limit_ratio_pickup": 32186.9,
-//   "max_limit_ratio_delivery": 32186.9
-// }
