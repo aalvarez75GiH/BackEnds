@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const validate = require("uuid-validate");
 const productController = require("./products.controllers");
 const productsRouter = express.Router();
+const warehouseController = require("../warehouses/warehouses.controllers");
 
 const validateID = (req, res, next) => {
   let id = req.params.id;
@@ -91,6 +92,32 @@ productsRouter.get("/:id", validateID, (req, res) => {
   })();
 });
 
+const arrayingWarehouses = (data) => {
+  let warehouses = [];
+  let docs = data.docs;
+  docs.map((doc) => {
+    const selectedWarehouse = {
+      name: doc.data().name,
+      address: doc.data().address,
+      openingTime: doc.data().openingTime,
+      closingTime: doc.data().closingTime,
+      geometry: doc.data().geometry,
+      picture: doc.data().picture,
+      max_limit_ratio_pickup: doc.data().max_limit_ratio_pickup,
+      max_limit_ratio_delivery: doc.data().max_limit_ratio_delivery,
+      max_delivery_time: doc.data().max_delivery_time,
+      warehouse_id: doc.data().warehouse_id,
+      products: doc.data().products,
+      phone_number: doc.data().phone_number,
+      city: doc.data().city,
+      representative: doc.data().representative,
+    };
+    // console.log(selectedWarehouse);
+    warehouses.push(selectedWarehouse);
+  });
+  return warehouses;
+};
+
 productsRouter.post("/", (req, res) => {
   const product_id = uuidv4();
   const product = {
@@ -107,12 +134,53 @@ productsRouter.post("/", (req, res) => {
   };
   (async () => {
     try {
-      await productController.createProduct(product).then(() => {
-        return res.status(201).send({
-          status: "Success",
-          msg: "Data saved successfully...",
+      await productController
+        .createProduct(product)
+        .then(async (new_product) => {
+          console.log("NEW PRODUCT:", new_product);
+          const data = await warehouseController.getAllWarehouses();
+          const warehouses = arrayingWarehouses(data);
+          // console.log("WAREHOUSES AT END POINT:", warehouses);
+          // ********************************************************
+          warehouses.map((warehouse) => {
+            const itDoesExists = warehouse.products.includes(new_product);
+            console.log("DOES IT EXISTS?:", itDoesExists);
+            if (itDoesExists) {
+              console.log("Does exists...");
+              return;
+            }
+            if (!itDoesExists) {
+              console.log("Does not exists...");
+              warehouse.products.push(new_product);
+              warehouseController.updateWarehouseNewProduct(warehouse);
+            }
+
+            // warehouse.products.map((product) => {
+            //   if (product.product_id === new_product.product_id) {
+            //     console.log("PRODUCT EXISTS");
+            //   } else {
+            //     console.log("PRODUCT DOES NOT EXISTS");
+            //     warehouse.products.push(new_product);
+            //     warehouseController.updateWarehouseNewProduct(warehouse);
+            //   }
+            // });
+            // console.log("PRODUCTS OF THIS WAREHOUSE:", warehouse.products);
+
+            // docs.map((doc) => {
+            //   const selectedWarehousePic = {
+            //     picture_id: doc.data().picture_id,
+            //     picture: doc.data().picture,
+            //   };
+            //   console.log(selectedWarehousePic);
+            //   warehouses_pics.push(selectedWarehousePic);
+            // });
+          });
+          // ********************************************************
+          return res.status(201).send({
+            status: "Success",
+            msg: "Data saved successfully...",
+          });
         });
-      });
     } catch (error) {
       console.log(error);
       return res.status(500).send({

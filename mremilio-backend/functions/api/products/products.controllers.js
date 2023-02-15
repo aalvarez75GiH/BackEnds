@@ -35,7 +35,7 @@ const createProduct = async (product) => {
     area_availability,
   } = product;
   // return await db.collection("products").doc(`/${Date.now()}/`).create({
-  return await firebase_controller.db
+  await firebase_controller.db
     .collection("products")
     .doc(`/${product_id}/`)
     .create({
@@ -50,6 +50,7 @@ const createProduct = async (product) => {
       product_id,
       area_availability,
     });
+  return product;
 };
 
 const createProductPicture = async (product_picture) => {
