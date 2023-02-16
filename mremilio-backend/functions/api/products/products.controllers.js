@@ -105,8 +105,9 @@ const updateProductPicture = async (product_picture) => {
     });
 };
 
-const deleteProduct = async (id) => {
-  return await firebase_controller.db.collection("products").doc(id).delete();
+const deleteProduct = async (product, id) => {
+  await firebase_controller.db.collection("products").doc(id).delete();
+  return product;
 };
 
 module.exports = {

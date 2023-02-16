@@ -113,41 +113,6 @@ const updateWarehouse = async (warehouse, id) => {
     representative,
   });
 };
-const updateWarehouseNewProduct = async (warehouse) => {
-  const {
-    name,
-    geometry,
-    address,
-    max_limit_ratio_pickup,
-    max_limit_ratio_delivery,
-    max_delivery_time,
-    picture,
-    products,
-    phone_number,
-    openingTime,
-    closingTime,
-    city,
-    representative,
-  } = warehouse;
-  return await firebase_controller.db
-    .collection("warehouses")
-    .doc(warehouse.warehouse_id)
-    .update({
-      name,
-      geometry,
-      address,
-      max_limit_ratio_pickup,
-      max_limit_ratio_delivery,
-      max_delivery_time,
-      picture,
-      products,
-      phone_number,
-      openingTime,
-      closingTime,
-      city,
-      representative,
-    });
-};
 
 const updateProductsQuantityAtWarehouse = async (warehouse, order_products) => {
   console.log("WAREHOUSE_PRODUCTS:", warehouse.products);
@@ -186,5 +151,4 @@ module.exports = {
   deleteWarehouse,
   createWarehousePicture,
   getAllWarehouses_pics,
-  updateWarehouseNewProduct,
 };

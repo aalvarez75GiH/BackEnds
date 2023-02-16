@@ -137,11 +137,8 @@ productsRouter.post("/", (req, res) => {
       await productController
         .createProduct(product)
         .then(async (new_product) => {
-          console.log("NEW PRODUCT:", new_product);
           const data = await warehouseController.getAllWarehouses();
           const warehouses = arrayingWarehouses(data);
-          // console.log("WAREHOUSES AT END POINT:", warehouses);
-          // ********************************************************
           warehouses.map((warehouse) => {
             const itDoesExists = warehouse.products.includes(new_product);
             console.log("DOES IT EXISTS?:", itDoesExists);
@@ -152,30 +149,13 @@ productsRouter.post("/", (req, res) => {
             if (!itDoesExists) {
               console.log("Does not exists...");
               warehouse.products.push(new_product);
-              warehouseController.updateWarehouseNewProduct(warehouse);
+              warehouseController.updateWarehouse(
+                warehouse,
+                warehouse.warehouse_id
+              );
             }
-
-            // warehouse.products.map((product) => {
-            //   if (product.product_id === new_product.product_id) {
-            //     console.log("PRODUCT EXISTS");
-            //   } else {
-            //     console.log("PRODUCT DOES NOT EXISTS");
-            //     warehouse.products.push(new_product);
-            //     warehouseController.updateWarehouseNewProduct(warehouse);
-            //   }
-            // });
-            // console.log("PRODUCTS OF THIS WAREHOUSE:", warehouse.products);
-
-            // docs.map((doc) => {
-            //   const selectedWarehousePic = {
-            //     picture_id: doc.data().picture_id,
-            //     picture: doc.data().picture,
-            //   };
-            //   console.log(selectedWarehousePic);
-            //   warehouses_pics.push(selectedWarehousePic);
-            // });
           });
-          // ********************************************************
+
           return res.status(201).send({
             status: "Success",
             msg: "Data saved successfully...",
@@ -250,11 +230,40 @@ productsRouter.delete("/:id", validateID, (req, res) => {
   const id = req.params.id;
   (async () => {
     try {
-      await productController.deleteProduct(id).then(() => {
-        return res.status(200).send({
-          status: "Success",
-          msg: "Data deleted successfully...",
-        });
+      await productController.getProductById(id).then(async (product) => {
+        await productController
+          .deleteProduct(product, product.product_id)
+          .then(async (product_to_delete) => {
+            const data = await warehouseController.getAllWarehouses();
+            const warehouses = arrayingWarehouses(data);
+            console.log("WAREHOUSES:", warehouses);
+            warehouses.map((warehouse) => {
+              const indexOfProductToDelete = warehouse.products.findIndex(
+                (index) => index.product_id === product_to_delete.product_id
+              );
+              console.log("INDEX:", indexOfProductToDelete);
+
+              if (indexOfProductToDelete === -1) {
+                return res.status(404).send({
+                  status: "Failed",
+                  msg: "Product Not found",
+                });
+              }
+              if (indexOfProductToDelete !== -1) {
+                warehouse.products.splice(indexOfProductToDelete, 1);
+                warehouseController.updateWarehouse(
+                  warehouse,
+                  warehouse.warehouse_id
+                );
+                return;
+              }
+            });
+
+            return res.status(200).send({
+              status: "Success",
+              msg: "Data deleted successfully...",
+            });
+          });
       });
     } catch (error) {
       return res.status(500).send({
