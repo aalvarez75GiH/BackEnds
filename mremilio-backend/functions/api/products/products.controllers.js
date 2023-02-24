@@ -34,7 +34,6 @@ const createProduct = async (product) => {
     product_id,
     area_availability,
   } = product;
-  // return await db.collection("products").doc(`/${Date.now()}/`).create({
   await firebase_controller.db
     .collection("products")
     .doc(`/${product_id}/`)
@@ -55,7 +54,6 @@ const createProduct = async (product) => {
 
 const createProductPicture = async (product_picture) => {
   const { picture, picture_id } = product_picture;
-  // return await db.collection("products").doc(`/${Date.now()}/`).create({
   return await firebase_controller.db
     .collection("products_pictures")
     .doc(`/${picture_id}/`)
@@ -76,8 +74,9 @@ const updateProduct = async (product, id) => {
     picture,
     rating,
     area_availability,
+    product_id,
   } = product;
-  return await firebase_controller.db.collection("products").doc(id).update({
+  await firebase_controller.db.collection("products").doc(id).update({
     name,
     description,
     price,
@@ -87,15 +86,13 @@ const updateProduct = async (product, id) => {
     picture,
     rating,
     area_availability,
+    product_id,
   });
+  return product;
 };
 
 const updateProductPicture = async (product_picture) => {
-  console.log("PRODUCT_PICTURE:", product_picture);
   const { picture, picture_id } = product_picture;
-  console.log("URL:", url);
-  console.log("PICTURE_ID:", picture_id);
-  // return await db.collection("products").doc(`/${Date.now()}/`).create({
   return await firebase_controller.db
     .collection("products_pictures")
     .doc(`/${picture_id}/`)

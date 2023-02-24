@@ -41,7 +41,6 @@ ordersRouter.get("/", (req, res) => {
           //   console.log(selectedOrder);
           orders.push(selectedOrder);
         });
-        console.log(orders);
         res.status(200).json(orders);
       });
     } catch (error) {
@@ -58,7 +57,6 @@ ordersRouter.get("/:id", validateID, (req, res) => {
   (async () => {
     try {
       await ordersController.getOrderById(id).then((order) => {
-        console.log(order);
         res.status(200).send(order);
       });
     } catch (error) {
@@ -94,7 +92,6 @@ ordersRouter.get("/customer/email/:email", (req, res) => {
   (async () => {
     try {
       await ordersController.getOrderByCustomerEmail(email).then((data) => {
-        // console.log("DATA:", data);
         res.status(200).json(data);
       });
     } catch (error) {
@@ -128,7 +125,6 @@ ordersRouter.get("/customer/phone/:phone", (req, res) => {
 
 ordersRouter.get("/order_number/:order_number", (req, res) => {
   const order_number = req.params.order_number;
-  console.log("ORDER NUMBER:", order_number);
   (async () => {
     try {
       await ordersController
@@ -148,7 +144,6 @@ ordersRouter.get("/order_number/:order_number", (req, res) => {
 
 ordersRouter.get("/warehouse/:warehouse_id", (req, res) => {
   const warehouse_id = req.params.warehouse_id;
-  console.log("WAREHOUSE ID:", warehouse_id);
   (async () => {
     try {
       await ordersController
@@ -187,7 +182,6 @@ ordersRouter.post("/", (req, res) => {
   // Generating Order number
   const randomOrderNumber = Math.floor(100000 + Math.random() * 900000);
   const order_number = `ME-${randomOrderNumber.toString()}`;
-  // console.log(order_number);
 
   // Generating Order Document Id
   const order_id = uuidv4();

@@ -30,9 +30,7 @@ const arrayingStores = (data) => {
       store_products: doc.data().store_products,
       store_id: doc.data().store_id,
     };
-    console.log(selectedStore);
     stores.push(selectedStore);
-    console.log("STORES AT ARRAYING:", stores);
   });
   return stores;
 };
@@ -42,7 +40,6 @@ storesRouter.get("/", (req, res) => {
     try {
       await storesControllers.getAllStores().then((data) => {
         const stores = arrayingStores(data);
-        console.log("RESPONSE AT GET END POINT:", stores);
         res.status(200).json(stores);
       });
     } catch (error) {
@@ -65,10 +62,8 @@ storesRouter.get("/store_pictures", (req, res) => {
             picture_id: doc.data().picture_id,
             picture: doc.data().picture,
           };
-          console.log(selectedStorePic);
           stores_pics.push(selectedStorePic);
         });
-        // console.log(products);
         res.status(200).json(stores_pics);
       });
     } catch (error) {
@@ -85,7 +80,6 @@ storesRouter.get("/:id", validateID, (req, res) => {
   (async () => {
     try {
       await storesControllers.getStoreById(id).then((store) => {
-        console.log(store);
         res.status(200).send(store);
       });
     } catch (error) {
@@ -102,7 +96,6 @@ storesRouter.get("/storesbycity/:city", (req, res) => {
   (async () => {
     try {
       await storesControllers.getStoresByCity(city).then((data) => {
-        console.log("DATA:", data);
         res.status(200).json(data);
       });
     } catch (error) {
@@ -184,7 +177,7 @@ storesRouter.put("/:id", validateID, (req, res) => {
     openingTime: req.body.openingTime,
     closingTime: req.body.closingTime,
   };
-  console.log("STORE:", store);
+  // console.log("STORE:", store);
   (async () => {
     try {
       await storesControllers.updateStore(store, id).then(() => {
@@ -205,7 +198,7 @@ storesRouter.put("/:id", validateID, (req, res) => {
 
 storesRouter.delete("/:id", validateID, (req, res) => {
   const id = req.params.id;
-  console.log("STORE ID AT END POINT:", id);
+  // console.log("STORE ID AT END POINT:", id);
   (async () => {
     try {
       await storesControllers.deleteStore(id).then(() => {

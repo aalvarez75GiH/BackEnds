@@ -38,7 +38,7 @@ const arrayingWarehouses = (data) => {
       city: doc.data().city,
       representative: doc.data().representative,
     };
-    console.log(selectedWarehouse);
+    // console.log(selectedWarehouse);
     warehouses.push(selectedWarehouse);
   });
   return warehouses;
@@ -73,7 +73,7 @@ warehousesRouter.get("/warehouse_pictures", (req, res) => {
             picture_id: doc.data().picture_id,
             picture: doc.data().picture,
           };
-          console.log(selectedWarehousePic);
+          // console.log(selectedWarehousePic);
           warehouses_pics.push(selectedWarehousePic);
         });
         // console.log(products);

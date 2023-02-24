@@ -4,6 +4,7 @@ const validate = require("uuid-validate");
 const productController = require("./products.controllers");
 const productsRouter = express.Router();
 const warehouseController = require("../warehouses/warehouses.controllers");
+const { UpdateBuilder } = require("firebase-functions/v1/remoteConfig");
 
 const validateID = (req, res, next) => {
   let id = req.params.id;
@@ -34,7 +35,6 @@ productsRouter.get("/", (req, res) => {
             product_id: doc.data().product_id,
             area_availability: doc.data().area_availability,
           };
-          console.log(selectedProduct);
           products.push(selectedProduct);
         });
         // console.log(products);
@@ -60,7 +60,6 @@ productsRouter.get("/product_pictures", (req, res) => {
             picture_id: doc.data().picture_id,
             picture: doc.data().picture,
           };
-          console.log(selectedProductPic);
           products_pics.push(selectedProductPic);
         });
         // console.log(products);
@@ -207,15 +206,59 @@ productsRouter.put("/:id", validateID, (req, res) => {
     picture: req.body.picture,
     rating: req.body.rating,
     area_availability: req.body.area_availability,
+    product_id: req.body.product_id,
   };
   (async () => {
     try {
-      await productController.updateProduct(product, id).then(() => {
-        return res.status(201).send({
-          status: "Success",
-          msg: "Data updated successfully...",
+      await productController
+        .updateProduct(product, id)
+        .then(async (product_to_update) => {
+          let cont = 0;
+          console.log("PRODUCT TO UPDATE:", product_to_update);
+          const data = await warehouseController.getAllWarehouses();
+          const warehouses = arrayingWarehouses(data);
+
+          warehouses.map(async (warehouse) => {
+            const indexOfProductToUpdate = warehouse.products.findIndex(
+              (index) => index.product_id === product_to_update.product_id
+            );
+            console.log("INDEX:", indexOfProductToUpdate);
+
+            if (indexOfProductToUpdate !== -1) {
+              warehouse.products[indexOfProductToUpdate] = {
+                name: product_to_update.name,
+                description: product_to_update.description,
+                price: product_to_update.price,
+                stock: warehouse.products[indexOfProductToUpdate].stock,
+                size: product_to_update.size,
+                quantity: product_to_update.quantity,
+                picture: product_to_update.picture,
+                rating: product_to_update.rating,
+                area_availability:
+                  warehouse.products[indexOfProductToUpdate].area_availability,
+                product_id: product_to_update.product_id,
+              };
+
+              console.log("WAREHOUSE TO UPDATE:", warehouse);
+              await warehouseController.updateWarehouse(
+                warehouse,
+                warehouse.warehouse_id
+              );
+            }
+
+            if (indexOfProductToUpdate === -1) {
+              return res.status(404).send({
+                status: "Failed",
+                msg: "Product Not found",
+              });
+            }
+          });
+
+          return res.status(201).send({
+            status: "Success",
+            msg: "Data updated successfully...",
+          });
         });
-      });
     } catch (error) {
       console.log(error);
       return res.status(500).send({
@@ -225,7 +268,7 @@ productsRouter.put("/:id", validateID, (req, res) => {
     }
   })();
 });
-
+// Crema acaramelada en base a leche perfecta para galletas, obleas y mucha más
 productsRouter.delete("/:id", validateID, (req, res) => {
   const id = req.params.id;
   (async () => {
@@ -236,7 +279,6 @@ productsRouter.delete("/:id", validateID, (req, res) => {
           .then(async (product_to_delete) => {
             const data = await warehouseController.getAllWarehouses();
             const warehouses = arrayingWarehouses(data);
-            console.log("WAREHOUSES:", warehouses);
             warehouses.map((warehouse) => {
               const indexOfProductToDelete = warehouse.products.findIndex(
                 (index) => index.product_id === product_to_delete.product_id
@@ -275,3 +317,42 @@ productsRouter.delete("/:id", validateID, (req, res) => {
 });
 
 module.exports = productsRouter;
+
+// warehouses.map((warehouse) => {
+//   const indexOfProductToUpdate = warehouse.products.findIndex(
+//     (index) => index.product_id === product_to_update.product_id
+//   );
+//   console.log("WAREHOUSE:", warehouse.name);
+//   console.log("INDEX:", indexOfProductToUpdate);
+//   console.log(
+//     "STOCK:",
+//     warehouse.products[indexOfProductToUpdate].stock
+//   );
+
+//   if (indexOfProductToUpdate === -1) {
+//     return res.status(404).send({
+//       status: "Failed",
+//       msg: "Product Not found",
+//     });
+//   }
+
+//   if (indexOfProductToUpdate !== -1) {
+//     product_to_update.stock =
+//       warehouse.products[indexOfProductToUpdate].stock;
+//     console.log("PRODUCT TO UPDATE STOCK:", product_to_update.stock);
+
+//     product_to_update.area_availability =
+//       warehouse.products[indexOfProductToUpdate].area_availability;
+//     console.log(
+//       "PRODUCT TO UPDATE AVAIL:",
+//       product_to_update.area_availability
+//     );
+//   }
+//   warehouse.products.splice(indexOfProductToUpdate, 1);
+//   console.log("PRODUCT TO UPDATE BEFORE UPDATE:", product_to_update);
+//   warehouse.products.push(product_to_update);
+//   warehouseController.updateWarehouse(
+//     warehouse,
+//     warehouse.warehouse_id
+//   );
+// });

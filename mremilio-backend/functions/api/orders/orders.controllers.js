@@ -16,7 +16,6 @@ const getOrderById = async (id) => {
 };
 
 const getOrderByCustomerUID = async (uid) => {
-  console.log(uid);
   let orders = [];
   return await firebase_controller.db
     .collection("orders")
@@ -34,7 +33,6 @@ const getOrderByCustomerUID = async (uid) => {
 };
 
 const getOrderByCustomerEmail = async (email) => {
-  console.log(email);
   let orders = [];
   return await firebase_controller.db
     .collection("orders")
@@ -45,13 +43,11 @@ const getOrderByCustomerEmail = async (email) => {
         console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
-      console.log("ORDERS BY EMAIL ARRAY:", orders);
       return orders;
     });
 };
 
 const getOrderByCustomerPhoneNumber = async (phone_number) => {
-  console.log(phone_number);
   let orders = [];
   return await firebase_controller.db
     .collection("orders")
@@ -62,7 +58,6 @@ const getOrderByCustomerPhoneNumber = async (phone_number) => {
         console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
-      console.log("ORDERS BY PHONE NUMBER ARRAY:", orders);
       return orders;
     });
 };
@@ -78,7 +73,6 @@ const getOrderByCustomerOrderNumber = async (order_number) => {
         console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
-      console.log("ORDER BY ORDER NUMBER ARRAY:", orders);
       return orders;
     });
 };
@@ -95,7 +89,6 @@ const getOrdersByWarehouseID = async (warehouse_id) => {
         console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
-      console.log("ORDER BY ORDER NUMBER ARRAY:", orders);
       return orders;
     });
 };

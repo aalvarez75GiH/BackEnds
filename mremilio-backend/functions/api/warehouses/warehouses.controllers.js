@@ -82,6 +82,10 @@ const createWarehousePicture = async (warehouse_picture) => {
 };
 
 const updateWarehouse = async (warehouse, id) => {
+  console.log("WAREHOUSE ID AT CONTROLLER:", warehouse.warehouse_id);
+  console.log("WAREHOUSE NAME AT CONTROLLER:", warehouse.name);
+  console.log("WAREHOUSE PRODUCTS AT CONTROLLER:", warehouse.products);
+  console.log("WAREHOUSE AT CONTROLLER:", warehouse);
   const {
     name,
     geometry,
@@ -97,7 +101,8 @@ const updateWarehouse = async (warehouse, id) => {
     city,
     representative,
   } = warehouse;
-  return await firebase_controller.db.collection("warehouses").doc(id).update({
+  console.log("SPECIFIC PRODUCT:", products[4]);
+  await firebase_controller.db.collection("warehouses").doc(id).update({
     name,
     geometry,
     address,
@@ -112,6 +117,7 @@ const updateWarehouse = async (warehouse, id) => {
     city,
     representative,
   });
+  console.log("WAREHOUSE UPDATED SUCCESSFULLY...");
 };
 
 const updateProductsQuantityAtWarehouse = async (warehouse, order_products) => {

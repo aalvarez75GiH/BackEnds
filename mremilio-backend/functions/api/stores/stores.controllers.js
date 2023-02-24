@@ -23,7 +23,6 @@ const getStoreById = async (id) => {
 };
 
 const getStoresByCity = async (city) => {
-  console.log(city);
   let stores = [];
   return await firebase_controller.db
     .collection("stores")
@@ -34,7 +33,6 @@ const getStoresByCity = async (city) => {
         console.log(doc.id, " => ", doc.data());
         stores.push(doc.data());
       });
-      console.log("STORES BY CITY ARRAY:", stores);
       return stores;
     });
 };
