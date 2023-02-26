@@ -30,7 +30,6 @@ const getWarehouseByIdReturningProducts = async (id) => {
 };
 
 const createWarehouse = async (warehouse) => {
-  console.log("WAREHOUSE AT CONTROLLER:", warehouse);
   const {
     name,
     address,
@@ -46,12 +45,12 @@ const createWarehouse = async (warehouse) => {
     closingTime,
     phone_number,
     representative,
+    active,
   } = warehouse;
   return await firebase_controller.db
     .collection("warehouses")
     .doc(`/${warehouse_id}/`)
     .create({
-      id: Date.now(),
       name,
       address,
       geometry,
@@ -66,6 +65,7 @@ const createWarehouse = async (warehouse) => {
       closingTime,
       phone_number,
       representative,
+      active,
     });
 };
 
@@ -86,6 +86,43 @@ const updateWarehouse = async (warehouse, id) => {
   console.log("WAREHOUSE NAME AT CONTROLLER:", warehouse.name);
   console.log("WAREHOUSE PRODUCTS AT CONTROLLER:", warehouse.products);
   console.log("WAREHOUSE AT CONTROLLER:", warehouse);
+  const {
+    name,
+    geometry,
+    address,
+    max_limit_ratio_pickup,
+    max_limit_ratio_delivery,
+    max_delivery_time,
+    picture,
+    products,
+    phone_number,
+    openingTime,
+    closingTime,
+    city,
+    representative,
+    active,
+  } = warehouse;
+  await firebase_controller.db.collection("warehouses").doc(id).update({
+    name,
+    geometry,
+    address,
+    max_limit_ratio_pickup,
+    max_limit_ratio_delivery,
+    max_delivery_time,
+    picture,
+    products,
+    phone_number,
+    openingTime,
+    closingTime,
+    city,
+    representative,
+    active,
+  });
+  console.log("WAREHOUSE UPDATED SUCCESSFULLY...");
+};
+const updateWarehouseStatus = async (status, id) => {
+  console.log("WAREHOUSE ID AT CONTROLLER:", id);
+
   const {
     name,
     geometry,

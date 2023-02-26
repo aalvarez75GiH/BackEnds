@@ -37,9 +37,41 @@ const arrayingWarehouses = (data) => {
       phone_number: doc.data().phone_number,
       city: doc.data().city,
       representative: doc.data().representative,
+      active: doc.data().active,
     };
     // console.log(selectedWarehouse);
+    if (selectedWarehouse.active) {
+      warehouses.push(selectedWarehouse);
+    }
+  });
+  return warehouses;
+};
+const arrayingWarehousesForAdmin = (data) => {
+  let warehouses = [];
+  let docs = data.docs;
+  docs.map((doc) => {
+    const selectedWarehouse = {
+      name: doc.data().name,
+      address: doc.data().address,
+      openingTime: doc.data().openingTime,
+      closingTime: doc.data().closingTime,
+      geometry: doc.data().geometry,
+      picture: doc.data().picture,
+      max_limit_ratio_pickup: doc.data().max_limit_ratio_pickup,
+      max_limit_ratio_delivery: doc.data().max_limit_ratio_delivery,
+      max_delivery_time: doc.data().max_delivery_time,
+      warehouse_id: doc.data().warehouse_id,
+      products: doc.data().products,
+      phone_number: doc.data().phone_number,
+      city: doc.data().city,
+      representative: doc.data().representative,
+      active: doc.data().active,
+    };
     warehouses.push(selectedWarehouse);
+
+    // console.log(selectedWarehouse);
+    // if (selectedWarehouse.active) {
+    // }
   });
   return warehouses;
 };
@@ -50,6 +82,23 @@ warehousesRouter.get("/", (req, res) => {
     try {
       await warehousesController.getAllWarehouses().then((data) => {
         const warehouses = arrayingWarehouses(data);
+        // console.log("RESPONSE AT GET END POINT:", warehouses);
+        res.status(200).json(warehouses);
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: "Failed",
+        msg: error,
+      });
+    }
+  })();
+});
+
+warehousesRouter.get("/wh_for_admin", (req, res) => {
+  (async () => {
+    try {
+      await warehousesController.getAllWarehouses().then((data) => {
+        const warehouses = arrayingWarehousesForAdmin(data);
         // console.log("RESPONSE AT GET END POINT:", warehouses);
         res.status(200).json(warehouses);
       });
@@ -122,6 +171,7 @@ warehousesRouter.get("/distanceMatrix", (req, res) => {
     try {
       await warehousesController.getAllWarehouses().then(async (data) => {
         warehouses = arrayingWarehouses(data);
+        console.log("ACTIVE WAREHOUSES:", warehouses);
         let available_warehouses = [];
         let most_optimum_warehouse_forCustomer = [];
         const warehouses_with_distance_from_google = await Promise.all(
@@ -182,7 +232,7 @@ warehousesRouter.get("/distanceMatrix", (req, res) => {
               : current;
           }
         );
-        // console.log("Most Closest Warehouse to customer:", closest_warehouse);
+        console.log("Most Closest Warehouse to customer:", closest_warehouse);
         most_optimum_warehouse_forCustomer.push(closest_warehouse);
         res.status(200).send(most_optimum_warehouse_forCustomer);
       });
@@ -239,6 +289,7 @@ warehousesRouter.post("/", (req, res) => {
     closingTime: req.body.closingTime,
     phone_number: req.body.phone_number,
     representative: req.body.representative,
+    active: true,
     warehouse_id,
   };
 
@@ -312,9 +363,37 @@ warehousesRouter.put("/:id", validateID, (req, res) => {
     closingTime: req.body.closingTime,
     city: req.body.city,
     representative: req.body.representative,
+    active: req.body.active,
   };
   (async () => {
     try {
+      await warehousesController.updateWarehouse(warehouse, id).then(() => {
+        return res.status(201).send({
+          status: "Success",
+          msg: "Data updated successfully...",
+        });
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        status: "Failed",
+        msg: "Something went wrong saving Data...",
+      });
+    }
+  })();
+});
+
+warehousesRouter.put("/status/:id", validateID, (req, res) => {
+  const id = req.params.id;
+
+  (async () => {
+    try {
+      const warehouse = await warehousesController.getWarehouseById(id);
+      console.log("WAREHOUSE TO UPDATE STATUS:", warehouse);
+      warehouse.active = !warehouse.active;
+      console.log("STATUS:", warehouse.active);
+      console.log("WAREHOUSE TO UPDATE STATUS BEFORE UPDATE:", warehouse);
+
       await warehousesController.updateWarehouse(warehouse, id).then(() => {
         return res.status(201).send({
           status: "Success",

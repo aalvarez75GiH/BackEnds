@@ -24,10 +24,8 @@ const getOrderByCustomerUID = async (uid) => {
     // .then((orders) => orders.data());
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
-      console.log("ORDERS BY ID ARRAY:", orders);
       return orders;
     });
 };
@@ -40,7 +38,7 @@ const getOrderByCustomerEmail = async (email) => {
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
+        // console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
       return orders;
@@ -55,7 +53,6 @@ const getOrderByCustomerPhoneNumber = async (phone_number) => {
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
       return orders;
@@ -70,7 +67,7 @@ const getOrderByCustomerOrderNumber = async (order_number) => {
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
+        // console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
       return orders;
@@ -78,7 +75,6 @@ const getOrderByCustomerOrderNumber = async (order_number) => {
 };
 
 const getOrdersByWarehouseID = async (warehouse_id) => {
-  console.log("WAREHOUSE ID AT CONTROLLER:", warehouse_id);
   let orders = [];
   return await firebase_controller.db
     .collection("orders")
@@ -86,7 +82,7 @@ const getOrdersByWarehouseID = async (warehouse_id) => {
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
+        // console.log(doc.id, " => ", doc.data());
         orders.push(doc.data());
       });
       return orders;

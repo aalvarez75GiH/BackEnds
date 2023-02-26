@@ -105,7 +105,6 @@ ordersRouter.get("/customer/email/:email", (req, res) => {
 
 ordersRouter.get("/customer/phone/:phone", (req, res) => {
   const phone_number = req.params.phone;
-  console.log("PHONE NUMBER:", phone_number);
   (async () => {
     try {
       await ordersController
