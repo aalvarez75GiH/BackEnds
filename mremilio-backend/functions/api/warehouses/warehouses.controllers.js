@@ -120,42 +120,6 @@ const updateWarehouse = async (warehouse, id) => {
   });
   console.log("WAREHOUSE UPDATED SUCCESSFULLY...");
 };
-const updateWarehouseStatus = async (status, id) => {
-  console.log("WAREHOUSE ID AT CONTROLLER:", id);
-
-  const {
-    name,
-    geometry,
-    address,
-    max_limit_ratio_pickup,
-    max_limit_ratio_delivery,
-    max_delivery_time,
-    picture,
-    products,
-    phone_number,
-    openingTime,
-    closingTime,
-    city,
-    representative,
-  } = warehouse;
-  console.log("SPECIFIC PRODUCT:", products[4]);
-  await firebase_controller.db.collection("warehouses").doc(id).update({
-    name,
-    geometry,
-    address,
-    max_limit_ratio_pickup,
-    max_limit_ratio_delivery,
-    max_delivery_time,
-    picture,
-    products,
-    phone_number,
-    openingTime,
-    closingTime,
-    city,
-    representative,
-  });
-  console.log("WAREHOUSE UPDATED SUCCESSFULLY...");
-};
 
 const updateProductsQuantityAtWarehouse = async (warehouse, order_products) => {
   console.log("WAREHOUSE_PRODUCTS:", warehouse.products);

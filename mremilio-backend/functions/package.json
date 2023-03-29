@@ -9,7 +9,7 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "main": "index.js",
   "dependencies": {
@@ -19,7 +19,7 @@
     "dotenv": "^16.0.2",
     "express": "^4.18.1",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^4.1.1",
+    "firebase-functions": "^4.2.1",
     "nanoid": "^2.1.9",
     "stripe": "^10.7.0",
     "stripe-client": "^1.1.5",

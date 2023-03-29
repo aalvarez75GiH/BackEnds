@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require("uuid");
 const validate = require("uuid-validate");
 const warehousesRouter = express.Router();
 const axios = require("axios");
+const warehousesHandlers = require("./warehouses.handlers");
+
 require("dotenv").config();
 
 const validateID = (req, res, next) => {
@@ -17,72 +19,13 @@ const validateID = (req, res, next) => {
   next();
 };
 
-// Consolidation warehouses in an array
-const arrayingWarehouses = (data) => {
-  let warehouses = [];
-  let docs = data.docs;
-  docs.map((doc) => {
-    const selectedWarehouse = {
-      name: doc.data().name,
-      address: doc.data().address,
-      openingTime: doc.data().openingTime,
-      closingTime: doc.data().closingTime,
-      geometry: doc.data().geometry,
-      picture: doc.data().picture,
-      max_limit_ratio_pickup: doc.data().max_limit_ratio_pickup,
-      max_limit_ratio_delivery: doc.data().max_limit_ratio_delivery,
-      max_delivery_time: doc.data().max_delivery_time,
-      warehouse_id: doc.data().warehouse_id,
-      products: doc.data().products,
-      phone_number: doc.data().phone_number,
-      city: doc.data().city,
-      representative: doc.data().representative,
-      active: doc.data().active,
-    };
-    // console.log(selectedWarehouse);
-    if (selectedWarehouse.active) {
-      warehouses.push(selectedWarehouse);
-    }
-  });
-  return warehouses;
-};
-const arrayingWarehousesForAdmin = (data) => {
-  let warehouses = [];
-  let docs = data.docs;
-  docs.map((doc) => {
-    const selectedWarehouse = {
-      name: doc.data().name,
-      address: doc.data().address,
-      openingTime: doc.data().openingTime,
-      closingTime: doc.data().closingTime,
-      geometry: doc.data().geometry,
-      picture: doc.data().picture,
-      max_limit_ratio_pickup: doc.data().max_limit_ratio_pickup,
-      max_limit_ratio_delivery: doc.data().max_limit_ratio_delivery,
-      max_delivery_time: doc.data().max_delivery_time,
-      warehouse_id: doc.data().warehouse_id,
-      products: doc.data().products,
-      phone_number: doc.data().phone_number,
-      city: doc.data().city,
-      representative: doc.data().representative,
-      active: doc.data().active,
-    };
-    warehouses.push(selectedWarehouse);
-
-    // console.log(selectedWarehouse);
-    // if (selectedWarehouse.active) {
-    // }
-  });
-  return warehouses;
-};
-
 // Get All warehouses from Firesote
 warehousesRouter.get("/", (req, res) => {
   (async () => {
     try {
       await warehousesController.getAllWarehouses().then((data) => {
-        const warehouses = arrayingWarehouses(data);
-        // console.log("RESPONSE AT GET END POINT:", warehouses);
+        // const warehouses = arrayingWarehouses(data);
+        const warehouses = warehousesHandlers.arrayingWarehouses(data);
         res.status(200).json(warehouses);
       });
     } catch (error) {
@@ -98,7 +41,8 @@ warehousesRouter.get("/wh_for_admin", (req, res) => {
   (async () => {
     try {
       await warehousesController.getAllWarehouses().then((data) => {
-        const warehouses = arrayingWarehousesForAdmin(data);
+        // const warehouses = arrayingWarehousesForAdmin(data);
+        const warehouses = warehousesHandlers.arrayingWarehousesForAdmin(data);
         // console.log("RESPONSE AT GET END POINT:", warehouses);
         res.status(200).json(warehouses);
       });
@@ -170,7 +114,8 @@ warehousesRouter.get("/distanceMatrix", (req, res) => {
     let warehouses = [];
     try {
       await warehousesController.getAllWarehouses().then(async (data) => {
-        warehouses = arrayingWarehouses(data);
+        // warehouses = arrayingWarehouses(data);
+        warehouses = warehousesHandlers.arrayingWarehouses(data);
         console.log("ACTIVE WAREHOUSES:", warehouses);
         let available_warehouses = [];
         let most_optimum_warehouse_forCustomer = [];

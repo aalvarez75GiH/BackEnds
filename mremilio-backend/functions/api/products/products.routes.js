@@ -4,7 +4,6 @@ const validate = require("uuid-validate");
 const productController = require("./products.controllers");
 const productsRouter = express.Router();
 const warehouseController = require("../warehouses/warehouses.controllers");
-const { UpdateBuilder } = require("firebase-functions/v1/remoteConfig");
 
 const validateID = (req, res, next) => {
   let id = req.params.id;
@@ -110,6 +109,7 @@ const arrayingWarehouses = (data) => {
       phone_number: doc.data().phone_number,
       city: doc.data().city,
       representative: doc.data().representative,
+      active: doc.data().active,
     };
     // console.log(selectedWarehouse);
     warehouses.push(selectedWarehouse);
@@ -317,42 +317,3 @@ productsRouter.delete("/:id", validateID, (req, res) => {
 });
 
 module.exports = productsRouter;
-
-// warehouses.map((warehouse) => {
-//   const indexOfProductToUpdate = warehouse.products.findIndex(
-//     (index) => index.product_id === product_to_update.product_id
-//   );
-//   console.log("WAREHOUSE:", warehouse.name);
-//   console.log("INDEX:", indexOfProductToUpdate);
-//   console.log(
-//     "STOCK:",
-//     warehouse.products[indexOfProductToUpdate].stock
-//   );
-
-//   if (indexOfProductToUpdate === -1) {
-//     return res.status(404).send({
-//       status: "Failed",
-//       msg: "Product Not found",
-//     });
-//   }
-
-//   if (indexOfProductToUpdate !== -1) {
-//     product_to_update.stock =
-//       warehouse.products[indexOfProductToUpdate].stock;
-//     console.log("PRODUCT TO UPDATE STOCK:", product_to_update.stock);
-
-//     product_to_update.area_availability =
-//       warehouse.products[indexOfProductToUpdate].area_availability;
-//     console.log(
-//       "PRODUCT TO UPDATE AVAIL:",
-//       product_to_update.area_availability
-//     );
-//   }
-//   warehouse.products.splice(indexOfProductToUpdate, 1);
-//   console.log("PRODUCT TO UPDATE BEFORE UPDATE:", product_to_update);
-//   warehouse.products.push(product_to_update);
-//   warehouseController.updateWarehouse(
-//     warehouse,
-//     warehouse.warehouse_id
-//   );
-// });
